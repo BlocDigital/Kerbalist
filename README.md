@@ -155,25 +155,32 @@ Kerbalist.html
 
 in any modern browser.
 
+## Changelog
+
+### Version 1.5.0 (Current)
+- 🪐 **Full 3D WebGL Solar System Map**: Replaced 2D SVG map with Three.js WebGL 3D scene supporting accurate planetary orbital inclinations.
+- 🎥 **Free-look Orbital Camera**: Added free rotation (`Left Drag`), panning (`Shift + Drag`), zoom (`Scroll`), and quick view reset (`R` key or `⤾` button).
+- 👻 **Destination Arrival Ghost**: Shows a translucent ghost planet at the exact projected position of the destination body upon arrival, connected by a trajectory line.
+- ⌨️ **UI & Controls HUD**: Added on-screen keyboard/mouse controls overlay card and expanded UT sync input fields to support 4-digit years comfortably.
+
+---
+
 ## Roadmap
 
-### Version 1.0
-
+### Version 1.0 (Completed)
 - Interactive Kerbol system
 - Hohmann transfers
 - Delta-V calculator
 - Phase angle calculator
 - Transfer visualization
 
-### Version 1.5
+### Version 1.5 (Completed)
+- 3D WebGL rendering with true inclinations
+- Free-look & pan camera controls
+- Destination arrival ghost planet visualization
+- Lambert solver & Porkchop plots
 
-- Lambert solver
-- Porkchop plots
-- Mission timeline
-- Improved orbital rendering
-
-### Version 2.0
-
+### Version 2.0 (Planned)
 - Gravity assist planner
 - Multi-flyby trajectories
 - Plane change optimization
