@@ -163,25 +163,10 @@ No installation is required.
 Simply download the project and open:
 
 ```
-index.html
+Kerbalist.html
 ```
 
 in any modern browser.
-
-Alternatively:
-
-```bash
-git clone https://github.com/yourusername/ksp2-mission-planner.git
-cd ksp2-mission-planner
-```
-
-Open:
-
-```
-index.html
-```
-
----
 
 ## Roadmap
 
@@ -226,7 +211,6 @@ Most KSP transfer calculators either:
 
 - only calculate phase angles,
 - use simplified equations,
-- require an internet connection,
 - or provide little visual feedback.
 
 This project combines accurate orbital mechanics with an interactive visualization system, allowing players to understand *why* a transfer works rather than simply following numbers.
