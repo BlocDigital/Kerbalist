@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kerbol Transfer Window Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060a11;
+  --bg-grid:#0a1120;
+  --panel:#0b1220;
+  --panel2:#0f1830;
+  --panel3:#101c33;
+  --border:#1d2c47;
+  --border-bright:#2c4470;
+  --text:#dbe7f5;
+  --text-dim:#7688a6;
+  --text-dimmer:#4d5d78;
+  --cyan:#4fe0e8;
+  --cyan-dim:#1f5d63;
+  --amber:#ffb454;
+  --amber-dim:#7a5222;
+  --green:#7ee787;
+  --red:#ff6b6b;
+  --violet:#b78cff;
+  --font-display:'Rajdhani',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at 20% -10%, #0d1830 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 110%, #0a1526 0%, transparent 50%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-display);
+  overflow:hidden;
+}
+.app{ display:flex; flex-direction:column; height:100vh; }
+
+/* ---------- HEADER ---------- */
+header{
+  display:flex; align-items:center; gap:22px;
+  padding:10px 18px;
+  background:linear-gradient(180deg,#0c1526,#081020);
+  border-bottom:1px solid var(--border);
+  flex:0 0 auto;
+  z-index:20;
+}
+.brand{ display:flex; align-items:center; gap:10px; }
+.brand .mark{
+  width:30px;height:30px; border-radius:50%;
+  background:radial-gradient(circle at 32% 30%, #fff6d8, #ffd166 40%, #b8781a 100%);
+  box-shadow:0 0 14px 2px rgba(255,209,102,.35);
+  flex:0 0 auto;
+}
+.brand h1{
+  font-size:17px; margin:0; letter-spacing:.09em; font-weight:700;
+  text-transform:uppercase; color:#f2f6fb;
+}
+.brand .sub{ font-size:10.5px; color:var(--text-dim); letter-spacing:.14em; text-transform:uppercase; margin-top:1px;}
+
+.ut-clock{
+  margin-left:auto; display:flex; align-items:center; gap:14px;
+  font-family:var(--font-mono);
+}
+.ut-clock .label{ font-size:10px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:.12em;}
+.ut-clock .value{ font-size:16px; color:var(--cyan); text-shadow:0 0 8px rgba(79,224,232,.4); letter-spacing:.02em;}
+
+.ut-sync{ display:flex; align-items:center; gap:5px; background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:5px 7px; }
+.ut-sync .label{ font-size:9.5px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:.1em; margin-right:2px;}
+.ut-sync input{
+  width:64px; background:var(--panel3); border:1px solid var(--border); border-radius:4px;
+  color:var(--text); font-family:var(--font-mono); font-size:12.5px; padding:6px 4px; text-align:center; outline:none;
+}
+.ut-sync input.narrow{ width:52px; }
+.ut-sync input:focus{ border-color:var(--cyan); }
+.ut-sync span.sep{ color:var(--text-dimmer); font-size:11px; margin:0 -1px;}
+.ut-sync button{
+  background:var(--cyan-dim); border:1px solid var(--cyan-dim); color:var(--cyan);
+  font-family:var(--font-display); font-weight:700; font-size:11px; letter-spacing:.05em;
+  padding:5px 10px; border-radius:5px; cursor:pointer; text-transform:uppercase; margin-left:3px;
+}
+.ut-sync button:hover{ background:#164048; }
+
+.warp-controls{ display:flex; align-items:center; gap:4px; background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:4px; }
+.warp-controls button{
+  background:transparent; border:none; color:var(--text-dim);
+  font-family:var(--font-mono); font-size:11px; padding:5px 9px; border-radius:5px;
+  cursor:pointer; transition:.12s;
+}
+.warp-controls button:hover{ background:var(--panel3); color:var(--text);}
+.warp-controls button.active{ background:var(--cyan-dim); color:var(--cyan); }
+.warp-controls .reset-btn{ color:var(--amber); border-left:1px solid var(--border); margin-left:2px; padding-left:10px;}
+
+/* ---------- MAIN LAYOUT ---------- */
+.main{ flex:1 1 auto; display:flex; min-height:0; }
+
+.map-wrap{ flex:1 1 auto; position:relative; min-width:0; background:var(--bg-grid); overflow:hidden;}
+.map-wrap svg{ width:100%; height:100%; display:block; cursor:grab; }
+.map-wrap svg.grabbing{ cursor:grabbing; }
+
+.map-hud{
+  position:absolute; top:12px; left:12px; display:flex; flex-direction:column; gap:6px; pointer-events:none;
+}
+.map-hud .chip{
+  font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim);
+  background:rgba(9,15,28,.72); border:1px solid var(--border); border-radius:6px;
+  padding:5px 9px; letter-spacing:.03em; backdrop-filter:blur(2px);
+}
+.zoom-controls{
+  position:absolute; bottom:14px; left:12px; display:flex; flex-direction:column; gap:5px;
+}
+.zoom-controls button{
+  width:30px;height:30px; border-radius:7px; border:1px solid var(--border);
+  background:rgba(11,18,32,.85); color:var(--text-dim); font-size:15px; cursor:pointer;
+}
+.zoom-controls button:hover{ color:var(--cyan); border-color:var(--border-bright); }
+
+.legend{
+  position:absolute; bottom:14px; right:14px;
+  background:rgba(9,15,28,.78); border:1px solid var(--border); border-radius:8px;
+  padding:8px 12px; font-size:10.5px; color:var(--text-dim); font-family:var(--font-mono);
+  display:flex; gap:14px; align-items:center;
+}
+.legend .dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle;}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  width:392px; flex:0 0 392px; border-left:1px solid var(--border);
+  background:linear-gradient(180deg,#0a0f1c,#080d18);
+  display:flex; flex-direction:column; min-height:0;
+}
+.select-row{ display:flex; gap:8px; padding:14px 14px 10px; }
+.field{ flex:1; display:flex; flex-direction:column; gap:5px; }
+.field label{ font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-dimmer); font-weight:600;}
+select{
+  background:var(--panel2); border:1px solid var(--border); color:var(--text);
+  font-family:var(--font-display); font-weight:600; font-size:14px;
+  padding:8px 9px; border-radius:7px; outline:none; cursor:pointer;
+}
+select:focus{ border-color:var(--cyan); }
+.swap-btn{
+  align-self:flex-end; width:34px; height:34px; border-radius:7px;
+  border:1px solid var(--border); background:var(--panel2); color:var(--text-dim);
+  cursor:pointer; font-size:15px; margin-bottom:0;
+}
+.swap-btn:hover{ color:var(--cyan); border-color:var(--border-bright); }
+
+.plan-btn{
+  margin:2px 14px 12px; padding:11px; border-radius:8px; border:1px solid var(--cyan-dim);
+  background:linear-gradient(180deg,#123339,#0c2226); color:var(--cyan);
+  font-family:var(--font-display); font-weight:700; font-size:13.5px; letter-spacing:.08em;
+  text-transform:uppercase; cursor:pointer; transition:.12s;
+}
+.plan-btn:hover{ background:linear-gradient(180deg,#164048,#0f2a2f); box-shadow:0 0 16px rgba(79,224,232,.15); }
+
+.tabs{ display:flex; border-bottom:1px solid var(--border); padding:0 14px; gap:2px; flex:0 0 auto;}
+.tab{
+  padding:9px 12px; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:600;
+  color:var(--text-dimmer); cursor:pointer; border-bottom:2px solid transparent; user-select:none;
+}
+.tab:hover{ color:var(--text-dim); }
+.tab.active{ color:var(--cyan); border-bottom-color:var(--cyan); }
+
+.tab-panels{ flex:1 1 auto; overflow-y:auto; padding:14px; min-height:0; }
+.tab-panel{ display:none; }
+.tab-panel.active{ display:block; }
+
+.card{
+  background:var(--panel); border:1px solid var(--border); border-radius:9px;
+  padding:12px 13px; margin-bottom:11px;
+}
+.card h3{
+  margin:0 0 9px; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-dim); font-weight:600; display:flex; align-items:center; gap:6px;
+}
+.card h3 .dot{ width:6px;height:6px;border-radius:50%; background:var(--cyan); box-shadow:0 0 6px var(--cyan);}
+
+.stat-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:5px 0; border-bottom:1px dashed rgba(255,255,255,.05);
+  font-size:12.5px;
+}
+.stat-row:last-child{ border-bottom:none; }
+.stat-row .k{ color:var(--text-dim); }
+.stat-row .v{ font-family:var(--font-mono); color:var(--text); font-weight:500; text-align:right;}
+.stat-row .v.hi{ color:var(--cyan); }
+.stat-row .v.warn{ color:var(--amber); }
+.stat-row .v.good{ color:var(--green); }
+.stat-row .v.bad{ color:var(--red); }
+
+.big-num{
+  font-family:var(--font-mono); font-size:26px; color:var(--amber); font-weight:700;
+  text-shadow:0 0 14px rgba(255,180,84,.3); letter-spacing:.01em;
+}
+.big-num small{ font-size:13px; color:var(--text-dim); font-weight:400; margin-left:6px;}
+
+.phase-gauge{ display:flex; justify-content:center; padding:6px 0 2px; }
+.countdown{
+  font-family:var(--font-mono); font-size:21px; color:var(--green); text-align:center;
+  padding:8px 0 4px; letter-spacing:.02em;
+}
+.countdown.past{ color:var(--text-dim); }
+.note{ font-size:10.5px; color:var(--text-dimmer); line-height:1.5; margin-top:2px;}
+.placeholder{ color:var(--text-dimmer); font-size:12.5px; text-align:center; padding:24px 6px; line-height:1.6;}
+
+/* porkchop */
+.pk-canvas-wrap{ position:relative; background:var(--panel2); border-radius:8px; overflow:hidden; border:1px solid var(--border);}
+#pkCanvas{ display:block; width:100%; cursor:crosshair; }
+.pk-axis-x, .pk-axis-y{ font-family:var(--font-mono); font-size:9.5px; color:var(--text-dimmer);}
+.pk-axis-x{ display:flex; justify-content:space-between; padding:3px 2px 0;}
+.pk-controls{ display:flex; gap:8px; margin-top:8px; }
+.pk-controls button{
+  flex:1; background:var(--panel2); border:1px solid var(--border); color:var(--text-dim);
+  padding:7px; border-radius:6px; font-family:var(--font-display); font-weight:600; font-size:11.5px;
+  cursor:pointer; text-transform:uppercase; letter-spacing:.05em;
+}
+.pk-controls button:hover{ color:var(--cyan); border-color:var(--border-bright);}
+.pk-legend-bar{ height:8px; border-radius:4px; margin-top:8px;
+  background:linear-gradient(90deg,#2f6fff,#4fe0e8,#7ee787,#ffe066,#ff9d4d,#ff5b5b);}
+.pk-legend-labels{ display:flex; justify-content:space-between; font-size:9.5px; color:var(--text-dimmer); font-family:var(--font-mono); margin-top:2px;}
+
+/* planet info */
+.planet-swatch{ width:15px;height:15px;border-radius:50%; display:inline-block; margin-right:8px; vertical-align:middle; box-shadow:0 0 8px currentColor;}
+.info-title{ display:flex; align-items:center; font-size:19px; font-weight:700; margin-bottom:4px;}
+.info-desc{ font-size:12px; color:var(--text-dim); line-height:1.6; margin-bottom:12px;}
+
+::-webkit-scrollbar{ width:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:var(--border-bright); border-radius:5px; }
+
+.orbit-path{ fill:none; stroke-width:1; }
+.planet-dot{ cursor:pointer; }
+.planet-label{ font-family:var(--font-mono); font-size:9.5px; fill:var(--text-dim); pointer-events:none; }
+.kerbol-dot{ filter: drop-shadow(0 0 10px rgba(255,209,102,.85)); }
+
+@media (max-width:880px){
+  .sidebar{ width:320px; flex-basis:320px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="mark"></div>
+      <div>
+        <h1>Kerbol Transfer Planner</h1>
+        <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 stock system</div>
+      </div>
+    </div>
+    <div class="ut-clock">
+      <div><span class="label">UT</span><br><span class="value" id="utValue">T+0y,0d,00:00:00</span></div>
+    </div>
+    <div class="ut-sync">
+      <span class="label">Sync to save (T+)</span>
+      <input type="number" id="setYear" class="narrow" min="0" value="0" title="Years elapsed">
+      <span class="sep">y</span>
+      <input type="number" id="setDay" min="0" max="425" value="0" title="Days elapsed (0-425)">
+      <span class="sep">d</span>
+      <input type="number" id="setHour" class="narrow" min="0" max="23" value="0" title="Hour">
+      <span class="sep">:</span>
+      <input type="number" id="setMin" class="narrow" min="0" max="59" value="0" title="Minute">
+      <span class="sep">:</span>
+      <input type="number" id="setSec" class="narrow" min="0" max="59" value="0" title="Second">
+      <button id="setUtBtn">Set</button>
+    </div>
+    <div class="warp-controls" id="warpControls"></div>
+  </header>
+
+  <div class="main">
+    <div class="map-wrap" id="mapWrap">
+      <svg id="mapSvg" viewBox="-480 -480 960 960" preserveAspectRatio="xMidYMid meet">
+        <g id="orbitsLayer"></g>
+        <g id="transferLayer"></g>
+        <g id="phaseLayer"></g>
+        <g id="planetsLayer"></g>
+      </svg>
+      <div class="map-hud">
+        <div class="chip" id="hudOrigin">ORIGIN — Kerbin</div>
+        <div class="chip" id="hudDest">DEST — Duna</div>
+      </div>
+      <div class="zoom-controls">
+        <button id="zoomIn">+</button>
+        <button id="zoomOut">−</button>
+        <button id="zoomReset">⤾</button>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
+        <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
+        <span><span class="dot" style="background:var(--green)"></span>Transfer arc</span>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="select-row">
+        <div class="field">
+          <label>Origin</label>
+          <select id="originSelect"></select>
+        </div>
+        <button class="swap-btn" id="swapBtn" title="Swap origin/destination">⇄</button>
+        <div class="field">
+          <label>Destination</label>
+          <select id="destSelect"></select>
+        </div>
+      </div>
+      <button class="plan-btn" id="planBtn">Plan Transfer</button>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="transfer">Transfer</div>
+        <div class="tab" data-tab="porkchop">Porkchop</div>
+        <div class="tab" data-tab="info">Body Info</div>
+      </div>
+
+      <div class="tab-panels">
+
+        <div class="tab-panel active" id="panel-transfer">
+          <div id="transferResults">
+            <div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a Hohmann-style transfer window.</div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-porkchop">
+          <div class="card">
+            <h3><span class="dot"></span>Porkchop Plot</h3>
+            <div class="pk-canvas-wrap">
+              <canvas id="pkCanvas" width="360" height="300"></canvas>
+            </div>
+            <div class="pk-legend-bar"></div>
+            <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
+            <div class="pk-controls">
+              <button id="pkGenerate">Generate</button>
+            </div>
+            <div class="note">X-axis: departure date. Y-axis: time of flight. Color = total heliocentric Δv (departure v∞ + arrival v∞), Lambert-solved per cell. Click a cell to inspect it.</div>
+          </div>
+          <div class="card" id="pkSelected" style="display:none;">
+            <h3><span class="dot"></span>Selected Point</h3>
+            <div id="pkSelectedBody"></div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="panel-info">
+          <div class="card" id="infoCard"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   1. PHYSICAL DATA — stock Kerbol system (KSP / KSP2)
+   ========================================================= */
+const KERBOL = { name:'Kerbol', mu:1.1723328e18, radius:261600000, color:'#ffd166' };
+
+const DEG = Math.PI/180;
+
+const RAW_PLANETS = [
+  { name:'Moho',   color:'#b98a56', a:5263138304,  e:0.200, orientDeg:85,    m0Deg:180, period:2215754.5,   mu:1.6860938e11, radius:250000,  incl:7.00,
+    desc:'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.' },
+  { name:'Eve',    color:'#9c4fc4', a:9832684544,  e:0.010, orientDeg:15,    m0Deg:180, period:5657995.7,   mu:8.1717302e12, radius:700000,  incl:2.10,
+    desc:'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.' },
+  { name:'Kerbin', color:'#3aa15c', a:13599840256, e:0.000, orientDeg:0,     m0Deg:180, period:9203544.6,   mu:3.5316000e12, radius:600000,  incl:0.00,
+    desc:'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.' },
+  { name:'Duna',   color:'#c1531c', a:20726155264, e:0.051, orientDeg:135.5, m0Deg:180, period:17315400.4,  mu:3.0136321e11, radius:320000,  incl:0.06,
+    desc:'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.' },
+  { name:'Dres',   color:'#9a9a9a', a:40839348203, e:0.145, orientDeg:370,   m0Deg:180, period:47893063.1,  mu:2.1484489e10, radius:138000,  incl:5.00,
+    desc:'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Dres does exist.' },
+  { name:'Jool',   color:'#4fae5b', a:68773560320, e:0.050, orientDeg:52,    m0Deg:6,   period:104661432,   mu:2.82528e14,   radius:6000000, incl:1.304,
+    desc:'A gas giant with a swirling green atmosphere and an enormous sphere of influence hosting five moons: Laythe, Vall, Tylo, Bop and Pol. Dominates the outer Kerbol system.' },
+  { name:'Eeloo',  color:'#dfe8ec', a:90118820000, e:0.260, orientDeg:310,   m0Deg:180, period:156991880,   mu:7.4410815e10, radius:210000,  incl:6.15,
+    desc:'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.' }
+];
+
+const PLANETS = RAW_PLANETS.map(p=>({
+  ...p,
+  orient: p.orientDeg*DEG,
+  m0: p.m0Deg*DEG,
+  n: 2*Math.PI/p.period
+}));
+
+/* =========================================================
+   2. ORBITAL MECHANICS
+   ========================================================= */
+function solveKepler(M,e){
+  M = ((M % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  let E = e<0.8 ? M : Math.PI;
+  for(let i=0;i<60;i++){
+    const dE = (E - e*Math.sin(E) - M)/(1 - e*Math.cos(E));
+    E -= dE;
+    if(Math.abs(dE) < 1e-12) break;
+  }
+  return E;
+}
+
+// Returns {x,y,r,theta,vx,vy} in the Kerbol-centered 2D ecliptic-projection plane
+function stateAt(planet, t){
+  const M = planet.m0 + planet.n*t;
+  const E = solveKepler(M, planet.e);
+  const e = planet.e;
+  const nu = Math.atan2(Math.sqrt(1-e*e)*Math.sin(E), Math.cos(E)-e);
+  const r = planet.a*(1-e*Math.cos(E));
+  const theta = nu + planet.orient;
+  const x = r*Math.cos(theta), y = r*Math.sin(theta);
+  const h = Math.sqrt(KERBOL.mu*planet.a*(1-e*e));
+  const vr = KERBOL.mu/h * e*Math.sin(nu);
+  const vt = KERBOL.mu/h * (1+e*Math.cos(nu));
+  const vx = vr*Math.cos(theta) - vt*Math.sin(theta);
+  const vy = vr*Math.sin(theta) + vt*Math.cos(theta);
+  return {x,y,r,theta,vx,vy,nu};
+}
+
+function stumpC(z){ if(z>1e-6) return (1-Math.cos(Math.sqrt(z)))/z; if(z<-1e-6){const s=Math.sqrt(-z); return (Math.cosh(s)-1)/(-z);} return 0.5; }
+function stumpS(z){ if(z>1e-6){const s=Math.sqrt(z); return (s-Math.sin(s))/(s*s*s);} if(z<-1e-6){const s=Math.sqrt(-z); return (Math.sinh(s)-s)/(s*s*s);} return 1/6; }
+
+// Universal-variable Lambert solver, single revolution, prograde (short way in direction of orbital motion)
+function lambertSolve(r1v, r2v, tof, mu){
+  const r1 = Math.hypot(r1v[0],r1v[1]), r2 = Math.hypot(r2v[0],r2v[1]);
+  const th1 = Math.atan2(r1v[1],r1v[0]), th2 = Math.atan2(r2v[1],r2v[0]);
+  let dnu = th2-th1; if(dnu<=1e-9) dnu += 2*Math.PI;
+  const A = Math.sin(dnu)*Math.sqrt(r1*r2/(1-Math.cos(dnu)));
+  if(!isFinite(A) || Math.abs(A)<1e-6) return null;
+  function yOf(z){ return r1+r2+A*(z*stumpS(z)-1)/Math.sqrt(stumpC(z)); }
+  function Fz(z){
+    const y = yOf(z);
+    if(y<0) return null;
+    const x = Math.sqrt(y/stumpC(z));
+    return (Math.pow(x,3)*stumpS(z)+A*Math.sqrt(y))/Math.sqrt(mu) - tof;
+  }
+  let zLow=-40, zHigh=4*Math.PI*Math.PI;
+  let guard=0;
+  while(yOf(zLow)<0 && guard<2000){ zLow+=0.05; guard++; }
+  let fLow=Fz(zLow), fHigh=Fz(zHigh), tries=0;
+  while((fLow===null||fHigh===null||fLow*fHigh>0) && tries<300){ zHigh*=1.08; fHigh=Fz(zHigh); tries++; }
+  if(fLow===null||fHigh===null||fLow*fHigh>0) return null;
+  let z=0,f=0;
+  for(let i=0;i<200;i++){
+    z=(zLow+zHigh)/2; f=Fz(z);
+    if(f===null){ zLow=z; continue; }
+    if(Math.abs(f)<1e-4) break;
+    if((f>0)===(fLow>0)){ zLow=z; fLow=f; } else { zHigh=z; fHigh=f; }
+  }
+  const y = yOf(z);
+  const f_ = 1-y/r1, g = A*Math.sqrt(y/mu), gdot = 1-y/r2;
+  if(Math.abs(g)<1e-6) return null;
+  const v1 = [(r2v[0]-f_*r1v[0])/g, (r2v[1]-f_*r1v[1])/g];
+  const v2 = [(gdot*r2v[0]-r1v[0])/g, (gdot*r2v[1]-r1v[1])/g];
+  return {v1,v2};
+}
+
+function norm(v){ return Math.hypot(v[0],v[1]); }
+function sub(a,b){ return [a[0]-b[0], a[1]-b[1]]; }
+
+/* =========================================================
+   3. SIMULATION CLOCK
+   ========================================================= */
+let UT = 0; // T+0y,0d,00:00:00 — use "Sync to save" to match your game
+let warpIndex = 2; // index into WARP_LEVELS
+const WARP_LEVELS = [0, 1, 5, 50, 500, 5000, 50000, 500000];
+let lastFrameTime = performance.now();
+
+const DAY_SEC = 21600, YEAR_DAYS = 426; // 6h Kerbin day, 426-day calendar year (KSP's fixed clock convention)
+
+function utToDateString(ut){
+  // Matches KSP's in-game "T+Yy,Dd,H:M:S" elapsed-time readout exactly.
+  const totalDays = Math.floor(ut/DAY_SEC);
+  const year = Math.floor(totalDays/YEAR_DAYS);
+  const day = totalDays % YEAR_DAYS;
+  const secOfDay = ((ut%DAY_SEC)+DAY_SEC)%DAY_SEC;
+  const h = Math.floor(secOfDay/3600), m = Math.floor((secOfDay%3600)/60), s = Math.floor(secOfDay%60);
+  const pad=(n,l=2)=>String(Math.floor(n)).padStart(l,'0');
+  return `T+${year}y,${day}d,${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+function durationString(sec){
+  if(sec<0) sec=0;
+  const y = Math.floor(sec/(DAY_SEC*YEAR_DAYS));
+  sec -= y*DAY_SEC*YEAR_DAYS;
+  const d = Math.floor(sec/DAY_SEC);
+  sec -= d*DAY_SEC;
+  const h = Math.floor(sec/3600);
+  sec -= h*3600;
+  const m = Math.floor(sec/60);
+  const pad=(n)=>String(Math.floor(n)).padStart(2,'0');
+  let out='';
+  if(y>0) out += y+'y ';
+  out += d+'d ' + pad(h)+'h ' + pad(m)+'m';
+  return out;
+}
+
+/* =========================================================
+   4. MAP RENDERING (SVG, pan & zoom via viewBox)
+   ========================================================= */
+const svg = document.getElementById('mapSvg');
+const orbitsLayer = document.getElementById('orbitsLayer');
+const transferLayer = document.getElementById('transferLayer');
+const phaseLayer = document.getElementById('phaseLayer');
+const planetsLayer = document.getElementById('planetsLayer');
+
+const EELOO_A = PLANETS[PLANETS.length-1].a;
+const SCALE = 430/EELOO_A; // meters -> svg units
+
+function sx(x){ return x*SCALE; }
+function sy(y){ return -y*SCALE; } // flip so orbits read counter-clockwise visually
+
+let viewBox = {x:-480, y:-480, w:960, h:960};
+function applyViewBox(){ svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`); }
+applyViewBox();
+
+function svgPoint(evt){
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX; pt.y = evt.clientY;
+  const ctm = svg.getScreenCTM().inverse();
+  return pt.matrixTransform(ctm);
+}
+
+// zoom
+document.getElementById('mapWrap').addEventListener('wheel', function(evt){
+  evt.preventDefault();
+  const p = svgPoint(evt);
+  const factor = evt.deltaY>0 ? 1.12 : 1/1.12;
+  const newW = Math.min(3200, Math.max(20, viewBox.w*factor));
+  const newH = Math.min(3200, Math.max(20, viewBox.h*factor));
+  viewBox.x = p.x - (p.x-viewBox.x)*(newW/viewBox.w);
+  viewBox.y = p.y - (p.y-viewBox.y)*(newH/viewBox.h);
+  viewBox.w = newW; viewBox.h = newH;
+  applyViewBox();
+}, {passive:false});
+
+document.getElementById('zoomIn').onclick = ()=>{ zoomStep(1/1.35); };
+document.getElementById('zoomOut').onclick = ()=>{ zoomStep(1.35); };
+document.getElementById('zoomReset').onclick = ()=>{ viewBox={x:-480,y:-480,w:960,h:960}; applyViewBox(); };
+function zoomStep(factor){
+  const cx = viewBox.x+viewBox.w/2, cy = viewBox.y+viewBox.h/2;
+  const newW = viewBox.w*factor, newH = viewBox.h*factor;
+  viewBox.x = cx-newW/2; viewBox.y = cy-newH/2; viewBox.w=newW; viewBox.h=newH;
+  applyViewBox();
+}
+
+// pan
+let dragging=false, dragStart=null, vbStart=null;
+svg.addEventListener('mousedown', (evt)=>{
+  dragging=true; svg.classList.add('grabbing');
+  dragStart = {x:evt.clientX, y:evt.clientY}; vbStart = {...viewBox};
+});
+window.addEventListener('mousemove', (evt)=>{
+  if(!dragging) return;
+  const rect = svg.getBoundingClientRect();
+  const scaleX = viewBox.w/rect.width, scaleY = viewBox.h/rect.height;
+  viewBox.x = vbStart.x - (evt.clientX-dragStart.x)*scaleX;
+  viewBox.y = vbStart.y - (evt.clientY-dragStart.y)*scaleY;
+  applyViewBox();
+});
+window.addEventListener('mouseup', ()=>{ dragging=false; svg.classList.remove('grabbing'); });
+
+// touch pan/pinch (basic)
+let touchState=null;
+svg.addEventListener('touchstart', (evt)=>{
+  if(evt.touches.length===1){
+    touchState = {mode:'pan', x:evt.touches[0].clientX, y:evt.touches[0].clientY, vb:{...viewBox}};
+  } else if(evt.touches.length===2){
+    const d = Math.hypot(evt.touches[0].clientX-evt.touches[1].clientX, evt.touches[0].clientY-evt.touches[1].clientY);
+    touchState = {mode:'pinch', d, vb:{...viewBox}};
+  }
+}, {passive:true});
+svg.addEventListener('touchmove', (evt)=>{
+  if(!touchState) return;
+  const rect = svg.getBoundingClientRect();
+  if(touchState.mode==='pan' && evt.touches.length===1){
+    const scaleX = viewBox.w/rect.width, scaleY = viewBox.h/rect.height;
+    viewBox.x = touchState.vb.x - (evt.touches[0].clientX-touchState.x)*scaleX;
+    viewBox.y = touchState.vb.y - (evt.touches[0].clientY-touchState.y)*scaleY;
+    applyViewBox();
+  } else if(touchState.mode==='pinch' && evt.touches.length===2){
+    const d = Math.hypot(evt.touches[0].clientX-evt.touches[1].clientX, evt.touches[0].clientY-evt.touches[1].clientY);
+    const factor = touchState.d/d;
+    const cx = touchState.vb.x+touchState.vb.w/2, cy = touchState.vb.y+touchState.vb.h/2;
+    viewBox.w = touchState.vb.w*factor; viewBox.h = touchState.vb.h*factor;
+    viewBox.x = cx-viewBox.w/2; viewBox.y = cy-viewBox.h/2;
+    applyViewBox();
+  }
+}, {passive:true});
+svg.addEventListener('touchend', ()=>{ touchState=null; });
+
+// static orbit paths (sampled, robust for any eccentricity)
+function buildOrbitPath(planet){
+  const pts=[];
+  const N=180;
+  for(let i=0;i<=N;i++){
+    const nu = (i/N)*2*Math.PI;
+    const r = planet.a*(1-planet.e*planet.e)/(1+planet.e*Math.cos(nu));
+    const theta = nu+planet.orient;
+    const x = r*Math.cos(theta), y=r*Math.sin(theta);
+    pts.push(`${i===0?'M':'L'}${sx(x).toFixed(2)},${sy(y).toFixed(2)}`);
+  }
+  return pts.join(' ')+' Z';
+}
+
+const ns = 'http://www.w3.org/2000/svg';
+function el(tag, attrs){
+  const e = document.createElementNS(ns, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+// Kerbol
+planetsLayer.appendChild(el('circle',{cx:0,cy:0,r:6,fill:KERBOL.color,class:'kerbol-dot'}));
+
+const planetDots = {}, planetLabels = {};
+PLANETS.forEach(p=>{
+  orbitsLayer.appendChild(el('path',{d:buildOrbitPath(p), class:'orbit-path', stroke:p.color, opacity:0.45}));
+  const g = el('g',{class:'planet-dot', 'data-name':p.name});
+  const dot = el('circle',{cx:0,cy:0,r:4.2,fill:p.color});
+  dot.style.filter = `drop-shadow(0 0 4px ${p.color})`;
+  g.appendChild(dot);
+  const label = el('text',{x:7,y:-7,class:'planet-label'});
+  label.textContent = p.name;
+  g.appendChild(label);
+  g.addEventListener('click', ()=>{ showInfoFor(p.name); switchTab('info'); });
+  planetsLayer.appendChild(g);
+  planetDots[p.name]=g;
+});
+
+function updateMap(){
+  PLANETS.forEach(p=>{
+    const st = stateAt(p, UT);
+    const g = planetDots[p.name];
+    g.setAttribute('transform', `translate(${sx(st.x).toFixed(2)},${sy(st.y).toFixed(2)})`);
+    p._state = st;
+  });
+}
+
+/* =========================================================
+   5. UI SETUP: selectors, tabs, warp buttons
+   ========================================================= */
+const originSelect = document.getElementById('originSelect');
+const destSelect = document.getElementById('destSelect');
+PLANETS.forEach((p,i)=>{
+  const o1 = document.createElement('option'); o1.value=p.name; o1.textContent=p.name;
+  const o2 = document.createElement('option'); o2.value=p.name; o2.textContent=p.name;
+  originSelect.appendChild(o1); destSelect.appendChild(o2);
+});
+originSelect.value='Kerbin'; destSelect.value='Duna';
+
+function refreshHud(){
+  document.getElementById('hudOrigin').textContent = 'ORIGIN — '+originSelect.value;
+  document.getElementById('hudDest').textContent = 'DEST — '+destSelect.value;
+}
+refreshHud();
+originSelect.onchange = refreshHud;
+destSelect.onchange = refreshHud;
+document.getElementById('swapBtn').onclick = ()=>{
+  const a=originSelect.value; originSelect.value=destSelect.value; destSelect.value=a; refreshHud();
+};
+
+// tabs
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>switchTab(t.dataset.tab));
+});
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+}
+
+// warp controls
+const warpWrap = document.getElementById('warpControls');
+const warpLabels = ['II','1x','5x','50x','500x','5,000x','50,000x','500,000x'];
+WARP_LEVELS.forEach((lvl,i)=>{
+  const b = document.createElement('button');
+  b.textContent = i===0 ? '⏸' : warpLabels[i];
+  b.className = i===warpIndex ? 'active':'';
+  b.onclick = ()=>{ warpIndex=i; document.querySelectorAll('#warpControls button').forEach((x,j)=>x.classList.toggle('active', j===i && x.dataset.reset!=='1')); };
+  warpWrap.appendChild(b);
+});
+const resetBtn = document.createElement('button');
+resetBtn.textContent='Epoch ⟲'; resetBtn.className='reset-btn'; resetBtn.dataset.reset='1';
+resetBtn.title = 'Reset to UT=0 (T+0y,0d,00:00:00)';
+resetBtn.onclick = ()=>{ UT = 0; };
+warpWrap.appendChild(resetBtn);
+
+document.getElementById('setUtBtn').onclick = ()=>{
+  const y = Math.max(0, parseInt(document.getElementById('setYear').value)||0);
+  const d = Math.max(0, Math.min(YEAR_DAYS-1, parseInt(document.getElementById('setDay').value)||0));
+  const h = Math.max(0, Math.min(23, parseInt(document.getElementById('setHour').value)||0));
+  const mi = Math.max(0, Math.min(59, parseInt(document.getElementById('setMin').value)||0));
+  const s = Math.max(0, Math.min(59, parseInt(document.getElementById('setSec').value)||0));
+  UT = y*YEAR_DAYS*DAY_SEC + d*DAY_SEC + h*3600 + mi*60 + s;
+  updateMap();
+  if(currentResult){ renderTransferResults(); drawTransferEllipse(); drawPhaseWedges(); }
+};
+
+/* =========================================================
+   6. TRANSFER CALCULATION (patched-conic, circular/coplanar approx)
+   ========================================================= */
+const PARK_ALT = 100000; // 100 km default parking-orbit altitude, both ends
+
+function angNorm360(a){ a = a % 360; if(a<0) a+=360; return a; }
+function angNormPM180(a){ a = angNorm360(a); if(a>180) a-=360; return a; }
+
+function computeTransfer(originName, destName){
+  const o = PLANETS.find(p=>p.name===originName);
+  const d = PLANETS.find(p=>p.name===destName);
+  if(!o || !d || o===d) return null;
+
+  const r1 = o.a, r2 = d.a; // circular approximation using semi-major axis
+  const mu = KERBOL.mu;
+  const at = (r1+r2)/2;
+  const tt = Math.PI*Math.sqrt(Math.pow(at,3)/mu); // Hohmann transfer time (half period)
+
+  const v1c = Math.sqrt(mu/r1), v2c = Math.sqrt(mu/r2);
+  const vt1 = Math.sqrt(mu*(2/r1 - 1/at));
+  const vt2 = Math.sqrt(mu*(2/r2 - 1/at));
+  const dv1_helio = vt1 - v1c; // signed: + means speed up (prograde), - means retrograde
+  const dv2_helio = v2c - vt2; // burn needed at arrival to match circular speed (signed)
+
+  const n1 = o.n, n2 = d.n;
+  // required phase angle (destination ahead of origin, degrees) for departure "now-style" Hohmann
+  let requiredPhase = 180 - (n2*tt)*180/Math.PI;
+  requiredPhase = angNormPM180(requiredPhase);
+
+  const os = stateAt(o, UT), ds = stateAt(d, UT);
+  let currentPhase = angNormPM180((ds.theta-os.theta)*180/Math.PI);
+
+  // countdown to next window: solve for t>=0 where phase(t) = requiredPhase (mod 360)
+  const rate = (n2-n1); // rad/s, d(phase)/dt
+  let waitSec = null;
+  const curRad = currentPhase*DEG, reqRad = requiredPhase*DEG;
+  if(Math.abs(rate) > 1e-12){
+    if(rate>0){
+      let diff = reqRad - curRad;
+      diff = ((diff % (2*Math.PI))+2*Math.PI)%(2*Math.PI);
+      waitSec = diff/rate;
+    } else {
+      let diff = curRad - reqRad;
+      diff = ((diff % (2*Math.PI))+2*Math.PI)%(2*Math.PI);
+      waitSec = diff/(-rate);
+    }
+  }
+
+  // ejection angle (patched-conic hyperbolic excess -> parking orbit periapsis burn point)
+  function ejection(vInf, planet){
+    const rp = planet.radius + PARK_ALT;
+    const muP = planet.mu;
+    const eH = 1 + rp*vInf*vInf/muP;
+    const nuInf = Math.acos(Math.max(-1,Math.min(1,-1/eH)));
+    const ejAngleFromPeri = 180 - nuInf*180/Math.PI; // deg, angle between periapsis dir and asymptote
+    const vPark = Math.sqrt(muP/rp);
+    const vBurnout = Math.sqrt(vInf*vInf + 2*muP/rp);
+    const dvBurn = vBurnout - vPark;
+    return {ejAngleFromPeri, dvBurn, vInf, rp};
+  }
+  const depEj = ejection(Math.abs(dv1_helio), o);
+  const arrEj = ejection(Math.abs(dv2_helio), d);
+
+  return {
+    origin:o, dest:d, r1, r2, at, tt,
+    v1c, v2c, vt1, vt2, dv1_helio, dv2_helio,
+    requiredPhase, currentPhase, waitSec,
+    depEj, arrEj,
+    outbound: r2>r1
+  };
+}
+
+let currentResult = null;
+
+document.getElementById('planBtn').onclick = ()=>{
+  const o = originSelect.value, d = destSelect.value;
+  if(o===d){
+    document.getElementById('transferResults').innerHTML = '<div class="placeholder">Origin and destination must be different bodies.</div>';
+    return;
+  }
+  currentResult = computeTransfer(o,d);
+  switchTab('transfer');
+  renderTransferResults();
+  drawTransferEllipse();
+  drawPhaseWedges();
+};
+
+function fmtDv(v){ return (Math.abs(v)/1000).toFixed(0)+' m/s'.replace('m',''); }
+function fmtMs(v){ return (v).toFixed(0)+' m/s'; }
+
+function renderTransferResults(){
+  const r = currentResult;
+  if(!r){ document.getElementById('transferResults').innerHTML='<div class="placeholder">No transfer computed.</div>'; return; }
+
+  const ejDepBurn = Math.abs(r.dv1_helio)>0 ? r.depEj.dvBurn : 0;
+  const ejArrBurn = r.arrEj.dvBurn;
+  const totalDv = ejDepBurn + ejArrBurn;
+
+  let phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
+  const closeEnough = Math.abs(phaseDiff) < 2;
+
+  document.getElementById('transferResults').innerHTML = `
+    <div class="card">
+      <h3><span class="dot"></span>Δv Budget (from ${(PARK_ALT/1000)|0} km parking orbit)</h3>
+      <div class="big-num">${totalDv.toFixed(0)}<small>m/s total</small></div>
+      <div class="stat-row"><span class="k">Ejection burn @ ${r.origin.name}</span><span class="v hi">${ejDepBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Capture burn @ ${r.dest.name}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
+      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit assumed at ${(PARK_ALT/1000)|0} km altitude at both ends. Capture burn can be omitted for a flyby / aerocapture mission.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot"></span>Transfer Time</h3>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
+      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at/1e9).toFixed(3)} Gm</span></div>
+      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound?'Outbound (ascending)':'Inbound (descending)'}</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot"></span>Phase Angle</h3>
+      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough?'good':''}">${phaseDiff.toFixed(1)}°</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot"></span>Next Transfer Window</h3>
+      <div class="countdown ${r.waitSec===null?'past':''}">${r.waitSec===null ? 'Synodic period ≈ 0 (same period)' : (r.waitSec<1 ? 'WINDOW OPEN NOW' : 'T‑minus '+durationString(r.waitSec))}</div>
+      ${r.waitSec!==null ? `<div class="stat-row"><span class="k">Window opens at UT</span><span class="v">${utToDateString(UT+r.waitSec)}</span></div>` : ''}
+      <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec!==null ? utToDateString(UT+r.waitSec+r.tt) : '—'}</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="dot"></span>Ejection Angles (from prograde marker)</h3>
+      <div class="stat-row"><span class="k">${r.origin.name} departure burn</span><span class="v hi">${r.depEj.ejAngleFromPeri.toFixed(1)}° ${r.outbound?'ahead of':'behind'} prograde</span></div>
+      <div class="stat-row"><span class="k">${r.dest.name} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
+      <div class="note">Angle between your parking-orbit periapsis (burn point) and the planet's own prograde/retrograde velocity direction, derived from the hyperbolic escape trajectory at ${(PARK_ALT/1000)|0} km altitude.</div>
+    </div>
+  `;
+}
+
+function phaseGaugeSvg(current, required){
+  const R=44, cx=54, cy=54;
+  function pt(deg,r){ const a=(deg-90)*DEG; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  const p1 = pt(0,R), p2c = pt(current,R), p2r = pt(required,R);
+  function arcPath(deg,color,dash){
+    const large = Math.abs(deg)>180?1:0;
+    const sweep = deg>=0?1:0;
+    const end = pt(deg,R);
+    return `<path d="M${cx},${cy} L${p1[0].toFixed(1)},${p1[1].toFixed(1)} A${R},${R} 0 ${large} ${sweep} ${end[0].toFixed(1)},${end[1].toFixed(1)} Z" fill="${color}" opacity="0.28"/>`;
+  }
+  return `<svg width="108" height="108" viewBox="0 0 108 108">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1d2c47" stroke-width="1"/>
+    ${arcPath(required, 'var(--amber)')}
+    <line x1="${cx}" y1="${cy}" x2="${p2r[0].toFixed(1)}" y2="${p2r[1].toFixed(1)}" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.85"/>
+    ${arcPath(current, 'var(--cyan)')}
+    <line x1="${cx}" y1="${cy}" x2="${p2c[0].toFixed(1)}" y2="${p2c[1].toFixed(1)}" stroke="var(--cyan)" stroke-width="2"/>
+    <line x1="${cx}" y1="${cy}" x2="${p1[0].toFixed(1)}" y2="${p1[1].toFixed(1)}" stroke="#4d5d78" stroke-width="1"/>
+    <circle cx="${cx}" cy="${cy}" r="2.5" fill="var(--text)"/>
+  </svg>`;
+}
+
+/* transfer ellipse + phase wedges drawn on the main map */
+function drawTransferEllipse(){
+  transferLayer.innerHTML='';
+  const r = currentResult;
+  if(!r) return;
+  const os = stateAt(r.origin, UT);
+  const thetaDep = os.theta;
+  const rA = r.r1, rB = r.r2;
+  let periTheta, e_t;
+  if(r.outbound){ periTheta = thetaDep; e_t = (rB-rA)/(rB+rA); }
+  else { periTheta = thetaDep+Math.PI; e_t = (rA-rB)/(rA+rB); }
+  const a_t = r.at;
+  const pts=[];
+  const N=90;
+  for(let i=0;i<=N;i++){
+    const nu = (i/N)*Math.PI; // half ellipse: periapsis -> apoapsis = the transfer arc
+    const rr = a_t*(1-e_t*e_t)/(1+e_t*Math.cos(nu));
+    const theta = nu+periTheta;
+    const x=rr*Math.cos(theta), y=rr*Math.sin(theta);
+    pts.push(`${i===0?'M':'L'}${sx(x).toFixed(2)},${sy(y).toFixed(2)}`);
+  }
+  const path = el('path',{d:pts.join(' '), fill:'none', stroke:'var(--green)', 'stroke-width':1.6, 'stroke-dasharray':'5,4', opacity:0.9});
+  transferLayer.appendChild(path);
+  // departure/arrival markers
+  const depPt = pts[0].slice(1).split(',');
+  const arrPt = pts[pts.length-1].slice(1).split(',');
+  transferLayer.appendChild(el('circle',{cx:depPt[0],cy:depPt[1],r:3,fill:'var(--green)'}));
+  transferLayer.appendChild(el('circle',{cx:arrPt[0],cy:arrPt[1],r:3,fill:'var(--green)',opacity:0.6}));
+}
+
+function drawPhaseWedges(){
+  phaseLayer.innerHTML='';
+  const r = currentResult;
+  if(!r) return;
+  const os = stateAt(r.origin, UT);
+  const rad = Math.min(sx(r.r1), sx(r.r2))*0.55;
+  function pt(theta){ return [rad*Math.cos(theta), -rad*Math.sin(theta)]; }
+  const p0 = pt(os.theta);
+  const pCur = pt(os.theta + r.currentPhase*DEG);
+  const pReq = pt(os.theta + r.requiredPhase*DEG);
+  function wedge(pEnd, color, dash){
+    const large = Math.abs(angNormPM180((Math.atan2(-pEnd[1],pEnd[0])-os.theta)*180/Math.PI))>180?1:0;
+    return el('path',{
+      d:`M0,0 L${p0[0].toFixed(2)},${p0[1].toFixed(2)} A${rad},${rad} 0 0 0 ${pEnd[0].toFixed(2)},${pEnd[1].toFixed(2)} Z`,
+      fill:color, opacity:0.13, stroke:color, 'stroke-width':1, 'stroke-dasharray':dash||'none'
+    });
+  }
+  phaseLayer.appendChild(wedge(pCur,'var(--cyan)'));
+  const l1 = el('line',{x1:0,y1:0,x2:pCur[0].toFixed(2),y2:pCur[1].toFixed(2),stroke:'var(--cyan)','stroke-width':1.4});
+  phaseLayer.appendChild(l1);
+  const l2 = el('line',{x1:0,y1:0,x2:pReq[0].toFixed(2),y2:pReq[1].toFixed(2),stroke:'var(--amber)','stroke-width':1.4,'stroke-dasharray':'4,3'});
+  phaseLayer.appendChild(l2);
+}
+
+/* =========================================================
+   7. PLANET INFO PANEL
+   ========================================================= */
+function showInfoFor(name){
+  const p = PLANETS.find(x=>x.name===name);
+  const s = p._state || stateAt(p, UT);
+  document.getElementById('infoCard').innerHTML = `
+    <div class="info-title"><span class="planet-swatch" style="background:${p.color};color:${p.color};"></span>${p.name}</div>
+    <div class="info-desc">${p.desc}</div>
+    <div class="stat-row"><span class="k">Semi-major axis</span><span class="v">${(p.a/1e9).toFixed(3)} Gm</span></div>
+    <div class="stat-row"><span class="k">Eccentricity</span><span class="v">${p.e.toFixed(3)}</span></div>
+    <div class="stat-row"><span class="k">Inclination</span><span class="v">${p.incl.toFixed(2)}°</span></div>
+    <div class="stat-row"><span class="k">Orbital period</span><span class="v">${durationString(p.period)}</span></div>
+    <div class="stat-row"><span class="k">SOI-parent μ</span><span class="v">${p.mu.toExponential(3)} m³/s²</span></div>
+    <div class="stat-row"><span class="k">Mean radius</span><span class="v">${(p.radius/1000).toFixed(0)} km</span></div>
+    <div class="stat-row"><span class="k">Current orbital speed</span><span class="v hi">${Math.hypot(s.vx,s.vy).toFixed(0)} m/s</span></div>
+    <div class="stat-row"><span class="k">Current distance from Kerbol</span><span class="v hi">${(s.r/1e9).toFixed(3)} Gm</span></div>
+  `;
+}
+showInfoFor('Kerbin');
+
+/* =========================================================
+   8. PORKCHOP PLOT
+   ========================================================= */
+const pkCanvas = document.getElementById('pkCanvas');
+const pkCtx = pkCanvas.getContext('2d');
+let pkGrid = null;
+
+function resizePkCanvas(){
+  const w = pkCanvas.parentElement.clientWidth;
+  pkCanvas.width = w;
+  pkCanvas.height = Math.round(w*0.82);
+}
+
+function generatePorkchop(){
+  const oName = originSelect.value, dName = destSelect.value;
+  const o = PLANETS.find(p=>p.name===oName), d = PLANETS.find(p=>p.name===dName);
+  if(!o||!d||o===d){ return; }
+  resizePkCanvas();
+
+  const synPeriod = Math.abs(1/(1/o.period - 1/d.period));
+  const depSpan = Math.min(synPeriod*1.05, o.period*1.2);
+  const at = (o.a+d.a)/2;
+  const ttHohmann = Math.PI*Math.sqrt(Math.pow(at,3)/KERBOL.mu);
+  const tofMin = ttHohmann*0.35, tofMax = ttHohmann*1.9;
+
+  const GRID = 42;
+  const depTimes = [], tofTimes = [];
+  for(let i=0;i<GRID;i++) depTimes.push(UT + (i/(GRID-1))*depSpan);
+  for(let j=0;j<GRID;j++) tofTimes.push(tofMin + (j/(GRID-1))*(tofMax-tofMin));
+
+  const dvGrid = [];
+  let dvMin=Infinity, dvMax=-Infinity;
+  for(let j=0;j<GRID;j++){
+    const row=[];
+    for(let i=0;i<GRID;i++){
+      const tDep = depTimes[i], tof = tofTimes[j];
+      const s1 = stateAt(o, tDep);
+      const s2 = stateAt(d, tDep+tof);
+      const r1v = [s1.x,s1.y], r2v=[s2.x,s2.y];
+      const sol = lambertSolve(r1v, r2v, tof, KERBOL.mu);
+      let dv = null;
+      if(sol){
+        const vInfDep = Math.hypot(sol.v1[0]-s1.vx, sol.v1[1]-s1.vy);
+        const vInfArr = Math.hypot(sol.v2[0]-s2.vx, sol.v2[1]-s2.vy);
+        dv = vInfDep+vInfArr;
+        if(dv<dvMin) dvMin=dv;
+        if(dv>dvMax) dvMax=dv;
+      }
+      row.push(dv);
+    }
+    dvGrid.push(row);
+  }
+
+  pkGrid = {depTimes, tofTimes, dvGrid, dvMin, dvMax, GRID, o, d};
+  drawPorkchop();
+}
+
+function dvColor(t){
+  // t in [0,1] -> blue -> cyan -> green -> yellow -> orange -> red
+  const stops = [
+    [0.00,[47,111,255]],
+    [0.22,[79,224,232]],
+    [0.45,[126,231,135]],
+    [0.65,[255,224,102]],
+    [0.83,[255,157,77]],
+    [1.00,[255,91,91]]
+  ];
+  for(let i=0;i<stops.length-1;i++){
+    const [t0,c0]=stops[i], [t1,c1]=stops[i+1];
+    if(t>=t0 && t<=t1){
+      const f=(t-t0)/(t1-t0);
+      return `rgb(${Math.round(c0[0]+(c1[0]-c0[0])*f)},${Math.round(c0[1]+(c1[1]-c0[1])*f)},${Math.round(c0[2]+(c1[2]-c0[2])*f)})`;
+    }
+  }
+  return 'rgb(255,91,91)';
+}
+
+let pkSelectedCell = null;
+function drawPorkchop(){
+  if(!pkGrid) return;
+  const {dvGrid, dvMin, dvMax, GRID} = pkGrid;
+  const W=pkCanvas.width, H=pkCanvas.height;
+  pkCtx.clearRect(0,0,W,H);
+  const cw = W/GRID, ch = H/GRID;
+  for(let j=0;j<GRID;j++){
+    for(let i=0;i<GRID;i++){
+      const dv = dvGrid[j][i];
+      pkCtx.fillStyle = dv===null ? '#0a0f1c' : dvColor((dv-dvMin)/Math.max(1,(dvMax-dvMin)));
+      pkCtx.fillRect(i*cw, H-(j+1)*ch, cw+0.6, ch+0.6);
+    }
+  }
+  if(pkSelectedCell){
+    pkCtx.strokeStyle='#ffffff'; pkCtx.lineWidth=2;
+    pkCtx.strokeRect(pkSelectedCell.i*cw, H-(pkSelectedCell.j+1)*ch, cw, ch);
+  }
+}
+
+pkCanvas.addEventListener('click', (evt)=>{
+  if(!pkGrid) return;
+  const rect = pkCanvas.getBoundingClientRect();
+  const scaleX = pkCanvas.width/rect.width, scaleY = pkCanvas.height/rect.height;
+  const px = (evt.clientX-rect.left)*scaleX, py=(evt.clientY-rect.top)*scaleY;
+  const GRID = pkGrid.GRID;
+  const cw = pkCanvas.width/GRID, ch = pkCanvas.height/GRID;
+  const i = Math.min(GRID-1, Math.max(0, Math.floor(px/cw)));
+  const j = Math.min(GRID-1, Math.max(0, Math.floor((pkCanvas.height-py)/ch)));
+  pkSelectedCell = {i,j};
+  drawPorkchop();
+  const dv = pkGrid.dvGrid[j][i];
+  const tDep = pkGrid.depTimes[i], tof = pkGrid.tofTimes[j];
+  document.getElementById('pkSelected').style.display='block';
+  document.getElementById('pkSelectedBody').innerHTML = dv===null ? '<div class="note">No solution at this cell (near-singular geometry) — try an adjacent cell.</div>' : `
+    <div class="stat-row"><span class="k">Departure UT</span><span class="v">${utToDateString(tDep)}</span></div>
+    <div class="stat-row"><span class="k">Time of flight</span><span class="v">${durationString(tof)}</span></div>
+    <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${utToDateString(tDep+tof)}</span></div>
+    <div class="stat-row"><span class="k">Total heliocentric Δv</span><span class="v hi">${dv.toFixed(0)} m/s</span></div>
+  `;
+});
+
+document.getElementById('pkGenerate').onclick = generatePorkchop;
+
+/* =========================================================
+   9. ANIMATION LOOP
+   ========================================================= */
+function frame(now){
+  const dt = (now-lastFrameTime)/1000;
+  lastFrameTime = now;
+  const warp = WARP_LEVELS[warpIndex];
+  UT += dt*warp;
+  document.getElementById('utValue').textContent = utToDateString(UT);
+  updateMap();
+  if(currentResult){
+    // keep phase readout live between full recalculations
+    const r = currentResult;
+    const os = stateAt(r.origin, UT), ds = stateAt(r.dest, UT);
+    r.currentPhase = angNormPM180((ds.theta-os.theta)*180/Math.PI);
+    const n1=r.origin.n, n2=r.dest.n, rate=(n2-n1);
+    const curRad = r.currentPhase*DEG, reqRad = r.requiredPhase*DEG;
+    if(Math.abs(rate)>1e-12){
+      if(rate>0){ let diff=reqRad-curRad; diff=((diff%(2*Math.PI))+2*Math.PI)%(2*Math.PI); r.waitSec=diff/rate; }
+      else { let diff=curRad-reqRad; diff=((diff%(2*Math.PI))+2*Math.PI)%(2*Math.PI); r.waitSec=diff/(-rate); }
+    }
+    renderTransferResults();
+    drawPhaseWedges();
+  }
+  requestAnimationFrame(frame);
+}
+updateMap();
+requestAnimationFrame(frame);
+
+window.addEventListener('resize', ()=>{ if(pkGrid) { resizePkCanvas(); drawPorkchop(); } });
+
+})();
+</script>
+</body>
+</html>
