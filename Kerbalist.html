@@ -724,12 +724,16 @@ function updateTransferArc(){
   if(r.outbound){periTheta=thetaDep;e_t=(rB-rA)/(rB+rA);}
   else{periTheta=thetaDep+Math.PI;e_t=(rA-rB)/(rA+rB);}
   const a_t=r.at;
+  const incStart=r.origin.incl;
+  const incEnd=r.dest.incl;
   const arr=arcGeo.attributes.position.array;
   for(let i=0;i<=ARC_N;i++){
-    const nu=(i/ARC_N)*Math.PI;
+    const frac=i/ARC_N;
+    const nu=frac*Math.PI;
     const rr=a_t*(1-e_t*e_t)/(1+e_t*Math.cos(nu));
     const theta=nu+periTheta;
-    const pt=toWorld(rr*Math.cos(theta),rr*Math.sin(theta),0);
+    const curIncl=incStart+(incEnd-incStart)*frac;
+    const pt=toWorld(rr*Math.cos(theta),rr*Math.sin(theta),curIncl);
     arr[i*3]=pt.x; arr[i*3+1]=pt.y; arr[i*3+2]=pt.z;
   }
   arcGeo.attributes.position.needsUpdate=true;

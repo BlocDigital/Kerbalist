@@ -161,6 +161,7 @@ in any modern browser.
 - 🪐 **Full 3D WebGL Solar System Map**: Replaced 2D SVG map with Three.js WebGL 3D scene supporting accurate planetary orbital inclinations.
 - 🎥 **Free-look Orbital Camera**: Added free rotation (`Left Drag`), panning (`Shift + Drag`), zoom (`Scroll`), and quick view reset (`R` key or `⤾` button).
 - 👻 **Destination Arrival Ghost**: Shows a translucent ghost planet at the exact projected position of the destination body upon arrival, connected by a trajectory line.
+- 📐 **3D Trajectory Inclination Matching**: Transfer arc path interpolates inclination angles from departure to destination planet (e.g. 0° Kerbin → 5° Dres).
 - ⌨️ **UI & Controls HUD**: Added on-screen keyboard/mouse controls overlay card and expanded UT sync input fields to support 4-digit years comfortably.
 
 ---
