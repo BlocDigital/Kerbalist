@@ -157,10 +157,17 @@ in any modern browser.
 
 ## Changelog
 
-### Version 1.5.0 (Current)
+### Version 1.6.0 (Current)
+- 🌕 **Complete Moon System**: Added all stock KSP/KSP2 moons (Gilly, Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol) with 3D local orbits, real-time ephemerides propagation, interactive raycast clicking, and detailed physical data inspection.
+- 🎯 **Double Click Centering**: Double-clicking any planet or moon in 3D snaps camera focus directly to that celestial body.
+- 🔍 **Expanded Visual Scale**: Scaled down planet spheres and expanded moon orbit radii so moons orbit clearly outside planetary atmospheres without overlap.
+- 📍 **Subtle Camera Focal Marker**: Added a minimal dark grey 3D pivot dot tracking camera focus in space.
+
+### Version 1.5.0
 - 🪐 **Full 3D WebGL Solar System Map**: Replaced 2D SVG map with Three.js WebGL 3D scene supporting accurate planetary orbital inclinations.
 - 🎥 **Free-look Orbital Camera**: Added free rotation (`Left Drag`), panning (`Shift + Drag`), zoom (`Scroll`), and quick view reset (`R` key or `⤾` button).
 - 👻 **Destination Arrival Ghost**: Shows a translucent ghost planet at the exact projected position of the destination body upon arrival, connected by a trajectory line.
+- 📐 **3D Trajectory Inclination Matching**: Transfer arc path interpolates inclination angles from departure to destination planet (e.g. 0° Kerbin → 5° Dres).
 - ⌨️ **UI & Controls HUD**: Added on-screen keyboard/mouse controls overlay card and expanded UT sync input fields to support 4-digit years comfortably.
 
 ---
@@ -179,6 +186,9 @@ in any modern browser.
 - Free-look & pan camera controls
 - Destination arrival ghost planet visualization
 - Lambert solver & Porkchop plots
+
+### Version 1.6 (Completed)
+- Complete 3D stock moon system (Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol, Gilly)
 
 ### Version 2.0 (Planned)
 - Gravity assist planner

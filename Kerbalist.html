@@ -321,6 +321,7 @@ select:focus{ border-color:var(--cyan); }
         <div class="shortcut-row"><span class="sk">Drag</span><span class="sv">Rotate orbit</span></div>
         <div class="shortcut-row"><span class="sk">Shift+Drag</span><span class="sv">Pan view</span></div>
         <div class="shortcut-row"><span class="sk">Scroll</span><span class="sv">Zoom in / out</span></div>
+        <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
         <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
         <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
       </div>
@@ -426,7 +427,7 @@ const RAW_PLANETS = [
     desc:'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.' },
   { name:'Eve',    color:'#9c4fc4', a:9832684544,  e:0.010, orientDeg:15,    m0Deg:180, period:5657995.7,   mu:8.1717302e12, radius:700000,  incl:2.10,
     desc:'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.' },
-  { name:'Kerbin', color:'#3aa15c', a:13599840256, e:0.000, orientDeg:0,     m0Deg:180, period:9203544.6,   mu:3.5316000e12, radius:600000,  incl:0.00,
+  { name:'Kerbin', color:'#4b9eff', a:13599840256, e:0.000, orientDeg:0,     m0Deg:180, period:9203544.6,   mu:3.5316000e12, radius:600000,  incl:0.00,
     desc:'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.' },
   { name:'Duna',   color:'#c1531c', a:20726155264, e:0.051, orientDeg:135.5, m0Deg:180, period:17315400.4,  mu:3.0136321e11, radius:320000,  incl:0.06,
     desc:'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.' },
@@ -438,11 +439,34 @@ const RAW_PLANETS = [
     desc:'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.' }
 ];
 
+const RAW_MOONS = [
+  // Eve
+  { name:'Gilly', parent:'Eve', color:'#bda892', a:31500000, e:0.55, orientDeg:10, m0Deg:0, period:288600, incl:12.0, radius:13000, desc:'Tiny captured asteroid orbiting Eve.' },
+  // Kerbin
+  { name:'Mun', parent:'Kerbin', color:'#bcbcbc', a:12000000, e:0.00, orientDeg:0, m0Deg:0, period:138984, incl:0.0, radius:200000, desc:'Kerbin\'s large, cratered primary moon.' },
+  { name:'Minmus', parent:'Kerbin', color:'#9be5d0', a:47000000, e:0.00, orientDeg:38, m0Deg:0, period:388380, incl:6.0, radius:60000, desc:'Mint-green icy moon with flat salt flats.' },
+  // Duna
+  { name:'Ike', parent:'Duna', color:'#888888', a:3200000, e:0.03, orientDeg:0, m0Deg:0, period:65518, incl:0.2, radius:130000, desc:'Tidally locked moon orbiting Duna closely.' },
+  // Jool
+  { name:'Laythe', parent:'Jool', color:'#4ba3e3', a:27184000, e:0.00, orientDeg:0, m0Deg:0, period:52980, incl:0.0, radius:500000, desc:'Ocean moon with breathable atmosphere.' },
+  { name:'Vall', parent:'Jool', color:'#a8dadc', a:43152000, e:0.00, orientDeg:0, m0Deg:0, period:105960, incl:0.0, radius:300000, desc:'Icy moon with cryovolcanic activity.' },
+  { name:'Tylo', parent:'Jool', color:'#e0e1dd', a:68500000, e:0.00, orientDeg:0, m0Deg:0, period:211920, incl:0.025, radius:600000, desc:'Large, airless moon with intense gravity.' },
+  { name:'Bop', parent:'Jool', color:'#7f6a54', a:128500000, e:0.235, orientDeg:10, m0Deg:0, period:544507, incl:15.0, radius:65000, desc:'Small irregular brown moon on inclined orbit.' },
+  { name:'Pol', parent:'Jool', color:'#eddcd2', a:179890000, e:0.17, orientDeg:15, m0Deg:0, period:901902, incl:4.25, radius:44000, desc:'Outermost yellowish spiky moon of Jool.' }
+];
+
 const PLANETS = RAW_PLANETS.map(p=>({
   ...p,
   orient: p.orientDeg*DEG,
   m0: p.m0Deg*DEG,
   n: 2*Math.PI/p.period
+}));
+
+const MOONS = RAW_MOONS.map(m=>({
+  ...m,
+  orient: m.orientDeg*DEG,
+  m0: m.m0Deg*DEG,
+  n: 2*Math.PI/m.period
 }));
 
 /* =========================================================
@@ -566,6 +590,13 @@ const camera=new THREE.PerspectiveCamera(52,1,0.5,15000);
 let camR=620, camTheta=0.15, camPhi=0.30;
 const camTarget=new THREE.Vector3(0,0,0);
 
+/* ---- Camera Target Pivot Indicator ---- */
+const targetPivotDot=new THREE.Mesh(
+  new THREE.SphereGeometry(1.25, 12, 12),
+  new THREE.MeshBasicMaterial({color:0x3a485e, transparent:true, opacity:0.45, depthTest:false})
+);
+scene.add(targetPivotDot);
+
 function updateCamera(){
   const sinP=Math.sin(camPhi),cosP=Math.cos(camPhi);
   const sinT=Math.sin(camTheta),cosT=Math.cos(camTheta);
@@ -575,6 +606,11 @@ function updateCamera(){
     camTarget.z+camR*sinP*cosT
   );
   camera.lookAt(camTarget);
+
+  // Position pivot indicator at focal center
+  targetPivotDot.position.copy(camTarget);
+  const isCentered=camTarget.length()<1;
+  targetPivotDot.material.opacity = isCentered ? 0.15 : 0.45;
 }
 
 function resetView(){
@@ -656,16 +692,21 @@ function buildOrbitLine(planet){
 }
 PLANETS.forEach(p=>scene.add(buildOrbitLine(p)));
 
-/* ---- Planet meshes ---- */
+/* ---- Planet & Moon meshes ---- */
 const planetMeshes={};
 const planetLabelEls={};
+const moonMeshes={};
+const moonLabelEls={};
+
+// Visual scaling factor for moon orbit radii so moons orbit clearly outside planet spheres & atmospheres
+const MOON_ORBIT_SCALE = 35.0;
 
 PLANETS.forEach(p=>{
   const col=new THREE.Color(p.color);
 
   // Core sphere
   const mesh=new THREE.Mesh(
-    new THREE.SphereGeometry(5,18,18),
+    new THREE.SphereGeometry(2.2,18,18),
     new THREE.MeshBasicMaterial({color:col})
   );
   mesh.userData.planetName=p.name;
@@ -674,8 +715,8 @@ PLANETS.forEach(p=>{
 
   // Glow halo (child of mesh so it moves with it)
   mesh.add(new THREE.Mesh(
-    new THREE.SphereGeometry(9,18,18),
-    new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.11,depthWrite:false})
+    new THREE.SphereGeometry(3.6,18,18),
+    new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.25,depthWrite:false})
   ));
 
   // HTML label
@@ -684,6 +725,59 @@ PLANETS.forEach(p=>{
   div.textContent=p.name;
   labelCtr.appendChild(div);
   planetLabelEls[p.name]=div;
+});
+
+// Render Moons attached to parent planets
+MOONS.forEach(m=>{
+  const parentMesh = planetMeshes[m.parent];
+  if(!parentMesh) return;
+
+  const col=new THREE.Color(m.color);
+
+  // Moon orbit ring relative to parent planet
+  const N=120, pts=[];
+  const orbitRad = m.a * SCALE * MOON_ORBIT_SCALE;
+  for(let i=0;i<=N;i++){
+    const nu=(i/N)*2*Math.PI;
+    const r=orbitRad*(1-m.e*m.e)/(1+m.e*Math.cos(nu));
+    const theta=nu+m.orient;
+    const inclRad=m.incl*DEG;
+    pts.push(new THREE.Vector3(
+      r*Math.cos(theta),
+      r*Math.sin(theta)*Math.sin(inclRad),
+      -r*Math.sin(theta)*Math.cos(inclRad)
+    ));
+  }
+  const orbitLine=new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color:col, transparent:true, opacity:0.45})
+  );
+  parentMesh.add(orbitLine);
+
+  // Moon Mesh
+  const moonMesh=new THREE.Mesh(
+    new THREE.SphereGeometry(1.0, 12, 12),
+    new THREE.MeshBasicMaterial({color:col})
+  );
+  moonMesh.userData.planetName=m.name;
+
+  // Moon glow halo
+  moonMesh.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.8,12,12),
+    new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.35,depthWrite:false})
+  ));
+
+  parentMesh.add(moonMesh);
+  moonMeshes[m.name]=moonMesh;
+
+  // HTML label for Moon
+  const div=document.createElement('div');
+  div.className='planet-label-3d';
+  div.style.fontSize='8.5px';
+  div.style.color='#a6b8d4';
+  div.textContent=m.name;
+  labelCtr.appendChild(div);
+  moonLabelEls[m.name]=div;
 });
 
 /* ---- Raycaster for planet clicks ---- */
@@ -717,25 +811,36 @@ function initTransferArc(){
 function updateTransferArc(){
   if(!arcLine||!currentResult) return;
   const r=currentResult;
-  const os=stateAt(r.origin,UT);
-  const thetaDep=os.theta;
-  const rA=r.r1, rB=r.r2;
-  let periTheta,e_t;
-  if(r.outbound){periTheta=thetaDep;e_t=(rB-rA)/(rB+rA);}
-  else{periTheta=thetaDep+Math.PI;e_t=(rA-rB)/(rA+rB);}
-  const a_t=r.at;
+  const waitSec=r.waitSec!==null?Math.max(0,r.waitSec):0;
+  const depUT=UT+waitSec;
+  const arrUT=depUT+r.tt;
+
+  const osDep=stateAt(r.origin,depUT);
+  const dsArr=stateAt(r.dest,arrUT);
+
+  const ptDep=toWorld(osDep.x,osDep.y,r.origin.incl);
+  const ptArr=toWorld(dsArr.x,dsArr.y,r.dest.incl);
+
+  const rA=Math.hypot(osDep.x,osDep.y);
+  const rB=Math.hypot(dsArr.x,dsArr.y);
+  const a_t=(rA+rB)/2;
+  const e_t=Math.abs(rB-rA)/(rB+rA);
+  const periTheta=r.outbound?osDep.theta:(osDep.theta+Math.PI);
+
   const arr=arcGeo.attributes.position.array;
   for(let i=0;i<=ARC_N;i++){
-    const nu=(i/ARC_N)*Math.PI;
+    const frac=i/ARC_N;
+    const nu=frac*Math.PI;
     const rr=a_t*(1-e_t*e_t)/(1+e_t*Math.cos(nu));
     const theta=nu+periTheta;
-    const pt=toWorld(rr*Math.cos(theta),rr*Math.sin(theta),0);
+    const curIncl=r.origin.incl+(r.dest.incl-r.origin.incl)*frac;
+    const pt=toWorld(rr*Math.cos(theta),rr*Math.sin(theta),curIncl);
     arr[i*3]=pt.x; arr[i*3+1]=pt.y; arr[i*3+2]=pt.z;
   }
   arcGeo.attributes.position.needsUpdate=true;
   arcLine.computeLineDistances();
-  arcDepDot.position.set(arr[0],arr[1],arr[2]);
-  arcArrDot.position.set(arr[ARC_N*3],arr[ARC_N*3+1],arr[ARC_N*3+2]);
+  arcDepDot.position.set(ptDep.x,ptDep.y,ptDep.z);
+  arcArrDot.position.set(ptArr.x,ptArr.y,ptArr.z);
 }
 
 function hideTransferArc(){
@@ -869,12 +974,26 @@ function clearGhost(){
   ghostDest=null;
 }
 
-/* ---- Planet position update (every frame) ---- */
+/* ---- Planet & Moon position update (every frame) ---- */
 function updateMap(){
   PLANETS.forEach(p=>{
     const st=stateAt(p,UT);
     p._state=st;
     planetMeshes[p.name].position.copy(toWorld(st.x,st.y,p.incl));
+  });
+
+  MOONS.forEach(m=>{
+    const st=stateAt(m,UT);
+    m._state=st;
+    const orbitRad = m.a * SCALE * MOON_ORBIT_SCALE;
+    const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(st.nu));
+    const theta = st.nu + m.orient;
+    const inclRad = m.incl * DEG;
+    moonMeshes[m.name].position.set(
+      r * Math.cos(theta),
+      r * Math.sin(theta) * Math.sin(inclRad),
+      -r * Math.sin(theta) * Math.cos(inclRad)
+    );
   });
 }
 
@@ -898,6 +1017,21 @@ function updateLabels(){
     el.style.top=s.y+'px';
     el.style.display=s.behind?'none':'';
   });
+
+  MOONS.forEach(m=>{
+    const parentMesh = planetMeshes[m.parent];
+    const moonMesh = moonMeshes[m.name];
+    if(parentMesh && moonMesh){
+      const worldPos = new THREE.Vector3();
+      moonMesh.getWorldPosition(worldPos);
+      const s=worldToScreen(worldPos);
+      const el=moonLabelEls[m.name];
+      el.style.left=s.x+'px';
+      el.style.top=s.y+'px';
+      el.style.display=s.behind?'none':'';
+    }
+  });
+
   if(ghostLabelEl&&ghostLabelEl._worldPos){
     const s=worldToScreen(ghostLabelEl._worldPos);
     ghostLabelEl.style.left=s.x+'px';
@@ -946,7 +1080,7 @@ window.addEventListener('mouseup',()=>{
   canvas3d.classList.remove('grabbing','panning');
 });
 
-// Planet click via raycasting
+// Planet & Moon click via raycasting
 canvas3d.addEventListener('click',e=>{
   if(dragMoved) return;
   const rect=canvas3d.getBoundingClientRect();
@@ -955,11 +1089,34 @@ canvas3d.addEventListener('click',e=>{
     -((e.clientY-rect.top)/rect.height)*2+1
   );
   raycaster.setFromCamera(mouse,camera);
-  const hits=raycaster.intersectObjects(Object.values(planetMeshes),true);
+  const targets=[...Object.values(planetMeshes),...Object.values(moonMeshes)];
+  const hits=raycaster.intersectObjects(targets,true);
   if(hits.length>0){
     let obj=hits[0].object;
     while(obj&&!obj.userData.planetName) obj=obj.parent;
     if(obj&&obj.userData.planetName){ showInfoFor(obj.userData.planetName); switchTab('info'); }
+  }
+});
+
+// Planet & Moon double-click to center camera view
+canvas3d.addEventListener('dblclick',e=>{
+  const rect=canvas3d.getBoundingClientRect();
+  const mouse=new THREE.Vector2(
+    ((e.clientX-rect.left)/rect.width)*2-1,
+    -((e.clientY-rect.top)/rect.height)*2+1
+  );
+  raycaster.setFromCamera(mouse,camera);
+  const targets=[...Object.values(planetMeshes),...Object.values(moonMeshes)];
+  const hits=raycaster.intersectObjects(targets,true);
+  if(hits.length>0){
+    let obj=hits[0].object;
+    while(obj&&!obj.userData.planetName) obj=obj.parent;
+    if(obj&&obj.userData.planetName){
+      const worldPos=new THREE.Vector3();
+      obj.getWorldPosition(worldPos);
+      camTarget.copy(worldPos);
+      updateCamera();
+    }
   }
 });
 
@@ -1230,19 +1387,24 @@ function phaseGaugeSvg(current,required){
    7. PLANET INFO PANEL
    ========================================================= */
 function showInfoFor(name){
-  const p=PLANETS.find(x=>x.name===name);
+  let p=PLANETS.find(x=>x.name===name);
+  let isMoon=false;
+  if(!p){
+    p=MOONS.find(x=>x.name===name);
+    if(p) isMoon=true;
+  }
+  if(!p) return;
   const s=p._state||stateAt(p,UT);
+  const semiMajorStr=isMoon?`${(p.a/1000).toFixed(0)} km`:`${(p.a/1e9).toFixed(3)} Gm`;
   document.getElementById('infoCard').innerHTML=`
-    <div class="info-title"><span class="planet-swatch" style="background:${p.color};color:${p.color};"></span>${p.name}</div>
+    <div class="info-title"><span class="planet-swatch" style="background:${p.color};color:${p.color};"></span>${p.name}${isMoon?` <small style="font-size:11px;color:var(--text-dim);margin-left:6px;">(Moon of ${p.parent})</small>`:''}</div>
     <div class="info-desc">${p.desc}</div>
-    <div class="stat-row"><span class="k">Semi-major axis</span><span class="v">${(p.a/1e9).toFixed(3)} Gm</span></div>
+    <div class="stat-row"><span class="k">Semi-major axis</span><span class="v">${semiMajorStr}</span></div>
     <div class="stat-row"><span class="k">Eccentricity</span><span class="v">${p.e.toFixed(3)}</span></div>
     <div class="stat-row"><span class="k">Inclination</span><span class="v">${p.incl.toFixed(2)}°</span></div>
     <div class="stat-row"><span class="k">Orbital period</span><span class="v">${durationString(p.period)}</span></div>
-    <div class="stat-row"><span class="k">SOI-parent μ</span><span class="v">${p.mu.toExponential(3)} m³/s²</span></div>
     <div class="stat-row"><span class="k">Mean radius</span><span class="v">${(p.radius/1000).toFixed(0)} km</span></div>
-    <div class="stat-row"><span class="k">Current orbital speed</span><span class="v hi">${Math.hypot(s.vx,s.vy).toFixed(0)} m/s</span></div>
-    <div class="stat-row"><span class="k">Current distance from Kerbol</span><span class="v hi">${(s.r/1e9).toFixed(3)} Gm</span></div>`;
+    <div class="stat-row"><span class="k">Current orbital speed</span><span class="v hi">${Math.hypot(s.vx,s.vy).toFixed(0)} m/s</span></div>`;
 }
 showInfoFor('Kerbin');
 
