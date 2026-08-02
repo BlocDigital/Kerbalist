@@ -8,14 +8,12 @@ Designed for both experienced players and newcomers, this application provides a
 
 ## Features
 
-### 🌌 Interactive Kerbol System
+### 🌌 Interactive 3D Kerbol System
 
-- Animated Kerbol system map
-- Accurate planetary orbits
-- Live planet positions
-- Zoom and pan controls
-- Adjustable simulation speed
-- Real-time orbital animation
+- **3D WebGL Visualization**: Full 3D rendering powered by Three.js with accurate planetary orbital inclinations
+- **Orbital Camera Controls**: Free rotation (`Left Drag`), panning (`Shift + Drag`), zoom (`Scroll`), and quick view reset (`R` key or reset button)
+- **Arrival Position Ghost**: Displays a translucent "ghost" marker of the destination planet at the exact predicted arrival time upon planning a transfer
+- **Live Ephemeris & Time Warp**: Real-time planet propagation with game-accurate epoch clock syncing (T+ elapsed time)
 
 ---
 
@@ -23,22 +21,19 @@ Designed for both experienced players and newcomers, this application provides a
 
 - Select any origin and destination planet
 - Automatic Hohmann transfer calculations
-- Current phase angle
-- Required phase angle
+- Current and required phase angles
 - Transfer window countdown
-- Transfer time
-- Departure and arrival dates
+- Transfer time and ΔV budget estimation
+- Arrival time calculation and arrival position ghost visualization
 
 ---
 
 ### 📈 Orbital Visualizations
 
-- Animated transfer ellipse
-- Spacecraft trajectory
-- Departure burn visualization
-- Arrival encounter visualization
-- Ejection angle display
-- Mission timeline animation
+- 3D transfer arc and phase angle lines
+- Destination arrival ghost with travel trajectory vector
+- Spacecraft trajectory visualization
+- Ejection & capture angle geometry display
 
 ---
 
@@ -58,12 +53,10 @@ Calculates:
 Includes orbital information for every stock KSP2 planet:
 
 - Semi-major axis
-- Orbital period
-- Radius
-- Sphere of Influence
-- Orbital velocity
-- Gravitational parameter
-- Surface gravity
+- Orbital period & eccentricity
+- Inclination & argument of periapsis
+- Radius & gravitational parameter (μ)
+- Live orbital velocity and current solar distance
 
 ---
 
@@ -77,9 +70,6 @@ Features include:
 - Interactive heatmap
 - Lowest ΔV trajectory identification
 - Click any solution to inspect the transfer
-- Live trajectory visualization
-
-Unlike approximate planners, this is generated from actual Lambert solutions rather than lookup tables.
 
 ---
 
@@ -92,8 +82,6 @@ The planner uses a numerical Lambert solver capable of handling:
 - Short and long-way solutions
 - Near-parabolic trajectories
 - 180° transfer edge cases
-
-The implementation has been validated against analytical Hohmann transfers and additional unit tests.
 
 ---
 
@@ -111,23 +99,22 @@ Instantly displays:
 
 ### 🎨 User Interface
 
-- Modern aerospace-inspired design
-- Dark theme
-- Responsive layout
-- Interactive tooltips
-- Smooth 60 FPS rendering
-- High-DPI support
+- Modern aerospace-inspired dark interface
+- On-screen controls shortcut overlay
+- Customizable epoch sync inputs (supports multi-digit year entry)
+- Responsive layout with high-DPI support
+- Smooth 60 FPS WebGL rendering
 
 ---
 
 ## Technologies
 
-- HTML5
-- CSS3
+- HTML5 & CSS3
 - Vanilla JavaScript
-- HTML5 Canvas
-- SVG rendering
-- No external dependencies
+- Three.js (via CDN for WebGL 3D rendering)
+- HTML5 Canvas (2D Porkchop Plot)
+- Universal Variable Lambert solver algorithms
+
 
 Everything runs entirely inside a modern web browser.
 
