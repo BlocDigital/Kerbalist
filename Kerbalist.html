@@ -426,7 +426,7 @@ const RAW_PLANETS = [
     desc:'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.' },
   { name:'Eve',    color:'#9c4fc4', a:9832684544,  e:0.010, orientDeg:15,    m0Deg:180, period:5657995.7,   mu:8.1717302e12, radius:700000,  incl:2.10,
     desc:'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.' },
-  { name:'Kerbin', color:'#3aa15c', a:13599840256, e:0.000, orientDeg:0,     m0Deg:180, period:9203544.6,   mu:3.5316000e12, radius:600000,  incl:0.00,
+  { name:'Kerbin', color:'#4b9eff', a:13599840256, e:0.000, orientDeg:0,     m0Deg:180, period:9203544.6,   mu:3.5316000e12, radius:600000,  incl:0.00,
     desc:'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.' },
   { name:'Duna',   color:'#c1531c', a:20726155264, e:0.051, orientDeg:135.5, m0Deg:180, period:17315400.4,  mu:3.0136321e11, radius:320000,  incl:0.06,
     desc:'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.' },
@@ -566,6 +566,13 @@ const camera=new THREE.PerspectiveCamera(52,1,0.5,15000);
 let camR=620, camTheta=0.15, camPhi=0.30;
 const camTarget=new THREE.Vector3(0,0,0);
 
+/* ---- Camera Target Pivot Indicator ---- */
+const targetPivotDot=new THREE.Mesh(
+  new THREE.SphereGeometry(1.25, 12, 12),
+  new THREE.MeshBasicMaterial({color:0x3a485e, transparent:true, opacity:0.45, depthTest:false})
+);
+scene.add(targetPivotDot);
+
 function updateCamera(){
   const sinP=Math.sin(camPhi),cosP=Math.cos(camPhi);
   const sinT=Math.sin(camTheta),cosT=Math.cos(camTheta);
@@ -575,6 +582,11 @@ function updateCamera(){
     camTarget.z+camR*sinP*cosT
   );
   camera.lookAt(camTarget);
+
+  // Position pivot indicator at focal center
+  targetPivotDot.position.copy(camTarget);
+  const isCentered=camTarget.length()<1;
+  targetPivotDot.material.opacity = isCentered ? 0.15 : 0.45;
 }
 
 function resetView(){
@@ -717,29 +729,36 @@ function initTransferArc(){
 function updateTransferArc(){
   if(!arcLine||!currentResult) return;
   const r=currentResult;
-  const os=stateAt(r.origin,UT);
-  const thetaDep=os.theta;
-  const rA=r.r1, rB=r.r2;
-  let periTheta,e_t;
-  if(r.outbound){periTheta=thetaDep;e_t=(rB-rA)/(rB+rA);}
-  else{periTheta=thetaDep+Math.PI;e_t=(rA-rB)/(rA+rB);}
-  const a_t=r.at;
-  const incStart=r.origin.incl;
-  const incEnd=r.dest.incl;
+  const waitSec=r.waitSec!==null?Math.max(0,r.waitSec):0;
+  const depUT=UT+waitSec;
+  const arrUT=depUT+r.tt;
+
+  const osDep=stateAt(r.origin,depUT);
+  const dsArr=stateAt(r.dest,arrUT);
+
+  const ptDep=toWorld(osDep.x,osDep.y,r.origin.incl);
+  const ptArr=toWorld(dsArr.x,dsArr.y,r.dest.incl);
+
+  const rA=Math.hypot(osDep.x,osDep.y);
+  const rB=Math.hypot(dsArr.x,dsArr.y);
+  const a_t=(rA+rB)/2;
+  const e_t=Math.abs(rB-rA)/(rB+rA);
+  const periTheta=r.outbound?osDep.theta:(osDep.theta+Math.PI);
+
   const arr=arcGeo.attributes.position.array;
   for(let i=0;i<=ARC_N;i++){
     const frac=i/ARC_N;
     const nu=frac*Math.PI;
     const rr=a_t*(1-e_t*e_t)/(1+e_t*Math.cos(nu));
     const theta=nu+periTheta;
-    const curIncl=incStart+(incEnd-incStart)*frac;
+    const curIncl=r.origin.incl+(r.dest.incl-r.origin.incl)*frac;
     const pt=toWorld(rr*Math.cos(theta),rr*Math.sin(theta),curIncl);
     arr[i*3]=pt.x; arr[i*3+1]=pt.y; arr[i*3+2]=pt.z;
   }
   arcGeo.attributes.position.needsUpdate=true;
   arcLine.computeLineDistances();
-  arcDepDot.position.set(arr[0],arr[1],arr[2]);
-  arcArrDot.position.set(arr[ARC_N*3],arr[ARC_N*3+1],arr[ARC_N*3+2]);
+  arcDepDot.position.set(ptDep.x,ptDep.y,ptDep.z);
+  arcArrDot.position.set(ptArr.x,ptArr.y,ptArr.z);
 }
 
 function hideTransferArc(){
