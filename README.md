@@ -19,7 +19,7 @@ Designed for both experienced players and newcomers, this application provides a
 
 ### 🛰 Mission Planning
 
-- Select any origin and destination planet
+- Select any origin and destination planet or moon
 - Automatic Hohmann transfer calculations
 - Current and required phase angles
 - Transfer window countdown
@@ -50,7 +50,7 @@ Calculates:
 
 ### 🪐 Planet Database
 
-Includes orbital information for every stock KSP2 planet:
+Includes orbital information for every stock KSP2 planet and moon:
 
 - Semi-major axis
 - Orbital period & eccentricity
@@ -157,7 +157,12 @@ in any modern browser.
 
 ## Changelog
 
-### Version 1.6.0 (Current)
+### Version 1.6.1 (Current)
+- **Moon Destination Selection**: Added moons to the origin and destination dropdowns directly below their parent planets, with dashed labels like `- Mun` to distinguish them from planets.
+- **Moon Orbit Display Fixes**: Tightened inner-planet moon orbit rendering so local moon rings remain readable without overlapping neighboring planetary orbits, while keeping outer moon systems legible.
+- **Clear Transfer Control**: Added a Clear button beside Plan Transfer to remove transfer arcs, phase lines, arrival ghosts, and reset the transfer panel for an unobstructed map view.
+
+### Version 1.6.0
 - 🌕 **Complete Moon System**: Added all stock KSP/KSP2 moons (Gilly, Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol) with 3D local orbits, real-time ephemerides propagation, interactive raycast clicking, and detailed physical data inspection.
 - 🎯 **Double Click Centering**: Double-clicking any planet or moon in 3D snaps camera focus directly to that celestial body.
 - 🔍 **Expanded Visual Scale**: Scaled down planet spheres and expanded moon orbit radii so moons orbit clearly outside planetary atmospheres without overlap.
@@ -189,6 +194,7 @@ in any modern browser.
 
 ### Version 1.6 (Completed)
 - Complete 3D stock moon system (Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol, Gilly)
+- Moon dropdown destinations, compact local moon orbit display, and clear-transfer map control
 
 ### Version 2.0 (Planned)
 - Gravity assist planner
