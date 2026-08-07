@@ -1,4 +1,4 @@
-# 🚀 Kerbal Space Program 2 – Interplanetary Mission Planner
+# Kerbal Space Program 2 – Interplanetary Mission Planner
 
 A standalone, browser-based mission planning tool for **Kerbal Space Program 2**.
 
@@ -8,16 +8,16 @@ Designed for both experienced players and newcomers, this application provides a
 
 ## Features
 
-### 🌌 Interactive 3D Kerbol System
+### Interactive 3D Kerbol System
 
-- **3D WebGL Visualization**: Full 3D rendering powered by Three.js with accurate planetary orbital inclinations
-- **Orbital Camera Controls**: Free rotation (`Left Drag`), panning (`Shift + Drag`), zoom (`Scroll`), and quick view reset (`R` key or reset button)
-- **Arrival Position Ghost**: Displays a translucent "ghost" marker of the destination planet at the exact predicted arrival time upon planning a transfer
-- **Live Ephemeris & Time Warp**: Real-time planet propagation with game-accurate epoch clock syncing (T+ elapsed time)
+- 3D WebGL Visualization: Full 3D rendering powered by Three.js with accurate planetary orbital inclinations
+- Orbital Camera Controls: Free rotation (Left Drag), panning (Shift + Drag), zoom (Scroll), and quick view reset (R key or reset button)
+- Arrival Position Ghost: Displays a translucent "ghost" marker of the destination planet at the exact predicted arrival time upon planning a transfer
+- Live Ephemeris & Time Warp: Real-time planet propagation with game-accurate epoch clock syncing (T+ elapsed time)
 
 ---
 
-### 🛰 Mission Planning
+### Mission Planning
 
 - Select any origin and destination planet or moon
 - Automatic Hohmann transfer calculations
@@ -28,7 +28,7 @@ Designed for both experienced players and newcomers, this application provides a
 
 ---
 
-### 📈 Orbital Visualizations
+### Orbital Visualizations
 
 - 3D transfer arc and phase angle lines
 - Destination arrival ghost with travel trajectory vector
@@ -37,7 +37,7 @@ Designed for both experienced players and newcomers, this application provides a
 
 ---
 
-### ⚡ Delta-V Calculator
+### Delta-V Calculator
 
 Calculates:
 
@@ -48,7 +48,7 @@ Calculates:
 
 ---
 
-### 🪐 Planet Database
+### Planet Database
 
 Includes orbital information for every stock KSP2 planet and moon:
 
@@ -60,9 +60,9 @@ Includes orbital information for every stock KSP2 planet and moon:
 
 ---
 
-### 🥩 Porkchop Plot Generator
+### Porkchop Plot Generator
 
-Generate real launch window plots using a **Universal Variable Lambert Solver**.
+Generate real launch window plots using a Universal Variable Lambert Solver.
 
 Features include:
 
@@ -73,7 +73,7 @@ Features include:
 
 ---
 
-### 🔬 Universal Variable Lambert Solver
+### Universal Variable Lambert Solver
 
 The planner uses a numerical Lambert solver capable of handling:
 
@@ -85,7 +85,7 @@ The planner uses a numerical Lambert solver capable of handling:
 
 ---
 
-### 🎯 Transfer Window Calculator
+### Transfer Window Calculator
 
 Instantly displays:
 
@@ -97,7 +97,7 @@ Instantly displays:
 
 ---
 
-### 🎨 User Interface
+### User Interface
 
 - Modern aerospace-inspired dark interface
 - On-screen controls shortcut overlay
@@ -115,6 +115,7 @@ Instantly displays:
 - HTML5 Canvas (2D Porkchop Plot)
 - Universal Variable Lambert solver algorithms
 
+---
 
 Everything runs entirely inside a modern web browser.
 
@@ -147,7 +148,7 @@ Implemented calculations include:
 
 No installation is required.
 
-Simply download the project and open:
+Simply download Kerbalist.html and open it in your browser.
 
 ```
 Kerbalist.html
@@ -155,95 +156,17 @@ Kerbalist.html
 
 in any modern browser.
 
-## Changelog
-
-### Version 1.6.1 (Current)
-- **Moon Destination Selection**: Added moons to the origin and destination dropdowns directly below their parent planets, with dashed labels like `- Mun` to distinguish them from planets.
-- **Moon Orbit Display Fixes**: Tightened inner-planet moon orbit rendering so local moon rings remain readable without overlapping neighboring planetary orbits, while keeping outer moon systems legible.
-- **Clear Transfer Control**: Added a Clear button beside Plan Transfer to remove transfer arcs, phase lines, arrival ghosts, and reset the transfer panel for an unobstructed map view.
-
-### Version 1.6.0
-- 🌕 **Complete Moon System**: Added all stock KSP/KSP2 moons (Gilly, Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol) with 3D local orbits, real-time ephemerides propagation, interactive raycast clicking, and detailed physical data inspection.
-- 🎯 **Double Click Centering**: Double-clicking any planet or moon in 3D snaps camera focus directly to that celestial body.
-- 🔍 **Expanded Visual Scale**: Scaled down planet spheres and expanded moon orbit radii so moons orbit clearly outside planetary atmospheres without overlap.
-- 📍 **Subtle Camera Focal Marker**: Added a minimal dark grey 3D pivot dot tracking camera focus in space.
-
-### Version 1.5.0
-- 🪐 **Full 3D WebGL Solar System Map**: Replaced 2D SVG map with Three.js WebGL 3D scene supporting accurate planetary orbital inclinations.
-- 🎥 **Free-look Orbital Camera**: Added free rotation (`Left Drag`), panning (`Shift + Drag`), zoom (`Scroll`), and quick view reset (`R` key or `⤾` button).
-- 👻 **Destination Arrival Ghost**: Shows a translucent ghost planet at the exact projected position of the destination body upon arrival, connected by a trajectory line.
-- 📐 **3D Trajectory Inclination Matching**: Transfer arc path interpolates inclination angles from departure to destination planet (e.g. 0° Kerbin → 5° Dres).
-- ⌨️ **UI & Controls HUD**: Added on-screen keyboard/mouse controls overlay card and expanded UT sync input fields to support 4-digit years comfortably.
-
 ---
 
-## Roadmap
+## Changelog
 
-### Version 1.0 (Completed)
-- Interactive Kerbol system
-- Hohmann transfers
-- Delta-V calculator
-- Phase angle calculator
-- Transfer visualization
-
-### Version 1.5 (Completed)
-- 3D WebGL rendering with true inclinations
-- Free-look & pan camera controls
-- Destination arrival ghost planet visualization
-- Lambert solver & Porkchop plots
-
-### Version 1.6 (Completed)
-- Complete 3D stock moon system (Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol, Gilly)
-- Moon dropdown destinations, compact local moon orbit display, and clear-transfer map control
-
-### Version 2.0 (Planned)
-- Gravity assist planner
-- Multi-flyby trajectories
-- Plane change optimization
-- Inclination matching
-- Resonant orbit planner
-
-### Future Ideas
-
-- Modded planetary systems
-- Principia compatibility
-- Save/load mission plans
-- Export trajectories
-- Offline PWA support
-- Dark/light themes
-- Real-time mission playback
+See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes.
 
 ---
 
 ## Why This Project?
 
-Most KSP transfer calculators either:
-
-- only calculate phase angles,
-- use simplified equations,
-- or provide little visual feedback.
-
-This project combines accurate orbital mechanics with an interactive visualization system, allowing players to understand *why* a transfer works rather than simply following numbers.
-
----
-
-## License
-
-MIT License
-
-Feel free to use, modify, and contribute.
-
----
-
-## Acknowledgements
-
-Inspired by:
-
-- AlexMoon Launch Window Planner
-- NASA trajectory planning tools
-- ESA mission analysis software
-- The Kerbal Space Program community
-- Squad and Intercept Games
+Most KSP transfer calculators either only calculate phase angles, use simplified equations, or provide little visual feedback. This project combines accurate orbital mechanics with an interactive visualization system, allowing players to understand why a transfer works rather than simply following numbers.
 
 ---
 
