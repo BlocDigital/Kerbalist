@@ -146,9 +146,9 @@ Implemented calculations include:
 
 ## Installation
 
-No installation is required.
+No installation is required - https://blocdigital.github.io/Kerbalist/
 
-Simply download Kerbalist.html and open it in your browser.
+Or simply download Kerbalist.html and open it in your browser.
 
 ```
 Kerbalist.html
