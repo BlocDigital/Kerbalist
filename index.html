@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kerbol Transfer Window Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <!-- Google AdSense Global Script -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5297704957311927"
+    crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #060a11;
+      --bg-grid: #0a1120;
+      --panel: #0b1220;
+      --panel2: #0f1830;
+      --panel3: #101c33;
+      --border: #1d2c47;
+      --border-bright: #2c4470;
+      --text: #dbe7f5;
+      --text-dim: #7688a6;
+      --text-dimmer: #4d5d78;
+      --cyan: #4fe0e8;
+      --cyan-dim: #1f5d63;
+      --amber: #ffb454;
+      --amber-dim: #7a5222;
+      --green: #7ee787;
+      --red: #ff6b6b;
+      --violet: #b78cff;
+      --font-display: 'Rajdhani', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 20% -10%, #0d1830 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 110%, #0a1526 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ---------- HEADER ---------- */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 10px 18px;
+      background: linear-gradient(180deg, #0c1526, #081020);
+      border-bottom: 1px solid var(--border);
+      flex: 0 0 auto;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #fff6d8, #ffd166 40%, #b8781a 100%);
+      box-shadow: 0 0 14px 2px rgba(255, 209, 102, .35);
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      font-size: 17px;
+      margin: 0;
+      letter-spacing: .09em;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #f2f6fb;
+    }
+
+    .brand .sub {
+      font-size: 10.5px;
+      color: var(--text-dim);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .ut-clock {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-mono);
+    }
+
+    .ut-clock .label {
+      font-size: 10px;
+      color: var(--text-dimmer);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .ut-clock .value {
+      font-size: 16px;
+      color: var(--cyan);
+      text-shadow: 0 0 8px rgba(79, 224, 232, .4);
+      letter-spacing: .02em;
+    }
+
+    .ut-sync {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 7px;
+    }
+
+    .ut-sync .label {
+      font-size: 9.5px;
+      color: var(--text-dimmer);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-right: 2px;
+    }
+
+    .ut-sync input {
+      width: 80px;
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      padding: 6px 6px;
+      text-align: center;
+      outline: none;
+    }
+
+    .ut-sync input.narrow {
+      width: 72px;
+    }
+
+    .ut-sync input:focus {
+      border-color: var(--cyan);
+    }
+
+    .ut-sync span.sep {
+      color: var(--text-dimmer);
+      font-size: 11px;
+      margin: 0 -1px;
+    }
+
+    .ut-sync button {
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-dim);
+      color: var(--cyan);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: .05em;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      margin-left: 3px;
+    }
+
+    .ut-sync button:hover {
+      background: #164048;
+    }
+
+    .live-sync-wrap { position: relative; }
+
+    .live-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--panel2); border: 1px solid var(--border); color: var(--text-dim);
+      font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .05em;
+      padding: 7px 11px; border-radius: 8px; cursor: pointer; text-transform: uppercase;
+    }
+    .live-btn:hover { border-color: var(--border-bright); color: var(--text); }
+    .live-btn .pip { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dimmer); }
+    .live-btn.on { color: var(--green); border-color: #1f5d2e; }
+    .live-btn.on .pip { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 1.4s infinite; }
+    .live-btn.err .pip { background: var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+    .live-panel {
+      display: none; position: absolute; top: 42px; right: 0; z-index: 40;
+      width: 300px; background: var(--panel); border: 1px solid var(--border-bright);
+      border-radius: 10px; padding: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+    }
+    .live-panel.open { display: block; }
+    .live-panel h4 { margin: 0 0 8px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+    .live-panel .opt { border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; margin-bottom: 9px; }
+    .live-panel .opt-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .live-panel .opt-desc { font-size: 10.5px; color: var(--text-dimmer); line-height: 1.5; margin-bottom: 8px; }
+    .live-panel input[type=text] {
+      width: 100%; background: var(--panel3); border: 1px solid var(--border); border-radius: 5px;
+      color: var(--text); font-family: var(--font-mono); font-size: 11.5px; padding: 6px 7px; outline: none; margin-bottom: 7px;
+    }
+    .live-panel input[type=text]:focus { border-color: var(--cyan); }
+    .live-panel .opt button {
+      width: 100%; background: var(--cyan-dim); border: 1px solid var(--cyan-dim); color: var(--cyan);
+      font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .05em;
+      padding: 7px; border-radius: 6px; cursor: pointer; text-transform: uppercase;
+    }
+    .live-panel .opt button:hover { background: #164048; }
+    .live-panel .opt button.stop { background: var(--amber-dim); border-color: var(--amber-dim); color: var(--amber); }
+    .live-status { font-size: 10.5px; color: var(--text-dimmer); margin-top: 2px; font-family: var(--font-mono); line-height: 1.4; }
+    .live-status.ok { color: var(--green); }
+    .live-status.err { color: var(--red); }
+
+    .warp-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .warp-controls button {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: .12s;
+    }
+
+    .warp-controls button:hover {
+      background: var(--panel3);
+      color: var(--text);
+    }
+
+    .warp-controls button.active {
+      background: var(--cyan-dim);
+      color: var(--cyan);
+    }
+
+    .warp-controls .reset-btn {
+      color: var(--amber);
+      border-left: 1px solid var(--border);
+      margin-left: 2px;
+      padding-left: 10px;
+    }
+
+    /* ---------- MAIN LAYOUT ---------- */
+    .main {
+      flex: 1 1 auto;
+      display: flex;
+      min-height: 0;
+    }
+
+    .map-wrap {
+      flex: 1 1 auto;
+      position: relative;
+      min-width: 0;
+      background: var(--bg-grid);
+      overflow: hidden;
+    }
+
+    #mapCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+      outline: none;
+    }
+
+    #mapCanvas.grabbing {
+      cursor: grabbing;
+    }
+
+    #mapCanvas.panning {
+      cursor: move;
+    }
+
+    .map-hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .map-hud .chip {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-dim);
+      background: rgba(9, 15, 28, .82);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 9px;
+      letter-spacing: .03em;
+      backdrop-filter: blur(2px);
+    }
+
+    .shortcuts-bubble {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      z-index: 10;
+      background: rgba(9, 15, 28, .86);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 13px;
+      font-family: var(--font-mono);
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .shortcuts-bubble .sb-title {
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sk {
+      background: var(--panel2);
+      border: 1px solid var(--border-bright);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--text-dim);
+      font-size: 8.5px;
+      white-space: nowrap;
+      min-width: 72px;
+      text-align: center;
+    }
+
+    .sv {
+      color: var(--text-dimmer);
+      font-size: 8.5px;
+    }
+
+    .zoom-controls {
+      position: absolute;
+      bottom: 14px;
+      left: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      z-index: 10;
+    }
+
+    .zoom-controls button {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: rgba(11, 18, 32, .85);
+      color: var(--text-dim);
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .zoom-controls button:hover {
+      color: var(--cyan);
+      border-color: var(--border-bright);
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      z-index: 10;
+      background: rgba(9, 15, 28, .78);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 10.5px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .legend .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    /* 3D labels */
+    #labelContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 8;
+    }
+
+    .planet-label-3d {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      transform: translate(9px, -9px);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .9), 0 0 8px rgba(0, 0, 0, .7);
+    }
+
+    .ghost-label-3d {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--amber);
+      white-space: nowrap;
+      opacity: 0.85;
+      transform: translate(10px, -10px);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+    }
+
+    /* ---------- SIDEBAR ---------- */
+    .sidebar {
+      width: 392px;
+      flex: 0 0 392px;
+      border-left: 1px solid var(--border);
+      background: linear-gradient(180deg, #0a0f1c, #080d18);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .select-row {
+      display: flex;
+      gap: 8px;
+      padding: 14px 14px 10px;
+    }
+
+    .field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--text-dimmer);
+      font-weight: 600;
+    }
+
+    select {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 9px;
+      border-radius: 7px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--cyan);
+    }
+
+    .swap-btn {
+      align-self: flex-end;
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 15px;
+      margin-bottom: 0;
+    }
+
+    .swap-btn:hover {
+      color: var(--cyan);
+      border-color: var(--border-bright);
+    }
+
+    .transfer-actions {
+      display: flex;
+      gap: 8px;
+      margin: 2px 14px 12px;
+    }
+
+    .plan-btn,
+    .clear-transfer-btn {
+      padding: 11px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 13.5px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: .12s;
+    }
+
+    .plan-btn {
+      flex: 1 1 auto;
+      border: 1px solid var(--cyan-dim);
+      background: linear-gradient(180deg, #123339, #0c2226);
+      color: var(--cyan);
+    }
+
+    .plan-btn:hover {
+      background: linear-gradient(180deg, #164048, #0f2a2f);
+      box-shadow: 0 0 16px rgba(79, 224, 232, .15);
+    }
+
+    .clear-transfer-btn {
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text-dim);
+    }
+
+    .clear-transfer-btn:hover {
+      color: var(--amber);
+      border-color: rgba(255, 180, 84, .45);
+      background: var(--panel3);
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 14px;
+      gap: 2px;
+      flex: 0 0 auto;
+    }
+
+    .tab {
+      padding: 9px 12px;
+      font-size: 11.5px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-dimmer);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      user-select: none;
+    }
+
+    .tab:hover {
+      color: var(--text-dim);
+    }
+
+    .tab.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .tab-panels {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 14px;
+      min-height: 0;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 13px;
+      margin-bottom: 11px;
+    }
+
+    .card h3 {
+      margin: 0 0 9px;
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card h3 .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 6px var(--cyan);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 5px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .05);
+      font-size: 12.5px;
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .stat-row .k {
+      color: var(--text-dim);
+    }
+
+    .stat-row .v {
+      font-family: var(--font-mono);
+      color: var(--text);
+      font-weight: 500;
+      text-align: right;
+    }
+
+    .stat-row .v.hi {
+      color: var(--cyan);
+    }
+
+    .stat-row .v.warn {
+      color: var(--amber);
+    }
+
+    .stat-row .v.good {
+      color: var(--green);
+    }
+
+    .stat-row .v.bad {
+      color: var(--red);
+    }
+
+    .big-num {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      color: var(--amber);
+      font-weight: 700;
+      text-shadow: 0 0 14px rgba(255, 180, 84, .3);
+      letter-spacing: .01em;
+    }
+
+    .big-num small {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-weight: 400;
+      margin-left: 6px;
+    }
+
+    .phase-gauge {
+      display: flex;
+      justify-content: center;
+      padding: 6px 0 2px;
+    }
+
+    .countdown {
+      font-family: var(--font-mono);
+      font-size: 21px;
+      color: var(--green);
+      text-align: center;
+      padding: 8px 0 4px;
+      letter-spacing: .02em;
+    }
+
+    .countdown.past {
+      color: var(--text-dim);
+    }
+
+    .note {
+      font-size: 10.5px;
+      color: var(--text-dimmer);
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+
+    .assist-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+      user-select: none;
+      margin-bottom: 7px;
+      transition: .12s;
+    }
+
+    .assist-item:hover {
+      border-color: var(--border-bright);
+    }
+
+    .assist-item.selected {
+      border-color: var(--violet);
+      background: #14122a;
+      box-shadow: 0 0 0 1px rgba(183, 140, 255, .25);
+    }
+
+    .assist-item input[type=radio] {
+      accent-color: var(--violet);
+      cursor: pointer;
+    }
+
+    .assist-item .label {
+      flex: 1;
+    }
+
+    .assist-item .label .name {
+      font-weight: 700;
+      font-size: 12.5px;
+      color: var(--violet);
+    }
+
+    .assist-item .label .sub {
+      font-size: 10px;
+      color: var(--text-dimmer);
+      margin-top: 1px;
+    }
+
+    .assist-item .savings {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--green);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .assist-item .savings.none {
+      color: var(--text-dimmer);
+    }
+
+    .placeholder {
+      color: var(--text-dimmer);
+      font-size: 12.5px;
+      text-align: center;
+      padding: 24px 6px;
+      line-height: 1.6;
+    }
+
+    /* porkchop */
+    .pk-canvas-wrap {
+      position: relative;
+      background: var(--panel2);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    #pkCanvas {
+      display: block;
+      width: 100%;
+      cursor: crosshair;
+    }
+
+    .pk-axis-x,
+    .pk-axis-y {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-dimmer);
+    }
+
+    .pk-axis-x {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 2px 0;
+    }
+
+    .pk-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pk-controls button {
+      flex: 1;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 7px;
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 11.5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .pk-controls button:hover {
+      color: var(--cyan);
+      border-color: var(--border-bright);
+    }
+
+    .pk-legend-bar {
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 8px;
+      background: linear-gradient(90deg, #2f6fff, #4fe0e8, #7ee787, #ffe066, #ff9d4d, #ff5b5b);
+    }
+
+    .pk-legend-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      color: var(--text-dimmer);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    /* planet info */
+    .planet-swatch {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .info-title {
+      display: flex;
+      align-items: center;
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .info-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-bright);
+      border-radius: 5px;
+    }
+
+    @media (max-width:880px) {
+      .sidebar {
+        width: 320px;
+        flex-basis: 320px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <header>
+      <div class="brand">
+        <div class="mark"></div>
+        <div>
+          <h1>Kerbalist</h1>
+          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 stock system</div>
+        </div>
+      </div>
+      <div class="ut-clock">
+        <div><span class="label">UT</span><br><span class="value" id="utValue">T+0y,0d,00:00:00</span></div>
+      </div>
+      <div class="ut-sync">
+        <span class="label">Sync to save (T+)</span>
+        <input type="number" id="setYear" class="narrow" min="0" value="0" title="Years elapsed">
+        <span class="sep">y</span>
+        <input type="number" id="setDay" min="0" max="425" value="0" title="Days elapsed (0-425)">
+        <span class="sep">d</span>
+        <input type="number" id="setHour" class="narrow" min="0" max="23" value="0" title="Hour">
+        <span class="sep">:</span>
+        <input type="number" id="setMin" class="narrow" min="0" max="59" value="0" title="Minute">
+        <span class="sep">:</span>
+        <input type="number" id="setSec" class="narrow" min="0" max="59" value="0" title="Second">
+        <button id="setUtBtn">Set</button>
+      </div>
+      <div class="warp-controls" id="warpControls"></div>
+      <div class="live-sync-wrap">
+        <button class="live-btn" id="liveBtn"><span class="pip"></span>Live Sync</button>
+        <div class="live-panel" id="livePanel">
+          <h4>Sync UT with a running KSP2</h4>
+          <div class="opt">
+            <div class="opt-title">① Local bridge (recommended)</div>
+            <div class="opt-desc">Run a small companion script (e.g. using the <b>kRPC2</b> mod) that reads live UT from KSP2 and serves it on localhost. This page polls it every 2s. Works while flying — no manual saving needed.</div>
+            <input type="text" id="bridgeUrl" value="http://localhost:5005/ut" placeholder="http://localhost:5005/ut">
+            <button id="bridgeConnectBtn">Connect</button>
+          </div>
+          <div class="opt">
+            <div class="opt-title">② Watch save file</div>
+            <div class="opt-desc">No mod required. Pick your KSP2 persistent save file — this page re-reads it every few seconds and syncs UT whenever the game autosaves. Chrome/Edge only.</div>
+            <button id="fileWatchBtn">Choose Save File…</button>
+          </div>
+          <div class="live-status" id="liveStatus">Not connected — UT is manual / warp-driven.</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="map-wrap" id="mapWrap">
+        <canvas id="mapCanvas"></canvas>
+        <div id="labelContainer"></div>
+        <div class="map-hud">
+          <div class="chip" id="hudOrigin">ORIGIN — Kerbin</div>
+          <div class="chip" id="hudDest">DEST — Duna</div>
+        </div>
+        <div class="shortcuts-bubble">
+          <div class="sb-title">Controls</div>
+          <div class="shortcut-row"><span class="sk">Drag</span><span class="sv">Rotate orbit</span></div>
+          <div class="shortcut-row"><span class="sk">Shift+Drag</span><span class="sv">Pan view</span></div>
+          <div class="shortcut-row"><span class="sk">Scroll</span><span class="sv">Zoom in / out</span></div>
+          <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
+          <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
+          <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
+        </div>
+        <div class="zoom-controls">
+          <button id="zoomIn">+</button>
+          <button id="zoomOut">−</button>
+          <button id="zoomReset">⤾</button>
+        </div>
+        <div class="legend">
+          <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
+          <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
+          <span><span class="dot" style="background:var(--green)"></span>Transfer arc</span>
+          <span><span class="dot"
+              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
+            ghost</span>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="select-row">
+          <div class="field">
+            <label>Origin</label>
+            <select id="originSelect"></select>
+          </div>
+          <button class="swap-btn" id="swapBtn" title="Swap origin/destination">⇄</button>
+          <div class="field">
+            <label>Destination</label>
+            <select id="destSelect"></select>
+          </div>
+        </div>
+
+        <!-- Google AdSense Sponsor Card — hidden until AdSense is configured -->
+        <div class="card" style="margin: 0 14px 11px; text-align: center; display:none;">
+          <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Sponsor</h3>
+          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5297704957311927"
+            data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+          <div class="note">Note: Replace data-ad-slot="1234567890" with your actual display ad unit ID.</div>
+        </div>
+
+        <div class="transfer-actions">
+          <button class="plan-btn" id="planBtn">Plan Transfer</button>
+          <button class="clear-transfer-btn" id="clearTransferBtn" title="Clear transfer overlays">Clear</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" data-tab="transfer">Transfer</div>
+          <div class="tab" data-tab="assists">Assists</div>
+          <div class="tab" data-tab="porkchop">Porkchop</div>
+          <div class="tab" data-tab="info">Body Info</div>
+        </div>
+
+        <div class="tab-panels">
+
+          <div class="tab-panel active" id="panel-transfer">
+            <div id="transferResults">
+              <div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a
+                Hohmann-style transfer window.</div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-assists">
+            <div class="card">
+              <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity Assist Routes</h3>
+              <div id="assistList">
+                <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a flyby, it'll show up here as an optional route.</div>
+              </div>
+              <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not a flight plan.</div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-porkchop">
+            <div class="card">
+              <h3><span class="dot"></span>Porkchop Plot</h3>
+              <div class="pk-canvas-wrap">
+                <canvas id="pkCanvas" width="360" height="300"></canvas>
+              </div>
+              <div class="pk-legend-bar"></div>
+              <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
+              <div class="pk-controls">
+                <button id="pkGenerate">Generate</button>
+              </div>
+              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = total heliocentric Δv (departure
+                v∞ + arrival v∞), Lambert-solved per cell. Click a cell to inspect it.</div>
+            </div>
+            <div class="card" id="pkSelected" style="display:none;">
+              <h3><span class="dot"></span>Selected Point</h3>
+              <div id="pkSelectedBody"></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-info">
+            <div class="card" id="infoCard"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
+
+    (function (THREE) {
+      "use strict";
+
+      /* =========================================================
+         1. PHYSICAL DATA — stock Kerbol system (KSP / KSP2)
+         ========================================================= */
+      const KERBOL = { name: 'Kerbol', mu: 1.1723328e18, radius: 261600000, color: '#ffd166' };
+      const DEG = Math.PI / 180;
+
+      const RAW_PLANETS = [
+        {
+          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 180, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
+          desc: 'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.'
+        },
+        {
+          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 180, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
+          desc: 'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.'
+        },
+        {
+          name: 'Kerbin', color: '#4b9eff', a: 13599840256, e: 0.000, orientDeg: 0, m0Deg: 180, period: 9203544.6, mu: 3.5316000e12, radius: 600000, incl: 0.00,
+          desc: 'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.'
+        },
+        {
+          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 180, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
+          desc: 'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.'
+        },
+        {
+          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 180, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
+          desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Dres does exist.'
+        },
+        {
+          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 6, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
+          desc: 'A gas giant with a swirling green atmosphere and an enormous sphere of influence hosting five moons: Laythe, Vall, Tylo, Bop and Pol. Dominates the outer Kerbol system.'
+        },
+        {
+          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 180, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
+          desc: 'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.'
+        }
+      ];
+
+      const RAW_MOONS = [
+        // Eve
+        { name: 'Gilly', parent: 'Eve', color: '#bda892', a: 31500000, e: 0.55, orientDeg: 10, m0Deg: 0, period: 288600, incl: 12.0, radius: 13000, desc: 'Tiny captured asteroid orbiting Eve.' },
+        // Kerbin
+        { name: 'Mun', parent: 'Kerbin', color: '#bcbcbc', a: 12000000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 138984, incl: 0.0, radius: 200000, desc: 'Kerbin\'s large, cratered primary moon.' },
+        { name: 'Minmus', parent: 'Kerbin', color: '#9be5d0', a: 47000000, e: 0.00, orientDeg: 38, m0Deg: 0, period: 388380, incl: 6.0, radius: 60000, desc: 'Mint-green icy moon with flat salt flats.' },
+        // Duna
+        { name: 'Ike', parent: 'Duna', color: '#888888', a: 3200000, e: 0.03, orientDeg: 0, m0Deg: 0, period: 65518, incl: 0.2, radius: 130000, desc: 'Tidally locked moon orbiting Duna closely.' },
+        // Jool
+        { name: 'Laythe', parent: 'Jool', color: '#4ba3e3', a: 27184000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 52980, incl: 0.0, radius: 500000, desc: 'Ocean moon with breathable atmosphere.' },
+        { name: 'Vall', parent: 'Jool', color: '#a8dadc', a: 43152000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 105960, incl: 0.0, radius: 300000, desc: 'Icy moon with cryovolcanic activity.' },
+        { name: 'Tylo', parent: 'Jool', color: '#e0e1dd', a: 68500000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 211920, incl: 0.025, radius: 600000, desc: 'Large, airless moon with intense gravity.' },
+        { name: 'Bop', parent: 'Jool', color: '#7f6a54', a: 128500000, e: 0.235, orientDeg: 10, m0Deg: 0, period: 544507, incl: 15.0, radius: 65000, desc: 'Small irregular brown moon on inclined orbit.' },
+        { name: 'Pol', parent: 'Jool', color: '#eddcd2', a: 179890000, e: 0.17, orientDeg: 15, m0Deg: 0, period: 901902, incl: 4.25, radius: 44000, desc: 'Outermost yellowish spiky moon of Jool.' }
+      ];
+
+      const PLANETS = RAW_PLANETS.map(p => ({
+        ...p,
+        orient: p.orientDeg * DEG,
+        m0: p.m0Deg * DEG,
+        n: 2 * Math.PI / p.period
+      }));
+
+      const MOONS = RAW_MOONS.map(m => ({
+        ...m,
+        orient: m.orientDeg * DEG,
+        m0: m.m0Deg * DEG,
+        n: 2 * Math.PI / m.period
+      }));
+
+      const BODY_OPTIONS = PLANETS.flatMap(p => [
+        { body: p, isMoon: false, label: p.name },
+        ...MOONS.filter(m => m.parent === p.name).map(m => ({ body: m, isMoon: true, label: `- ${m.name}` }))
+      ]);
+
+      function findBody(name) {
+        return PLANETS.find(p => p.name === name) || MOONS.find(m => m.name === name) || null;
+      }
+
+      function transferBodyFor(body) {
+        return body && body.parent ? PLANETS.find(p => p.name === body.parent) : body;
+      }
+
+      /* =========================================================
+         2. ORBITAL MECHANICS
+         ========================================================= */
+      function solveKepler(M, e) {
+        M = ((M % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        let E = e < 0.8 ? M : Math.PI;
+        for (let i = 0; i < 60; i++) {
+          const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+          E -= dE;
+          if (Math.abs(dE) < 1e-12) break;
+        }
+        return E;
+      }
+
+      function stateAt(planet, t) {
+        const M = planet.m0 + planet.n * t;
+        const E = solveKepler(M, planet.e);
+        const e = planet.e;
+        const nu = Math.atan2(Math.sqrt(1 - e * e) * Math.sin(E), Math.cos(E) - e);
+        const r = planet.a * (1 - e * Math.cos(E));
+        const theta = nu + planet.orient;
+        const x = r * Math.cos(theta), y = r * Math.sin(theta);
+        const h = Math.sqrt(KERBOL.mu * planet.a * (1 - e * e));
+        const vr = KERBOL.mu / h * e * Math.sin(nu);
+        const vt = KERBOL.mu / h * (1 + e * Math.cos(nu));
+        const vx = vr * Math.cos(theta) - vt * Math.sin(theta);
+        const vy = vr * Math.sin(theta) + vt * Math.cos(theta);
+        return { x, y, r, theta, vx, vy, nu };
+      }
+
+      function stumpC(z) { if (z > 1e-6) return (1 - Math.cos(Math.sqrt(z))) / z; if (z < -1e-6) { const s = Math.sqrt(-z); return (Math.cosh(s) - 1) / (-z); } return 0.5; }
+      function stumpS(z) { if (z > 1e-6) { const s = Math.sqrt(z); return (s - Math.sin(s)) / (s * s * s); } if (z < -1e-6) { const s = Math.sqrt(-z); return (Math.sinh(s) - s) / (s * s * s); } return 1 / 6; }
+
+      function lambertSolve(r1v, r2v, tof, mu) {
+        const r1 = Math.hypot(r1v[0], r1v[1]), r2 = Math.hypot(r2v[0], r2v[1]);
+        const th1 = Math.atan2(r1v[1], r1v[0]), th2 = Math.atan2(r2v[1], r2v[0]);
+        let dnu = th2 - th1; if (dnu <= 1e-9) dnu += 2 * Math.PI;
+        const A = Math.sin(dnu) * Math.sqrt(r1 * r2 / (1 - Math.cos(dnu)));
+        if (!isFinite(A) || Math.abs(A) < 1e-6) return null;
+        function yOf(z) { return r1 + r2 + A * (z * stumpS(z) - 1) / Math.sqrt(stumpC(z)); }
+        function Fz(z) {
+          const y = yOf(z); if (y < 0) return null;
+          const x = Math.sqrt(y / stumpC(z));
+          return (Math.pow(x, 3) * stumpS(z) + A * Math.sqrt(y)) / Math.sqrt(mu) - tof;
+        }
+        let zLow = -40, zHigh = 4 * Math.PI * Math.PI, guard = 0;
+        while (yOf(zLow) < 0 && guard < 2000) { zLow += 0.05; guard++; }
+        let fLow = Fz(zLow), fHigh = Fz(zHigh), tries = 0;
+        while ((fLow === null || fHigh === null || fLow * fHigh > 0) && tries < 300) { zHigh *= 1.08; fHigh = Fz(zHigh); tries++; }
+        if (fLow === null || fHigh === null || fLow * fHigh > 0) return null;
+        let z = 0, f = 0;
+        for (let i = 0; i < 200; i++) {
+          z = (zLow + zHigh) / 2; f = Fz(z);
+          if (f === null) { zLow = z; continue; }
+          if (Math.abs(f) < 1e-4) break;
+          if ((f > 0) === (fLow > 0)) { zLow = z; fLow = f; } else { zHigh = z; fHigh = f; }
+        }
+        const y = yOf(z);
+        const f_ = 1 - y / r1, g = A * Math.sqrt(y / mu), gdot = 1 - y / r2;
+        if (Math.abs(g) < 1e-6) return null;
+        const v1 = [(r2v[0] - f_ * r1v[0]) / g, (r2v[1] - f_ * r1v[1]) / g];
+        const v2 = [(gdot * r2v[0] - r1v[0]) / g, (gdot * r2v[1] - r1v[1]) / g];
+        return { v1, v2 };
+      }
+
+      /**
+       * Sample the *actual* transfer trajectory between two known position
+       * vectors and a known time-of-flight, by solving Lambert's problem for
+       * the departure velocity and then propagating that state forward with
+       * real two-body Kepler motion.
+       *
+       * Earlier arc-drawing code built an idealized Hohmann ellipse assuming
+       * an exact 180-degree transfer with periapsis pinned to one endpoint.
+       * That's only exact when both bodies are on circular orbits. For an
+       * eccentric destination (e.g. Eeloo, e=0.26) the real angular gap
+       * between departure and arrival isn't exactly 180 degrees, so that
+       * construction visibly missed the arrival point. Solving Lambert
+       * directly for the known endpoints/time-of-flight and propagating the
+       * resulting state guarantees the sampled curve starts and ends exactly
+       * on the real departure/arrival positions, regardless of eccentricity.
+       * Returns null if Lambert can't find a solution (near-degenerate
+       * geometry) so callers can fall back to the simple ellipse construction.
+       */
+      function buildLambertArcPoints(r1x, r1y, r2x, r2y, tof, mu, N) {
+        const sol = lambertSolve([r1x, r1y], [r2x, r2y], tof, mu);
+        if (!sol) return null;
+        const vx = sol.v1[0], vy = sol.v1[1];
+        const r = Math.hypot(r1x, r1y);
+        const v2 = vx * vx + vy * vy;
+        const energy = v2 / 2 - mu / r;
+        if (energy >= 0) return null; // hyperbolic/parabolic transfer orbit — shouldn't happen for bound Hohmann-style routes
+        const a = -mu / (2 * energy);
+        const rdotv = r1x * vx + r1y * vy;
+        const ex = ((v2 - mu / r) * r1x - rdotv * vx) / mu;
+        const ey = ((v2 - mu / r) * r1y - rdotv * vy) / mu;
+        const e = Math.hypot(ex, ey);
+        const periAngle = Math.atan2(ey, ex);
+        const theta1 = Math.atan2(r1y, r1x);
+        let nu1 = theta1 - periAngle;
+        nu1 = ((nu1 + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+        const E1 = 2 * Math.atan2(Math.sqrt(Math.max(0, 1 - e)) * Math.sin(nu1 / 2), Math.sqrt(Math.max(0, 1 + e)) * Math.cos(nu1 / 2));
+        const M1 = E1 - e * Math.sin(E1);
+        const n = Math.sqrt(mu / Math.pow(a, 3));
+        const pts = [];
+        for (let i = 0; i <= N; i++) {
+          const t = (i / N) * tof;
+          const M = M1 + n * t;
+          const E = solveKepler(M, e);
+          const nu = Math.atan2(Math.sqrt(1 - e * e) * Math.sin(E), Math.cos(E) - e);
+          const rr = a * (1 - e * Math.cos(E));
+          const theta = nu + periAngle;
+          pts.push({ x: rr * Math.cos(theta), y: rr * Math.sin(theta), r: rr, theta });
+        }
+        return pts;
+      }
+
+      /* =========================================================
+         3. SIMULATION CLOCK
+         ========================================================= */
+      let UT = 0;
+      let warpIndex = 2;
+      const WARP_LEVELS = [0, 1, 5, 50, 500, 5000, 50000, 500000];
+      let lastFrameTime = performance.now();
+      const DAY_SEC = 21600, YEAR_DAYS = 426;
+
+      function utToDateString(ut) {
+        const totalDays = Math.floor(ut / DAY_SEC);
+        const year = Math.floor(totalDays / YEAR_DAYS);
+        const day = totalDays % YEAR_DAYS;
+        const secOfDay = ((ut % DAY_SEC) + DAY_SEC) % DAY_SEC;
+        const h = Math.floor(secOfDay / 3600), m = Math.floor((secOfDay % 3600) / 60), s = Math.floor(secOfDay % 60);
+        const pad = (n, l = 2) => String(Math.floor(n)).padStart(l, '0');
+        return `T+${year}y,${day}d,${pad(h)}:${pad(m)}:${pad(s)}`;
+      }
+      function durationString(sec) {
+        if (sec < 0) sec = 0;
+        const y = Math.floor(sec / (DAY_SEC * YEAR_DAYS)); sec -= y * DAY_SEC * YEAR_DAYS;
+        const d = Math.floor(sec / DAY_SEC); sec -= d * DAY_SEC;
+        const h = Math.floor(sec / 3600); sec -= h * 3600;
+        const m = Math.floor(sec / 60);
+        const pad = (n) => String(Math.floor(n)).padStart(2, '0');
+        let out = '';
+        if (y > 0) out += y + 'y ';
+        out += d + 'd ' + pad(h) + 'h ' + pad(m) + 'm';
+        return out;
+      }
+
+      /* =========================================================
+         4. THREE.JS 3D MAP
+         ========================================================= */
+      const mapWrap = document.getElementById('mapWrap');
+      const canvas3d = document.getElementById('mapCanvas');
+      const labelCtr = document.getElementById('labelContainer');
+
+      /* ---- Scene ---- */
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x060a11);
+
+      /* ---- Stars ---- */
+      (() => {
+        const N = 1800, pos = new Float32Array(N * 3);
+        for (let i = 0; i < N * 3; i++) pos[i] = (Math.random() - 0.5) * 7000;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.4, transparent: true, opacity: 0.5 })));
+      })();
+
+      /* ---- Camera ---- */
+      const camera = new THREE.PerspectiveCamera(52, 1, 0.5, 15000);
+      let camR = 620, camTheta = 0.15, camPhi = 0.30;
+      const camTarget = new THREE.Vector3(0, 0, 0);
+
+      /* ---- Camera Target Pivot Indicator ---- */
+      const targetPivotDot = new THREE.Mesh(
+        new THREE.SphereGeometry(1.25, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0x3a485e, transparent: true, opacity: 0.45, depthTest: false })
+      );
+      scene.add(targetPivotDot);
+
+      function updateCamera() {
+        const sinP = Math.sin(camPhi), cosP = Math.cos(camPhi);
+        const sinT = Math.sin(camTheta), cosT = Math.cos(camTheta);
+        camera.position.set(
+          camTarget.x + camR * sinP * sinT,
+          camTarget.y + camR * cosP,
+          camTarget.z + camR * sinP * cosT
+        );
+        camera.lookAt(camTarget);
+
+        // Position pivot indicator at focal center
+        targetPivotDot.position.copy(camTarget);
+        const isCentered = camTarget.length() < 1;
+        targetPivotDot.material.opacity = isCentered ? 0.15 : 0.45;
+      }
+
+      function resetView() {
+        camR = 620; camTheta = 0.15; camPhi = 0.30;
+        camTarget.set(0, 0, 0);
+        updateCamera();
+      }
+      updateCamera();
+
+      /* ---- Renderer ---- */
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      function resizeRenderer() {
+        const w = mapWrap.clientWidth, h = mapWrap.clientHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resizeRenderer();
+      new ResizeObserver(resizeRenderer).observe(mapWrap);
+
+      /* ---- Scale ---- */
+      const EELOO_A = PLANETS[PLANETS.length - 1].a;
+      const SCALE = 430 / EELOO_A;
+      const INNER_EXPAND_REF = PLANETS.find(p => p.name === 'Duna').a;
+      const INNER_EXPAND_TAPER_END = PLANETS.find(p => p.name === 'Jool').a;
+
+      function smoothstep(t) {
+        t = Math.max(0, Math.min(1, t));
+        return t * t * (3 - 2 * t);
+      }
+
+      function heliocentricDisplayScale(r) {
+        if (r <= INNER_EXPAND_REF) return 1 + 0.32 * smoothstep(r / INNER_EXPAND_REF);
+        return 1 + 0.32 * (1 - smoothstep((r - INNER_EXPAND_REF) / (INNER_EXPAND_TAPER_END - INNER_EXPAND_REF)));
+      }
+
+      /**
+       * Convert ecliptic 2D coords + inclination (deg) → Three.js world Vector3.
+       * Ecliptic plane = XZ plane in Three.js (Y is "up/north of ecliptic").
+       * Inclination tilts orbits around the X axis.
+       */
+      function toWorld(xEcl, yEcl, inclDeg) {
+        const i = inclDeg * DEG;
+        const r = Math.hypot(xEcl, yEcl);
+        const displayScale = SCALE * heliocentricDisplayScale(r);
+        return new THREE.Vector3(
+          xEcl * displayScale,
+          yEcl * Math.sin(i) * displayScale,
+          -yEcl * Math.cos(i) * displayScale
+        );
+      }
+
+      /**
+       * Like toWorld(), but takes an explicit display-scale multiplier instead of
+       * recomputing heliocentricDisplayScale() from this point's own radius.
+       * Used for long transfer/assist arcs: resampling the nonlinear inner-system
+       * "bump" independently at every point along a wide-radius arc (e.g. Kerbin
+       * to Eeloo) inflates/deflates different parts of the same physical ellipse
+       * inconsistently and visibly distorts its shape. Instead we blend smoothly
+       * between the two endpoints' own (correct) compression values, so the arc
+       * still lands exactly on the departure/arrival markers but can't bulge or
+       * fold in between.
+       */
+      function toWorldBlendedScale(xEcl, yEcl, inclDeg, scale) {
+        const i = inclDeg * DEG;
+        const displayScale = SCALE * scale;
+        return new THREE.Vector3(
+          xEcl * displayScale,
+          yEcl * Math.sin(i) * displayScale,
+          -yEcl * Math.cos(i) * displayScale
+        );
+      }
+
+      /* ---- Kerbol (central star) ---- */
+      const kerbolMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(10, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0xffd166 })
+      );
+      scene.add(kerbolMesh);
+      // Glow halo
+      const kerbolGlow = new THREE.Mesh(
+        new THREE.SphereGeometry(16, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.15, depthWrite: false })
+      );
+      scene.add(kerbolGlow);
+
+      /* ---- Ecliptic grid ring (subtle) ---- */
+      (() => {
+        const N = 128, pts = [];
+        for (let i = 0; i <= N; i++) {
+          const a = (i / N) * 2 * Math.PI;
+          pts.push(new THREE.Vector3(SCALE * EELOO_A * 1.08 * Math.cos(a), 0, -SCALE * EELOO_A * 1.08 * Math.sin(a)));
+        }
+        scene.add(new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: 0x1d2c47, transparent: true, opacity: 0.3 })
+        ));
+      })();
+
+      /* ---- Orbit paths ---- */
+      function buildOrbitLine(planet) {
+        const N = 220, pts = [];
+        for (let i = 0; i <= N; i++) {
+          const nu = (i / N) * 2 * Math.PI;
+          const r = planet.a * (1 - planet.e * planet.e) / (1 + planet.e * Math.cos(nu));
+          const theta = nu + planet.orient;
+          pts.push(toWorld(r * Math.cos(theta), r * Math.sin(theta), planet.incl));
+        }
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ color: new THREE.Color(planet.color), transparent: true, opacity: 0.38 });
+        return new THREE.Line(geo, mat);
+      }
+      PLANETS.forEach(p => scene.add(buildOrbitLine(p)));
+
+      /* ---- Lighting for Photorealistic Shading ---- */
+      const sunLight = new THREE.PointLight(0xfffaed, 2.5, 0, 0);
+      scene.add(sunLight);
+      const ambientLight = new THREE.AmbientLight(0x1a2638, 0.4);
+      scene.add(ambientLight);
+
+      /* ---- Planet & Moon meshes ---- */
+      const planetMeshes = {};
+      const planetLabelEls = {};
+      const planetDisplayRadii = {};
+      const moonMeshes = {};
+      const moonLabelEls = {};
+
+      const maxMoonAByParent = MOONS.reduce((acc, m) => {
+        acc[m.parent] = Math.max(acc[m.parent] || 0, m.a);
+        return acc;
+      }, {});
+
+      function moonOrbitDisplayRadius(m) {
+        const parentRadius = planetDisplayRadii[m.parent] || 2;
+        const maxA = maxMoonAByParent[m.parent] || m.a;
+        const parentTuning = {
+          Eve: { base: 2.4, span: 6.8 },
+          Kerbin: { base: 2.6, span: 9.2 },
+          Duna: { base: 2.4, span: 6.5 }
+        };
+        if (parentTuning[m.parent]) {
+          const t = parentTuning[m.parent];
+          const ratio = Math.sqrt(m.a / maxA);
+          return parentRadius + t.base + ratio * t.span;
+        }
+        const parent = PLANETS.find(p => p.name === m.parent);
+        const outerRef = PLANETS.find(p => p.name === 'Jool') || PLANETS[PLANETS.length - 1];
+        const innerRef = PLANETS.find(p => p.name === 'Eve') || PLANETS[0];
+        const parentT = parent
+          ? Math.max(0, Math.min(1, (parent.a - innerRef.a) / (outerRef.a - innerRef.a)))
+          : 0;
+        const systemSpan = 10 + 14 * Math.sqrt(parentT);
+        const ratio = Math.sqrt(m.a / maxA);
+        return parentRadius + 3 + ratio * systemSpan;
+      }
+
+      function moonLocalPosition(m, t) {
+        const st = stateAt(m, t);
+        const orbitRad = moonOrbitDisplayRadius(m);
+        const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(st.nu));
+        const theta = st.nu + m.orient;
+        const inclRad = m.incl * DEG;
+        return new THREE.Vector3(
+          r * Math.cos(theta),
+          r * Math.sin(theta) * Math.sin(inclRad),
+          -r * Math.sin(theta) * Math.cos(inclRad)
+        );
+      }
+
+      function bodyWorldPositionAt(body, t) {
+        if (!body) return new THREE.Vector3();
+        if (body.parent) {
+          const parent = PLANETS.find(p => p.name === body.parent);
+          const ps = stateAt(parent, t);
+          return toWorld(ps.x, ps.y, parent.incl).add(moonLocalPosition(body, t));
+        }
+        const st = stateAt(body, t);
+        return toWorld(st.x, st.y, body.incl);
+      }
+
+      PLANETS.forEach(p => {
+        const col = new THREE.Color(p.color);
+
+        // Proportional size scaling based on physical radius (Kerbin r=600km -> ~1.8 units, Jool r=6000km -> ~4.2 units)
+        const baseRadius = Math.max(1.2, Math.min(4.8, Math.pow(p.radius / 600000, 0.45) * 1.8));
+        planetDisplayRadii[p.name] = baseRadius;
+
+        // Photorealistic standard material with physical shading & subtle emissive glow
+        const mesh = new THREE.Mesh(
+          new THREE.SphereGeometry(baseRadius, 32, 32),
+          new THREE.MeshStandardMaterial({
+            color: col,
+            roughness: 0.65,
+            metalness: 0.1,
+            emissive: col,
+            emissiveIntensity: 0.15
+          })
+        );
+        mesh.userData.planetName = p.name;
+        scene.add(mesh);
+        planetMeshes[p.name] = mesh;
+
+        // Thin, crisp atmospheric glow outline (only 1.25x body size instead of giant blob)
+        mesh.add(new THREE.Mesh(
+          new THREE.SphereGeometry(baseRadius * 1.25, 24, 24),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false })
+        ));
+
+        // Dres Asteroid Ring System (KSP1 / KSP2 Dres Ring)
+        if (p.name === 'Dres') {
+          const innerR = baseRadius * 1.8;
+          const outerR = baseRadius * 4.5;
+          const ringGeo = new THREE.RingGeometry(innerR, outerR, 48);
+          // Double-sided ring material with subtle grey asteroid dust opacity
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x8a929e,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.45,
+            depthWrite: false
+          });
+          const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+          ringMesh.rotation.x = Math.PI / 2.8; // Tilted ring plane
+          ringMesh.rotation.y = Math.PI / 6;
+          mesh.add(ringMesh);
+        }
+
+        // HTML label
+        const div = document.createElement('div');
+        div.className = 'planet-label-3d';
+        div.textContent = p.name;
+        labelCtr.appendChild(div);
+        planetLabelEls[p.name] = div;
+      });
+
+      // Render Moons attached to parent planets
+      MOONS.forEach(m => {
+        const parentMesh = planetMeshes[m.parent];
+        if (!parentMesh) return;
+
+        const col = new THREE.Color(m.color);
+
+        // Moon orbit ring relative to parent planet
+        const N = 120, pts = [];
+        const orbitRad = moonOrbitDisplayRadius(m);
+        for (let i = 0; i <= N; i++) {
+          const nu = (i / N) * 2 * Math.PI;
+          const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(nu));
+          const theta = nu + m.orient;
+          const inclRad = m.incl * DEG;
+          pts.push(new THREE.Vector3(
+            r * Math.cos(theta),
+            r * Math.sin(theta) * Math.sin(inclRad),
+            -r * Math.sin(theta) * Math.cos(inclRad)
+          ));
+        }
+        const orbitLine = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.35 })
+        );
+        parentMesh.add(orbitLine);
+
+        // Proportional moon size (Mun r=200km -> ~0.7 units, Gilly r=13km -> ~0.4 units)
+        const moonRadius = Math.max(0.35, Math.min(1.2, Math.pow(m.radius / 200000, 0.4) * 0.7));
+
+        // Moon Mesh with realistic lighting
+        const moonMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(moonRadius, 20, 20),
+          new THREE.MeshStandardMaterial({
+            color: col,
+            roughness: 0.8,
+            metalness: 0.05,
+            emissive: col,
+            emissiveIntensity: 0.1
+          })
+        );
+        moonMesh.userData.planetName = m.name;
+
+        // Subtle moon glow outline
+        moonMesh.add(new THREE.Mesh(
+          new THREE.SphereGeometry(moonRadius * 1.3, 16, 16),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.2, depthWrite: false })
+        ));
+
+        parentMesh.add(moonMesh);
+        moonMeshes[m.name] = moonMesh;
+
+        // HTML label for Moon
+        const div = document.createElement('div');
+        div.className = 'planet-label-3d';
+        div.style.fontSize = '8.5px';
+        div.style.color = '#a6b8d4';
+        div.textContent = m.name;
+        labelCtr.appendChild(div);
+        moonLabelEls[m.name] = div;
+      });
+
+      /* ---- Raycaster for planet clicks ---- */
+      const raycaster = new THREE.Raycaster();
+      raycaster.params.Mesh = {};
+
+      /* =========================================================
+         PERSISTENT GEOMETRY — Transfer Arc
+         ========================================================= */
+      const ARC_N = 120;
+      let arcGeo = null, arcLine = null, arcDepDot = null, arcArrDot = null;
+
+      function initTransferArc() {
+        if (arcLine) { scene.remove(arcLine); }
+        if (arcDepDot) { scene.remove(arcDepDot); }
+        if (arcArrDot) { scene.remove(arcArrDot); }
+
+        arcGeo = new THREE.BufferGeometry();
+        arcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
+        arcLine = new THREE.Line(arcGeo, new THREE.LineDashedMaterial({
+          color: 0x7ee787, dashSize: 7, gapSize: 5, transparent: true, opacity: 0.9
+        }));
+        scene.add(arcLine);
+
+        arcDepDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x7ee787 }));
+        arcArrDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x7ee787, transparent: true, opacity: 0.55 }));
+        scene.add(arcDepDot);
+        scene.add(arcArrDot);
+      }
+
+      function updateTransferArc() {
+        if (!arcLine || !currentResult) return;
+        const r = currentResult;
+        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
+        const depUT = UT + waitSec;
+        const arrUT = depUT + r.tt;
+
+        const osDep = stateAt(r.origin, depUT);
+        const dsArr = stateAt(r.dest, arrUT);
+
+        const ptDep = bodyWorldPositionAt(r.originSelected, depUT);
+        const ptArr = bodyWorldPositionAt(r.destSelected, arrUT);
+
+        const rA = Math.hypot(osDep.x, osDep.y);
+        const rB = Math.hypot(dsArr.x, dsArr.y);
+
+        const scaleStart = heliocentricDisplayScale(rA);
+        const scaleEnd = heliocentricDisplayScale(rB);
+
+        // Solve for the real trajectory connecting these two exact points in
+        // the known transfer time (handles eccentric destinations correctly —
+        // see buildLambertArcPoints for why the old fixed-180-degree ellipse
+        // construction could miss the arrival point). Falls back to the
+        // idealized ellipse only if Lambert can't find a solution.
+        let lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, r.tt, KERBOL.mu, ARC_N);
+
+        const arr = arcGeo.attributes.position.array;
+        if (lambertPts) {
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const curIncl = r.origin.incl + (r.dest.incl - r.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const p = lambertPts[i];
+            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        } else {
+          const a_t = (rA + rB) / 2;
+          const e_t = Math.abs(rB - rA) / (rB + rA);
+          const inbound = rB < rA;
+          const periTheta = inbound ? (osDep.theta - Math.PI) : osDep.theta;
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const nu = inbound ? Math.PI * (1 - frac) : frac * Math.PI;
+            const rr = a_t * (1 - e_t * e_t) / (1 + e_t * Math.cos(nu));
+            const theta = nu + periTheta;
+            const curIncl = r.origin.incl + (r.dest.incl - r.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        }
+        arcGeo.attributes.position.needsUpdate = true;
+        arcLine.computeLineDistances();
+        arcDepDot.position.set(ptDep.x, ptDep.y, ptDep.z);
+        arcArrDot.position.set(ptArr.x, ptArr.y, ptArr.z);
+      }
+
+      function hideTransferArc() {
+        if (arcLine) { scene.remove(arcLine); arcLine = null; }
+        if (arcDepDot) { scene.remove(arcDepDot); arcDepDot = null; }
+        if (arcArrDot) { scene.remove(arcArrDot); arcArrDot = null; }
+        arcGeo = null;
+      }
+
+      /* =========================================================
+         PERSISTENT GEOMETRY — Gravity Assist Arcs (two Lambert legs)
+         ========================================================= */
+      let assistArcGeos = [null, null], assistArcLines = [null, null];
+      let assistDot = null, assistGlow = null;
+
+      function initAssistArcs() {
+        hideAssistArcs();
+        for (let leg = 0; leg < 2; leg++) {
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
+          const line = new THREE.Line(geo, new THREE.LineDashedMaterial({
+            color: 0xb78cff, dashSize: 6, gapSize: 4, transparent: true, opacity: 0.85
+          }));
+          scene.add(line);
+          assistArcGeos[leg] = geo;
+          assistArcLines[leg] = line;
+        }
+        assistDot = new THREE.Mesh(new THREE.SphereGeometry(3.6, 12, 12), new THREE.MeshBasicMaterial({ color: 0xb78cff }));
+        assistGlow = new THREE.Mesh(new THREE.SphereGeometry(7, 14, 14), new THREE.MeshBasicMaterial({ color: 0xb78cff, transparent: true, opacity: 0.18, depthWrite: false }));
+        scene.add(assistDot);
+        scene.add(assistGlow);
+        // Dim the direct arc so the assist route reads as the highlighted option
+        if (arcLine) arcLine.material.opacity = 0.28;
+      }
+
+      function updateAssistArcs() {
+        if (selectedAssistIdx === null || !currentAssists[selectedAssistIdx] || !assistArcGeos[0]) return;
+        const r = currentResult;
+        const a = currentAssists[selectedAssistIdx];
+        const sol = a.solved;
+        const tDep = a.depUT;
+
+        // Leg 1: origin -> assist planet
+        const r1 = r.origin.a, r2a = a.planet.a;
+        const os = stateAt(r.origin, tDep);
+        const sAarr = stateAt(a.planet, tDep + sol.tof1);
+        const incl1a = r.origin.incl, incl1b = a.planet.incl;
+        const scale1Start = heliocentricDisplayScale(r1);
+        const scale1End = heliocentricDisplayScale(r2a);
+        let lambertPts1 = buildLambertArcPoints(os.x, os.y, sAarr.x, sAarr.y, sol.tof1, KERBOL.mu, ARC_N);
+        let arr = assistArcGeos[0].attributes.position.array;
+        if (lambertPts1) {
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const curIncl = incl1a + (incl1b - incl1a) * frac;
+            const blendedScale = scale1Start + (scale1End - scale1Start) * smoothstep(frac);
+            const p = lambertPts1[i];
+            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        } else {
+          const at1 = (r1 + r2a) / 2, e1 = Math.abs(r2a - r1) / (r2a + r1);
+          const inbound1 = r2a < r1;
+          const periTheta1 = inbound1 ? (os.theta - Math.PI) : os.theta;
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const nu = inbound1 ? Math.PI * (1 - frac) : frac * Math.PI;
+            const rr = at1 * (1 - e1 * e1) / (1 + e1 * Math.cos(nu));
+            const theta = nu + periTheta1;
+            const curIncl = incl1a + (incl1b - incl1a) * frac;
+            const blendedScale = scale1Start + (scale1End - scale1Start) * smoothstep(frac);
+            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        }
+        assistArcGeos[0].attributes.position.needsUpdate = true;
+        assistArcLines[0].computeLineDistances();
+
+        // Leg 2: assist planet -> destination
+        const r2b = a.planet.a, r3 = r.dest.a;
+        const sA = sAarr; // departure point of leg 2 = arrival point of leg 1
+        const s3 = stateAt(r.dest, tDep + sol.tof1 + sol.tof2);
+        const incl2a = a.planet.incl, incl2b = r.dest.incl;
+        const scale2Start = heliocentricDisplayScale(r2b);
+        const scale2End = heliocentricDisplayScale(r3);
+        let lambertPts2 = buildLambertArcPoints(sA.x, sA.y, s3.x, s3.y, sol.tof2, KERBOL.mu, ARC_N);
+        arr = assistArcGeos[1].attributes.position.array;
+        if (lambertPts2) {
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const curIncl = incl2a + (incl2b - incl2a) * frac;
+            const blendedScale = scale2Start + (scale2End - scale2Start) * smoothstep(frac);
+            const p = lambertPts2[i];
+            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        } else {
+          const at2 = (r2b + r3) / 2, e2 = Math.abs(r3 - r2b) / (r3 + r2b);
+          const inbound2 = r3 < r2b;
+          const periTheta2 = inbound2 ? (sA.theta - Math.PI) : sA.theta;
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const nu = inbound2 ? Math.PI * (1 - frac) : frac * Math.PI;
+            const rr = at2 * (1 - e2 * e2) / (1 + e2 * Math.cos(nu));
+            const theta = nu + periTheta2;
+            const curIncl = incl2a + (incl2b - incl2a) * frac;
+            const blendedScale = scale2Start + (scale2End - scale2Start) * smoothstep(frac);
+            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        }
+        assistArcGeos[1].attributes.position.needsUpdate = true;
+        assistArcLines[1].computeLineDistances();
+
+        // Ghost marker at the flyby encounter position
+        const encounterPos = toWorld(sA.x, sA.y, a.planet.incl);
+        assistDot.position.copy(encounterPos);
+        assistGlow.position.copy(encounterPos);
+      }
+
+      function hideAssistArcs() {
+        assistArcLines.forEach(l => { if (l) scene.remove(l); });
+        assistArcGeos = [null, null]; assistArcLines = [null, null];
+        if (assistDot) { scene.remove(assistDot); assistDot = null; }
+        if (assistGlow) { scene.remove(assistGlow); assistGlow = null; }
+        if (arcLine) arcLine.material.opacity = 0.9; // restore direct-arc brightness
+      }
+
+      /* =========================================================
+         PERSISTENT GEOMETRY — Phase Wedge Lines
+         Three lines: reference | current phase | required phase
+         ========================================================= */
+      let phaseGeos = [], phaseLines = [];
+
+      function initPhaseLines() {
+        phaseLines.forEach(l => scene.remove(l));
+        phaseGeos = []; phaseLines = [];
+        const defs = [
+          { color: 0x4d5d78, opacity: 0.65 },  // reference spoke
+          { color: 0x4fe0e8, opacity: 0.95 },  // current phase
+          { color: 0xffb454, opacity: 0.80 },  // required phase (dashed)
+        ];
+        defs.forEach((d, idx) => {
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+          const mat = idx === 2
+            ? new THREE.LineDashedMaterial({ color: d.color, dashSize: 5, gapSize: 4, transparent: true, opacity: d.opacity })
+            : new THREE.LineBasicMaterial({ color: d.color, transparent: true, opacity: d.opacity });
+          const line = new THREE.Line(geo, mat);
+          scene.add(line);
+          phaseGeos.push(geo);
+          phaseLines.push(line);
+        });
+      }
+
+      function updatePhaseLines() {
+        if (!phaseLines.length || !currentResult) return;
+        const r = currentResult;
+        const os = stateAt(r.origin, UT);
+        const rad = Math.min(r.r1, r.r2) * 0.52;
+        function pt(theta) { return toWorld(rad * Math.cos(theta), rad * Math.sin(theta), 0); }
+        const p0 = pt(os.theta);
+        const pCur = pt(os.theta + r.currentPhase * DEG);
+        const pReq = pt(os.theta + r.requiredPhase * DEG);
+        const endpoints = [p0, pCur, pReq];
+        endpoints.forEach((ep, idx) => {
+          const arr = phaseGeos[idx].attributes.position.array;
+          arr[0] = 0; arr[1] = 0; arr[2] = 0;
+          arr[3] = ep.x; arr[4] = ep.y; arr[5] = ep.z;
+          phaseGeos[idx].attributes.position.needsUpdate = true;
+          if (idx === 2) phaseLines[idx].computeLineDistances();
+        });
+      }
+
+      function hidePhaseLines() {
+        phaseLines.forEach(l => scene.remove(l));
+        phaseGeos = []; phaseLines = [];
+      }
+
+      /* =========================================================
+         PERSISTENT GEOMETRY — Ghost Planet
+         ========================================================= */
+      let ghostSphere = null, ghostGlow = null;
+      let ghostLineGeo = null, ghostLineObj = null;
+      let ghostLabelEl = null;
+      let ghostDest = null;
+
+      function initGhost(destPlanet) {
+        clearGhost();
+        ghostDest = destPlanet;
+        const col = new THREE.Color(destPlanet.color);
+
+        ghostSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.28, depthWrite: false })
+        );
+        scene.add(ghostSphere);
+
+        ghostGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.07, depthWrite: false })
+        );
+        scene.add(ghostGlow);
+
+        // Dashed line: current pos → ghost pos
+        ghostLineGeo = new THREE.BufferGeometry();
+        ghostLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        ghostLineObj = new THREE.Line(ghostLineGeo, new THREE.LineDashedMaterial({
+          color: col, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(ghostLineObj);
+
+        // Label
+        ghostLabelEl = document.createElement('div');
+        ghostLabelEl.className = 'ghost-label-3d';
+        ghostLabelEl.textContent = '⬡ Arrival';
+        labelCtr.appendChild(ghostLabelEl);
+      }
+
+      function updateGhostPosition() {
+        if (!ghostSphere || !currentResult || !ghostDest) return;
+        const r = currentResult;
+        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
+        const ghostUT = UT + waitSec + r.tt;
+
+        const gPos = bodyWorldPositionAt(ghostDest, ghostUT);
+        ghostSphere.position.copy(gPos);
+        ghostGlow.position.copy(gPos);
+
+        // Update line from current planet pos to ghost pos
+        const curPos = bodyWorldPositionAt(ghostDest, UT);
+        const la = ghostLineGeo.attributes.position.array;
+        la[0] = curPos.x; la[1] = curPos.y; la[2] = curPos.z;
+        la[3] = gPos.x; la[4] = gPos.y; la[5] = gPos.z;
+        ghostLineGeo.attributes.position.needsUpdate = true;
+        ghostLineObj.computeLineDistances();
+
+        // Store world pos for label projection
+        if (ghostLabelEl) ghostLabelEl._worldPos = gPos;
+      }
+
+      function clearGhost() {
+        if (ghostSphere) { scene.remove(ghostSphere); ghostSphere = null; }
+        if (ghostGlow) { scene.remove(ghostGlow); ghostGlow = null; }
+        if (ghostLineObj) { scene.remove(ghostLineObj); ghostLineObj = null; }
+        ghostLineGeo = null;
+        if (ghostLabelEl) { ghostLabelEl.remove(); ghostLabelEl = null; }
+        ghostDest = null;
+      }
+
+      /* ---- Planet & Moon position update (every frame) ---- */
+      function updateMap() {
+        PLANETS.forEach(p => {
+          const st = stateAt(p, UT);
+          p._state = st;
+          planetMeshes[p.name].position.copy(toWorld(st.x, st.y, p.incl));
+        });
+
+        MOONS.forEach(m => {
+          m._state = stateAt(m, UT);
+          moonMeshes[m.name].position.copy(moonLocalPosition(m, UT));
+        });
+      }
+
+      /* ---- Project world position to screen ---- */
+      function worldToScreen(worldPos) {
+        const v = worldPos.clone().project(camera);
+        const rect = canvas3d.getBoundingClientRect();
+        return {
+          x: (v.x + 1) / 2 * rect.width,
+          y: (-v.y + 1) / 2 * rect.height,
+          behind: v.z >= 1
+        };
+      }
+
+      /* ---- Label update (every frame) ---- */
+      function updateLabels() {
+        PLANETS.forEach(p => {
+          const s = worldToScreen(planetMeshes[p.name].position);
+          const el = planetLabelEls[p.name];
+          el.style.left = s.x + 'px';
+          el.style.top = s.y + 'px';
+          el.style.display = s.behind ? 'none' : '';
+        });
+
+        MOONS.forEach(m => {
+          const parentMesh = planetMeshes[m.parent];
+          const moonMesh = moonMeshes[m.name];
+          if (parentMesh && moonMesh) {
+            const worldPos = new THREE.Vector3();
+            moonMesh.getWorldPosition(worldPos);
+            const s = worldToScreen(worldPos);
+            const el = moonLabelEls[m.name];
+            el.style.left = s.x + 'px';
+            el.style.top = s.y + 'px';
+            el.style.display = s.behind ? 'none' : '';
+          }
+        });
+
+        if (ghostLabelEl && ghostLabelEl._worldPos) {
+          const s = worldToScreen(ghostLabelEl._worldPos);
+          ghostLabelEl.style.left = s.x + 'px';
+          ghostLabelEl.style.top = s.y + 'px';
+          ghostLabelEl.style.display = s.behind ? 'none' : '';
+        }
+      }
+
+      /* =========================================================
+         CAMERA CONTROLS — rotate / pan (shift) / zoom
+         ========================================================= */
+      let dragging = false, dragMoved = false, isPanning = false;
+      let dStart = { x: 0, y: 0 };
+      let camAtDragStart = { theta: 0, phi: 0 };
+      const targetAtDragStart = new THREE.Vector3();
+
+      canvas3d.addEventListener('mousedown', e => {
+        dragging = true; dragMoved = false;
+        isPanning = e.shiftKey;
+        dStart = { x: e.clientX, y: e.clientY };
+        camAtDragStart = { theta: camTheta, phi: camPhi };
+        targetAtDragStart.copy(camTarget);
+        canvas3d.classList.add(isPanning ? 'panning' : 'grabbing');
+      });
+      window.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - dStart.x, dy = e.clientY - dStart.y;
+        if (Math.abs(dx) + Math.abs(dy) > 3) dragMoved = true;
+        const rect = canvas3d.getBoundingClientRect();
+        if (isPanning) {
+          // Move pivot in camera-local XY plane
+          const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+          const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+          const scale = camR / rect.height * 1.8;
+          camTarget.copy(targetAtDragStart)
+            .addScaledVector(right, -dx * scale)
+            .addScaledVector(up, dy * scale);
+        } else {
+          camTheta = camAtDragStart.theta - (dx / rect.width) * Math.PI * 2.4;
+          camPhi = Math.max(0.01, Math.min(Math.PI - 0.01, camAtDragStart.phi - (dy / rect.height) * Math.PI));
+        }
+        updateCamera();
+      });
+      window.addEventListener('mouseup', () => {
+        dragging = false;
+        canvas3d.classList.remove('grabbing', 'panning');
+      });
+
+      // Planet & Moon click via raycasting
+      canvas3d.addEventListener('click', e => {
+        if (dragMoved) return;
+        const rect = canvas3d.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        raycaster.setFromCamera(mouse, camera);
+        const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
+        const hits = raycaster.intersectObjects(targets, true);
+        if (hits.length > 0) {
+          let obj = hits[0].object;
+          while (obj && !obj.userData.planetName) obj = obj.parent;
+          if (obj && obj.userData.planetName) { showInfoFor(obj.userData.planetName); switchTab('info'); }
+        }
+      });
+
+      // Planet & Moon double-click to center camera view
+      canvas3d.addEventListener('dblclick', e => {
+        const rect = canvas3d.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        raycaster.setFromCamera(mouse, camera);
+        const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
+        const hits = raycaster.intersectObjects(targets, true);
+        if (hits.length > 0) {
+          let obj = hits[0].object;
+          while (obj && !obj.userData.planetName) obj = obj.parent;
+          if (obj && obj.userData.planetName) {
+            const worldPos = new THREE.Vector3();
+            obj.getWorldPosition(worldPos);
+            camTarget.copy(worldPos);
+            updateCamera();
+          }
+        }
+      });
+
+      // Scroll zoom (zoom toward cursor by shifting camTarget slightly)
+      mapWrap.addEventListener('wheel', e => {
+        e.preventDefault();
+        const f = e.deltaY > 0 ? 1.12 : 1 / 1.12;
+        camR = Math.max(30, Math.min(2400, camR * f));
+        updateCamera();
+      }, { passive: false });
+
+      // Zoom buttons
+      document.getElementById('zoomIn').onclick = () => { camR = Math.max(30, camR / 1.35); updateCamera(); };
+      document.getElementById('zoomOut').onclick = () => { camR = Math.min(2400, camR * 1.35); updateCamera(); };
+      document.getElementById('zoomReset').onclick = resetView;
+
+      // Keyboard: R = reset view
+      window.addEventListener('keydown', e => {
+        if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          // Don't steal R from text inputs
+          if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+          resetView();
+        }
+      });
+
+      // Touch: 1-finger = rotate, 2-finger pinch = zoom, 2-finger pan = pan
+      let tState = null;
+      canvas3d.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+          tState = { mode: 'rot', x: e.touches[0].clientX, y: e.touches[0].clientY, theta: camTheta, phi: camPhi };
+        } else if (e.touches.length === 2) {
+          const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          tState = { mode: 'pinch', d, r: camR, mx, my, target: camTarget.clone() };
+        }
+      }, { passive: true });
+      canvas3d.addEventListener('touchmove', e => {
+        if (!tState) return;
+        const rect = canvas3d.getBoundingClientRect();
+        if (tState.mode === 'rot' && e.touches.length === 1) {
+          const dx = e.touches[0].clientX - tState.x, dy = e.touches[0].clientY - tState.y;
+          camTheta = tState.theta - (dx / rect.width) * Math.PI * 2.4;
+          camPhi = Math.max(0.01, Math.min(Math.PI - 0.01, tState.phi - (dy / rect.height) * Math.PI));
+          updateCamera();
+        } else if (tState.mode === 'pinch' && e.touches.length === 2) {
+          const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+          const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          camR = Math.max(30, Math.min(2400, tState.r * (tState.d / d)));
+          // Two-finger pan
+          const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+          const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+          const scale = camR / rect.height * 1.8;
+          camTarget.copy(tState.target)
+            .addScaledVector(right, -(mx - tState.mx) * scale)
+            .addScaledVector(up, (my - tState.my) * scale);
+          updateCamera();
+        }
+      }, { passive: true });
+      canvas3d.addEventListener('touchend', () => { tState = null; }, { passive: true });
+
+      /* =========================================================
+         5. UI SETUP
+         ========================================================= */
+      const originSelect = document.getElementById('originSelect');
+      const destSelect = document.getElementById('destSelect');
+      BODY_OPTIONS.forEach(({ body, isMoon, label }) => {
+        const o1 = document.createElement('option'); o1.value = body.name; o1.textContent = label;
+        const o2 = document.createElement('option'); o2.value = body.name; o2.textContent = label;
+        if (isMoon) {
+          o1.dataset.parent = body.parent;
+          o2.dataset.parent = body.parent;
+        }
+        originSelect.appendChild(o1); destSelect.appendChild(o2);
+      });
+      originSelect.value = 'Kerbin'; destSelect.value = 'Duna';
+
+      function refreshHud() {
+        document.getElementById('hudOrigin').textContent = 'ORIGIN — ' + originSelect.value;
+        document.getElementById('hudDest').textContent = 'DEST — ' + destSelect.value;
+      }
+      refreshHud();
+      originSelect.onchange = refreshHud;
+      destSelect.onchange = refreshHud;
+      document.getElementById('swapBtn').onclick = () => {
+        const a = originSelect.value; originSelect.value = destSelect.value; destSelect.value = a; refreshHud();
+      };
+
+      document.querySelectorAll('.tab').forEach(t => {
+        t.addEventListener('click', () => switchTab(t.dataset.tab));
+      });
+      function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+      }
+
+      // Warp controls
+      const warpWrap = document.getElementById('warpControls');
+      const warpLabels = ['II', '1x', '5x', '50x', '500x', '5,000x', '50,000x', '500,000x'];
+      WARP_LEVELS.forEach((lvl, i) => {
+        const b = document.createElement('button');
+        b.textContent = i === 0 ? '⏸' : warpLabels[i];
+        b.className = i === warpIndex ? 'active' : '';
+        b.onclick = () => { warpIndex = i; document.querySelectorAll('#warpControls button').forEach((x, j) => x.classList.toggle('active', j === i && x.dataset.reset !== '1')); };
+        warpWrap.appendChild(b);
+      });
+      const resetBtn = document.createElement('button');
+      resetBtn.textContent = 'Epoch ⟲'; resetBtn.className = 'reset-btn'; resetBtn.dataset.reset = '1';
+      resetBtn.title = 'Reset to UT=0 (T+0y,0d,00:00:00)';
+      resetBtn.onclick = () => { UT = 0; };
+      warpWrap.appendChild(resetBtn);
+
+      document.getElementById('setUtBtn').onclick = () => {
+        const y = Math.max(0, parseInt(document.getElementById('setYear').value) || 0);
+        const d = Math.max(0, Math.min(YEAR_DAYS - 1, parseInt(document.getElementById('setDay').value) || 0));
+        const h = Math.max(0, Math.min(23, parseInt(document.getElementById('setHour').value) || 0));
+        const mi = Math.max(0, Math.min(59, parseInt(document.getElementById('setMin').value) || 0));
+        const s = Math.max(0, Math.min(59, parseInt(document.getElementById('setSec').value) || 0));
+        UT = y * YEAR_DAYS * DAY_SEC + d * DAY_SEC + h * 3600 + mi * 60 + s;
+        if (currentResult) {
+          currentResult = computeTransfer(currentResult.originSelected.name, currentResult.destSelected.name);
+          renderTransferResults();
+        }
+      };
+
+      /* =========================================================
+         LIVE SYNC — keep UT locked to a running KSP2 session
+         Two independent methods; only one active at a time.
+         ========================================================= */
+      let liveMode = null;      // null | 'bridge' | 'file'
+      let liveIntervalId = null;
+      let saveFileHandle = null;
+
+      const liveBtn = document.getElementById('liveBtn');
+      const livePanel = document.getElementById('livePanel');
+      const liveStatusEl = document.getElementById('liveStatus');
+      const bridgeUrlInput = document.getElementById('bridgeUrl');
+      const bridgeConnectBtn = document.getElementById('bridgeConnectBtn');
+      const fileWatchBtn = document.getElementById('fileWatchBtn');
+
+      liveBtn.onclick = (e) => { e.stopPropagation(); livePanel.classList.toggle('open'); };
+      document.addEventListener('click', (e) => {
+        if (!livePanel.contains(e.target) && e.target !== liveBtn) livePanel.classList.remove('open');
+      });
+
+      function setLiveStatus(msg, cls) {
+        liveStatusEl.textContent = msg;
+        liveStatusEl.className = 'live-status' + (cls ? ' ' + cls : '');
+        liveBtn.classList.toggle('on', cls === 'ok');
+        liveBtn.classList.toggle('err', cls === 'err');
+      }
+
+      function stopLive() {
+        if (liveIntervalId) clearInterval(liveIntervalId);
+        liveIntervalId = null;
+        liveMode = null;
+        bridgeConnectBtn.textContent = 'Connect';
+        bridgeConnectBtn.classList.remove('stop');
+        fileWatchBtn.textContent = 'Choose Save File…';
+        fileWatchBtn.classList.remove('stop');
+        setLiveStatus('Not connected — UT is manual / warp-driven.', null);
+      }
+
+      function syncUtNow(newUt, sourceLabel) {
+        if (typeof newUt !== 'number' || !isFinite(newUt)) return false;
+        UT = newUt;
+        updateMap();
+        if (currentResult) {
+          currentResult = computeTransfer(currentResult.originSelected.name, currentResult.destSelected.name);
+          renderTransferResults();
+        }
+        setLiveStatus(`LIVE (${sourceLabel}) — synced ${utToDateString(UT)} @ ${new Date().toLocaleTimeString()}`, 'ok');
+        return true;
+      }
+
+      // --- Method 1: poll a local bridge (e.g. a kRPC2-backed script) ---
+      async function pollBridge(url) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          const ut = typeof data.ut === 'number' ? data.ut : parseFloat(data.ut);
+          if (!syncUtNow(ut, 'bridge')) throw new Error('response had no numeric "ut" field');
+        } catch (err) {
+          setLiveStatus(`LIVE (bridge) — connection failed: ${err.message}. Is the companion script running?`, 'err');
+        }
+      }
+
+      bridgeConnectBtn.onclick = () => {
+        if (liveMode === 'bridge') { stopLive(); return; }
+        stopLive();
+        const url = bridgeUrlInput.value.trim();
+        if (!url) return;
+        liveMode = 'bridge';
+        bridgeConnectBtn.textContent = 'Disconnect';
+        bridgeConnectBtn.classList.add('stop');
+        pollBridge(url);
+        liveIntervalId = setInterval(() => pollBridge(url), 2000);
+      };
+
+      // --- Method 2: watch the local save file via the File System Access API ---
+      function findUtInObject(obj, depth) {
+        if (obj == null || depth > 6) return null;
+        if (typeof obj === 'object') {
+          for (const k in obj) {
+            if (/^(ut|universaltime)$/i.test(k) && typeof obj[k] === 'number') return obj[k];
+          }
+          for (const k in obj) {
+            const r = findUtInObject(obj[k], depth + 1);
+            if (r !== null) return r;
+          }
+        }
+        return null;
+      }
+
+      async function readUtFromFile() {
+        try {
+          const file = await saveFileHandle.getFile();
+          const text = await file.text();
+          let ut = null;
+          try { ut = findUtInObject(JSON.parse(text), 0); }
+          catch (e) {
+            const m = text.match(/"?UT"?\s*[:=]\s*([0-9.eE+-]+)/i) || text.match(/UniversalTime\s*[:=]\s*([0-9.eE+-]+)/i);
+            if (m) ut = parseFloat(m[1]);
+          }
+          if (ut !== null) syncUtNow(ut, 'save file');
+          else setLiveStatus('LIVE (save file) — could not find a UT field in this file.', 'err');
+        } catch (err) {
+          setLiveStatus(`LIVE (save file) — read error: ${err.message}`, 'err');
+        }
+      }
+
+      fileWatchBtn.onclick = async () => {
+        if (liveMode === 'file') { stopLive(); return; }
+        if (!window.showOpenFilePicker) {
+          setLiveStatus('Save-file watching needs Chrome or Edge (File System Access API).', 'err');
+          return;
+        }
+        try {
+          const [handle] = await window.showOpenFilePicker({
+            excludeAcceptAllOption: false,
+            multiple: false
+          });
+          saveFileHandle = handle;
+          stopLive();
+          liveMode = 'file';
+          fileWatchBtn.textContent = 'Stop Watching';
+          fileWatchBtn.classList.add('stop');
+          readUtFromFile();
+          liveIntervalId = setInterval(readUtFromFile, 4000);
+        } catch (err) {
+          // user cancelled the picker — no-op
+        }
+      };
+
+      /* =========================================================
+         6. TRANSFER CALCULATION
+         ========================================================= */
+      const PARK_ALT = 100000;
+      function angNorm360(a) { a = a % 360; if (a < 0) a += 360; return a; }
+      function angNormPM180(a) { a = angNorm360(a); if (a > 180) a -= 360; return a; }
+
+      function computeTransfer(originName, destName) {
+        const originSelected = findBody(originName);
+        const destSelected = findBody(destName);
+        const o = transferBodyFor(originSelected);
+        const d = transferBodyFor(destSelected);
+        if (!originSelected || !destSelected || !o || !d || originSelected === destSelected || o === d) return null;
+        const r1 = o.a, r2 = d.a, mu = KERBOL.mu;
+        const at = (r1 + r2) / 2;
+        const tt = Math.PI * Math.sqrt(Math.pow(at, 3) / mu);
+        const v1c = Math.sqrt(mu / r1), v2c = Math.sqrt(mu / r2);
+        const vt1 = Math.sqrt(mu * (2 / r1 - 1 / at)), vt2 = Math.sqrt(mu * (2 / r2 - 1 / at));
+        const dv1_helio = vt1 - v1c, dv2_helio = v2c - vt2;
+        const n1 = o.n, n2 = d.n;
+        let requiredPhase = 180 - (n2 * tt) * 180 / Math.PI;
+        requiredPhase = angNormPM180(requiredPhase);
+        const os = stateAt(o, UT), ds = stateAt(d, UT);
+        let currentPhase = angNormPM180((ds.theta - os.theta) * 180 / Math.PI);
+        const rate = (n2 - n1);
+        let waitSec = null;
+        const curRad = currentPhase * DEG, reqRad = requiredPhase * DEG;
+        if (Math.abs(rate) > 1e-12) {
+          if (rate > 0) {
+            let diff = reqRad - curRad;
+            diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            waitSec = diff / rate;
+          } else {
+            let diff = curRad - reqRad;
+            diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+            waitSec = diff / (-rate);
+          }
+        }
+        function ejection(vInf, planet) {
+          const rp = planet.radius + PARK_ALT, muP = planet.mu;
+          const eH = 1 + rp * vInf * vInf / muP;
+          const nuInf = Math.acos(Math.max(-1, Math.min(1, -1 / eH)));
+          const ejAngleFromPeri = 180 - nuInf * 180 / Math.PI;
+          const vPark = Math.sqrt(muP / rp), vBurnout = Math.sqrt(vInf * vInf + 2 * muP / rp);
+          return { ejAngleFromPeri, dvBurn: vBurnout - vPark, vInf, rp };
+        }
+        const depEj = ejection(Math.abs(dv1_helio), o);
+        const arrEj = ejection(Math.abs(dv2_helio), d);
+        return { origin: o, dest: d, originSelected, destSelected, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+      }
+
+      let currentResult = null;
+      let lastSidebarUpdate = 0;
+      let currentAssists = [];
+      let selectedAssistIdx = null;
+
+      /* =========================================================
+         GRAVITY ASSIST DETECTION & CALCULATION
+         Coplanar, patched-conic approximation. Finds planets that sit
+         angularly "between" origin and destination near the midpoint
+         of the direct transfer, then solves two Lambert arcs
+         (origin -> assist, assist -> destination) to estimate the
+         combined Δv and compare it against the direct Hohmann budget.
+         ========================================================= */
+      function detectPotentialAssists(o, d, tDep, tofDirect) {
+        if (!o || !d) return [];
+        const s1 = stateAt(o, tDep);
+        const s2 = stateAt(d, tDep + tofDirect);
+        let angDiff = s2.theta - s1.theta;
+        while (angDiff < 0) angDiff += 2 * Math.PI;
+        while (angDiff > 2 * Math.PI) angDiff -= 2 * Math.PI;
+
+        const rMin = Math.min(o.a, d.a), rMax = Math.max(o.a, d.a);
+        const candidates = [];
+
+        PLANETS.forEach(candidate => {
+          if (candidate === o || candidate === d) return;
+          // Only useful as an assist if its own orbit sits between origin's and destination's
+          if (candidate.a < rMin * 0.6 || candidate.a > rMax * 1.4) return;
+
+          const sC = stateAt(candidate, tDep + tofDirect * 0.5);
+          let angToCandidate = sC.theta - s1.theta;
+          while (angToCandidate < 0) angToCandidate += 2 * Math.PI;
+          while (angToCandidate > 2 * Math.PI) angToCandidate -= 2 * Math.PI;
+
+          // Angularly roughly "on the way" between origin and destination
+          if (angToCandidate > 0.15 && angToCandidate < Math.max(0.15, angDiff - 0.15)) {
+            candidates.push({ planet: candidate });
+          }
+        });
+
+        return candidates;
+      }
+
+      function computeAssistTransfer(o, assistPlanet, d, tDep) {
+        const at12 = (o.a + assistPlanet.a) / 2;
+        const tof1 = Math.PI * Math.sqrt(Math.pow(at12, 3) / KERBOL.mu);
+        const at23 = (assistPlanet.a + d.a) / 2;
+        const tof2 = Math.PI * Math.sqrt(Math.pow(at23, 3) / KERBOL.mu);
+
+        const s1 = stateAt(o, tDep);
+        const sA_arr = stateAt(assistPlanet, tDep + tof1);
+        const sA_dep = sA_arr; // flyby treated as instantaneous at the patched-conic level
+        const s3 = stateAt(d, tDep + tof1 + tof2);
+
+        const sol1 = lambertSolve([s1.x, s1.y], [sA_arr.x, sA_arr.y], tof1, KERBOL.mu);
+        if (!sol1) return null;
+        const sol2 = lambertSolve([sA_dep.x, sA_dep.y], [s3.x, s3.y], tof2, KERBOL.mu);
+        if (!sol2) return null;
+
+        const vInfDep = Math.hypot(sol1.v1[0] - s1.vx, sol1.v1[1] - s1.vy);
+        const vInfAtAssistIn = Math.hypot(sol1.v2[0] - sA_arr.vx, sol1.v2[1] - sA_arr.vy);
+        const vInfAtAssistOut = Math.hypot(sol2.v1[0] - sA_dep.vx, sol2.v1[1] - sA_dep.vy);
+        const vInfArr = Math.hypot(sol2.v2[0] - s3.vx, sol2.v2[1] - s3.vy);
+
+        return {
+          assistPlanet, tof1, tof2, totalTime: tof1 + tof2,
+          vInfDep, vInfArr,
+          totalDv: vInfDep + vInfArr,
+          arrivalPos: sA_arr, departurePosSame: sA_dep,
+          s1, s3
+        };
+      }
+
+      function refreshAssistsForCurrentResult() {
+        const previouslySelectedPlanet = selectedAssistIdx !== null && currentAssists[selectedAssistIdx]
+          ? currentAssists[selectedAssistIdx].planet : null;
+        currentAssists = [];
+        if (!currentResult) { selectedAssistIdx = null; return; }
+        const r = currentResult;
+        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
+        const tDep = UT + waitSec;
+        const rawCandidates = detectPotentialAssists(r.origin, r.dest, tDep, r.tt);
+        const directDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
+        currentAssists = rawCandidates.map(c => {
+          const solved = computeAssistTransfer(r.origin, c.planet, r.dest, tDep);
+          if (!solved) return null;
+          return { planet: c.planet, solved, savings: directDv - solved.totalDv, depUT: tDep };
+        }).filter(Boolean).sort((a, b) => b.savings - a.savings);
+        // Re-find the previously selected planet in the refreshed list, if it's still a candidate
+        selectedAssistIdx = previouslySelectedPlanet
+          ? currentAssists.findIndex(a => a.planet === previouslySelectedPlanet)
+          : null;
+        if (selectedAssistIdx === -1) selectedAssistIdx = null;
+      }
+
+      function clearTransfer() {
+        currentResult = null;
+        currentAssists = [];
+        selectedAssistIdx = null;
+        hideTransferArc();
+        hidePhaseLines();
+        clearGhost();
+        hideAssistArcs();
+        document.getElementById('transferResults').innerHTML = '<div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a Hohmann-style transfer window.</div>';
+        document.getElementById('assistList').innerHTML = '<div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a flyby, it\'ll show up here as an optional route.</div>';
+      }
+
+      document.getElementById('planBtn').onclick = () => {
+        const o = originSelect.value, d = destSelect.value;
+        if (o === d) {
+          clearTransfer();
+          document.getElementById('transferResults').innerHTML = '<div class="placeholder">Origin and destination must be different bodies.</div>';
+          return;
+        }
+        currentResult = computeTransfer(o, d);
+        if (!currentResult) {
+          clearTransfer();
+          document.getElementById('transferResults').innerHTML = '<div class="placeholder">Transfers between moons around the same planet are not supported by this interplanetary planner.</div>';
+          return;
+        }
+        switchTab('transfer');
+        renderTransferResults();
+        lastSidebarUpdate = performance.now();
+        // Init 3D overlays
+        initTransferArc();
+        updateTransferArc();
+        initPhaseLines();
+        updatePhaseLines();
+        initGhost(currentResult.destSelected);
+        updateGhostPosition();
+        // Gravity assist options
+        refreshAssistsForCurrentResult();
+        renderAssistOptions();
+        hideAssistArcs();
+      };
+
+      document.getElementById('clearTransferBtn').onclick = clearTransfer;
+
+      function renderTransferResults() {
+        const r = currentResult;
+        if (!r) { document.getElementById('transferResults').innerHTML = '<div class="placeholder">No transfer computed.</div>'; return; }
+        const ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
+        const ejArrBurn = r.arrEj.dvBurn;
+        const totalDv = ejDepBurn + ejArrBurn;
+        const phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
+        const closeEnough = Math.abs(phaseDiff) < 2;
+        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
+        const ghostUT = UT + waitSec + r.tt;
+        const originName = r.originSelected.name;
+        const destName = r.destSelected.name;
+        const parentNote = (r.originSelected.parent || r.destSelected.parent)
+          ? `<div class="note">Moon selections use the parent planet's heliocentric transfer window, with map markers and arrival ghost placed on the selected moon.</div>`
+          : '';
+
+        document.getElementById('transferResults').innerHTML = `
+    ${parentNote}
+    <div class="card">
+      <h3><span class="dot"></span>Δv Budget (from ${(PARK_ALT / 1000) | 0} km parking orbit)</h3>
+      <div class="big-num">${totalDv.toFixed(0)}<small>m/s total</small></div>
+      <div class="stat-row"><span class="k">Ejection burn @ ${originName}</span><span class="v hi">${ejDepBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Capture burn @ ${destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
+      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. Capture burn can be omitted for a flyby / aerocapture mission.</div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Transfer Time</h3>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
+      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
+      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Phase Angle</h3>
+      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough ? 'good' : ''}">${phaseDiff.toFixed(1)}°</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Next Transfer Window</h3>
+      <div class="countdown ${r.waitSec === null ? 'past' : ''}">${r.waitSec === null ? 'Synodic period ≈ 0 (same period)' : (r.waitSec < 1 ? 'WINDOW OPEN NOW' : 'T‑minus ' + durationString(r.waitSec))}</div>
+      ${r.waitSec !== null ? `<div class="stat-row"><span class="k">Window opens at UT</span><span class="v">${utToDateString(UT + r.waitSec)}</span></div>` : ''}
+      <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec !== null ? utToDateString(ghostUT) : '—'}</span></div>
+    </div>
+    <div class="card" style="border-color:rgba(255,180,84,.22);">
+      <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival</h3>
+      <div class="stat-row"><span class="k">Arrival UT</span><span class="v warn">${utToDateString(ghostUT)}</span></div>
+      <div class="stat-row"><span class="k">Time until arrival</span><span class="v">${durationString(waitSec + r.tt)}</span></div>
+      <div class="note">The translucent ghost on the 3D map shows where ${destName} will be when your craft arrives. A dashed line connects its current position to the arrival position. The ghost updates live as UT advances.</div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Ejection Angles (from prograde marker)</h3>
+      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${r.depEj.ejAngleFromPeri.toFixed(1)}° ${r.outbound ? 'ahead of' : 'behind'} prograde</span></div>
+      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
+      <div class="note">Angle between your parking-orbit periapsis (burn point) and the planet's prograde/retrograde velocity direction, derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
+    </div>`;
+      }
+
+      function renderAssistOptions() {
+        const list = document.getElementById('assistList');
+        if (!currentResult) {
+          list.innerHTML = '<div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a flyby, it\'ll show up here as an optional route.</div>';
+          return;
+        }
+        if (!currentAssists.length) {
+          list.innerHTML = '<div class="placeholder">No planet is well-positioned for a gravity assist on this route right now. Try again closer to the transfer window, or pick a route that passes a planet on the way (e.g. Kerbin → Jool via Eve, or Kerbin → Eeloo via Jool).</div>';
+          return;
+        }
+        list.innerHTML = currentAssists.map((a, i) => {
+          const extra = a.solved.totalTime - currentResult.tt;
+          const savingsHtml = a.savings > 1
+            ? `Save ${a.savings.toFixed(0)} m/s`
+            : `<span style="color:var(--text-dimmer);">No savings</span>`;
+          return `
+      <div class="assist-item ${selectedAssistIdx === i ? 'selected' : ''}" onclick="window.selectAssist(${i})">
+        <input type="radio" name="assistPick" ${selectedAssistIdx === i ? 'checked' : ''} readonly>
+        <div class="label">
+          <div class="name">${a.planet.name} flyby</div>
+          <div class="sub">${durationString(a.solved.totalTime)} total (${extra >= 0 ? '+' : ''}${durationString(Math.abs(extra))} ${extra >= 0 ? 'longer' : 'shorter'})</div>
+        </div>
+        <div class="savings ${a.savings > 1 ? '' : 'none'}">${savingsHtml}</div>
+      </div>`;
+        }).join('') + `<div class="stat-row" style="margin-top:6px;"><span class="k">Direct transfer Δv (for comparison)</span><span class="v">${(Math.abs(currentResult.dv1_helio) + Math.abs(currentResult.dv2_helio)).toFixed(0)} m/s</span></div>`;
+      }
+
+      window.selectAssist = (i) => {
+        if (selectedAssistIdx === i) {
+          // toggle off
+          selectedAssistIdx = null;
+          hideAssistArcs();
+        } else {
+          selectedAssistIdx = i;
+          initAssistArcs();
+          updateAssistArcs();
+        }
+        renderAssistOptions();
+      };
+
+      function phaseGaugeSvg(current, required) {
+        const R = 44, cx = 54, cy = 54;
+        function pt(deg, r) { const a = (deg - 90) * DEG; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+        const p1 = pt(0, R), p2c = pt(current, R), p2r = pt(required, R);
+        function arcPath(deg, color) {
+          const large = Math.abs(deg) > 180 ? 1 : 0, sweep = deg >= 0 ? 1 : 0, end = pt(deg, R);
+          return `<path d="M${cx},${cy} L${p1[0].toFixed(1)},${p1[1].toFixed(1)} A${R},${R} 0 ${large} ${sweep} ${end[0].toFixed(1)},${end[1].toFixed(1)} Z" fill="${color}" opacity="0.28"/>`;
+        }
+        return `<svg width="108" height="108" viewBox="0 0 108 108">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1d2c47" stroke-width="1"/>
+    ${arcPath(required, 'var(--amber)')}
+    <line x1="${cx}" y1="${cy}" x2="${p2r[0].toFixed(1)}" y2="${p2r[1].toFixed(1)}" stroke="var(--amber)" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.85"/>
+    ${arcPath(current, 'var(--cyan)')}
+    <line x1="${cx}" y1="${cy}" x2="${p2c[0].toFixed(1)}" y2="${p2c[1].toFixed(1)}" stroke="var(--cyan)" stroke-width="2"/>
+    <line x1="${cx}" y1="${cy}" x2="${p1[0].toFixed(1)}" y2="${p1[1].toFixed(1)}" stroke="#4d5d78" stroke-width="1"/>
+    <circle cx="${cx}" cy="${cy}" r="2.5" fill="var(--text)"/>
+  </svg>`;
+      }
+
+      /* =========================================================
+         7. PLANET INFO PANEL
+         ========================================================= */
+      function showInfoFor(name) {
+        let p = PLANETS.find(x => x.name === name);
+        let isMoon = false;
+        if (!p) {
+          p = MOONS.find(x => x.name === name);
+          if (p) isMoon = true;
+        }
+        if (!p) return;
+        const s = p._state || stateAt(p, UT);
+        const semiMajorStr = isMoon ? `${(p.a / 1000).toFixed(0)} km` : `${(p.a / 1e9).toFixed(3)} Gm`;
+        document.getElementById('infoCard').innerHTML = `
+    <div class="info-title"><span class="planet-swatch" style="background:${p.color};color:${p.color};"></span>${p.name}${isMoon ? ` <small style="font-size:11px;color:var(--text-dim);margin-left:6px;">(Moon of ${p.parent})</small>` : ''}</div>
+    <div class="info-desc">${p.desc}</div>
+    <div class="stat-row"><span class="k">Semi-major axis</span><span class="v">${semiMajorStr}</span></div>
+    <div class="stat-row"><span class="k">Eccentricity</span><span class="v">${p.e.toFixed(3)}</span></div>
+    <div class="stat-row"><span class="k">Inclination</span><span class="v">${p.incl.toFixed(2)}°</span></div>
+    <div class="stat-row"><span class="k">Orbital period</span><span class="v">${durationString(p.period)}</span></div>
+    <div class="stat-row"><span class="k">Mean radius</span><span class="v">${(p.radius / 1000).toFixed(0)} km</span></div>
+    <div class="stat-row"><span class="k">Current orbital speed</span><span class="v hi">${Math.hypot(s.vx, s.vy).toFixed(0)} m/s</span></div>`;
+      }
+      showInfoFor('Kerbin');
+
+      /* =========================================================
+         8. PORKCHOP PLOT
+         ========================================================= */
+      const pkCanvas = document.getElementById('pkCanvas');
+      const pkCtx = pkCanvas.getContext('2d');
+      let pkGrid = null;
+
+      function resizePkCanvas() {
+        const w = pkCanvas.parentElement.clientWidth;
+        pkCanvas.width = w; pkCanvas.height = Math.round(w * 0.82);
+      }
+
+      function generatePorkchop() {
+        const oName = originSelect.value, dName = destSelect.value;
+        const originSelected = findBody(oName), destSelected = findBody(dName);
+        const o = transferBodyFor(originSelected), d = transferBodyFor(destSelected);
+        if (!o || !d || o === d) return;
+        resizePkCanvas();
+        const synPeriod = Math.abs(1 / (1 / o.period - 1 / d.period));
+        const depSpan = Math.min(synPeriod * 1.05, o.period * 1.2);
+        const at = (o.a + d.a) / 2;
+        const ttHohmann = Math.PI * Math.sqrt(Math.pow(at, 3) / KERBOL.mu);
+        const tofMin = ttHohmann * 0.35, tofMax = ttHohmann * 1.9;
+        const GRID = 42;
+        const depTimes = [], tofTimes = [];
+        for (let i = 0; i < GRID; i++) depTimes.push(UT + (i / (GRID - 1)) * depSpan);
+        for (let j = 0; j < GRID; j++) tofTimes.push(tofMin + (j / (GRID - 1)) * (tofMax - tofMin));
+        const dvGrid = [];
+        let dvMin = Infinity, dvMax = -Infinity;
+        for (let j = 0; j < GRID; j++) {
+          const row = [];
+          for (let i = 0; i < GRID; i++) {
+            const tDep = depTimes[i], tof = tofTimes[j];
+            const s1 = stateAt(o, tDep), s2 = stateAt(d, tDep + tof);
+            const sol = lambertSolve([s1.x, s1.y], [s2.x, s2.y], tof, KERBOL.mu);
+            let dv = null;
+            if (sol) {
+              const vd = Math.hypot(sol.v1[0] - s1.vx, sol.v1[1] - s1.vy);
+              const va = Math.hypot(sol.v2[0] - s2.vx, sol.v2[1] - s2.vy);
+              dv = vd + va;
+              if (dv < dvMin) dvMin = dv;
+              if (dv > dvMax) dvMax = dv;
+            }
+            row.push(dv);
+          }
+          dvGrid.push(row);
+        }
+        pkGrid = { depTimes, tofTimes, dvGrid, dvMin, dvMax, GRID, o, d };
+        drawPorkchop();
+      }
+
+      function dvColor(t) {
+        const stops = [[0.00, [47, 111, 255]], [0.22, [79, 224, 232]], [0.45, [126, 231, 135]], [0.65, [255, 224, 102]], [0.83, [255, 157, 77]], [1.00, [255, 91, 91]]];
+        for (let i = 0; i < stops.length - 1; i++) {
+          const [t0, c0] = stops[i], [t1, c1] = stops[i + 1];
+          if (t >= t0 && t <= t1) {
+            const f = (t - t0) / (t1 - t0);
+            return `rgb(${Math.round(c0[0] + (c1[0] - c0[0]) * f)},${Math.round(c0[1] + (c1[1] - c0[1]) * f)},${Math.round(c0[2] + (c1[2] - c0[2]) * f)})`;
+          }
+        }
+        return 'rgb(255,91,91)';
+      }
+
+      let pkSelectedCell = null;
+      function drawPorkchop() {
+        if (!pkGrid) return;
+        const { dvGrid, dvMin, dvMax, GRID } = pkGrid;
+        const W = pkCanvas.width, H = pkCanvas.height;
+        pkCtx.clearRect(0, 0, W, H);
+        const cw = W / GRID, ch = H / GRID;
+        for (let j = 0; j < GRID; j++) {
+          for (let i = 0; i < GRID; i++) {
+            const dv = dvGrid[j][i];
+            pkCtx.fillStyle = dv === null ? '#0a0f1c' : dvColor((dv - dvMin) / Math.max(1, (dvMax - dvMin)));
+            pkCtx.fillRect(i * cw, H - (j + 1) * ch, cw + 0.6, ch + 0.6);
+          }
+        }
+        if (pkSelectedCell) {
+          pkCtx.strokeStyle = '#ffffff'; pkCtx.lineWidth = 2;
+          pkCtx.strokeRect(pkSelectedCell.i * cw, H - (pkSelectedCell.j + 1) * ch, cw, ch);
+        }
+      }
+
+      pkCanvas.addEventListener('click', evt => {
+        if (!pkGrid) return;
+        const rect = pkCanvas.getBoundingClientRect();
+        const scaleX = pkCanvas.width / rect.width, scaleY = pkCanvas.height / rect.height;
+        const px = (evt.clientX - rect.left) * scaleX, py = (evt.clientY - rect.top) * scaleY;
+        const GRID = pkGrid.GRID;
+        const cw = pkCanvas.width / GRID, ch = pkCanvas.height / GRID;
+        const i = Math.min(GRID - 1, Math.floor(px / cw));
+        const j = Math.min(GRID - 1, Math.floor((pkCanvas.height - py) / ch));
+        pkSelectedCell = { i, j };
+        drawPorkchop();
+        const dv = pkGrid.dvGrid[j][i];
+        const tDep = pkGrid.depTimes[i], tof = pkGrid.tofTimes[j];
+        const card = document.getElementById('pkSelected');
+        const body = document.getElementById('pkSelectedBody');
+        if (dv !== null) {
+          card.style.display = '';
+          body.innerHTML = `
+      <div class="stat-row"><span class="k">Departure UT</span><span class="v">${utToDateString(tDep)}</span></div>
+      <div class="stat-row"><span class="k">Time of Flight</span><span class="v">${durationString(tof)}</span></div>
+      <div class="stat-row"><span class="k">Total heliocentric Δv</span><span class="v hi">${dv.toFixed(0)} m/s</span></div>`;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      document.getElementById('pkGenerate').onclick = generatePorkchop;
+
+      /* =========================================================
+         9. MAIN ANIMATION LOOP
+         ========================================================= */
+      function loop(now) {
+        requestAnimationFrame(loop);
+        const dt = Math.min((now - lastFrameTime) / 1000, 0.2);
+        lastFrameTime = now;
+        UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]); // live sync ticks in real time between corrections
+        document.getElementById('utValue').textContent = utToDateString(UT);
+
+        updateMap(); // move planet meshes each frame
+
+        if (currentResult) {
+          // Recompute phase angles each frame (cheap)
+          const os = stateAt(currentResult.origin, UT);
+          const ds = stateAt(currentResult.dest, UT);
+          currentResult.currentPhase = angNormPM180((ds.theta - os.theta) * 180 / Math.PI);
+          // Recompute window countdown each frame
+          const rate = currentResult.dest.n - currentResult.origin.n;
+          if (Math.abs(rate) > 1e-12) {
+            const curRad = currentResult.currentPhase * DEG, reqRad = currentResult.requiredPhase * DEG;
+            if (rate > 0) {
+              let diff = reqRad - curRad;
+              diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+              currentResult.waitSec = diff / rate;
+            } else {
+              let diff = curRad - reqRad;
+              diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+              currentResult.waitSec = diff / (-rate);
+            }
+          }
+
+          updateTransferArc();   // update transfer ellipse
+          updatePhaseLines();    // update phase angle spokes
+          updateGhostPosition(); // move ghost sphere
+          if (selectedAssistIdx !== null) updateAssistArcs(); // move assist arcs/marker if a flyby route is selected
+
+          // Rate-limited sidebar update (every ~1.2 s)
+          if (now - lastSidebarUpdate > 1200) {
+            renderTransferResults();
+            refreshAssistsForCurrentResult();
+            if (selectedAssistIdx !== null) { initAssistArcs(); updateAssistArcs(); }
+            renderAssistOptions();
+            lastSidebarUpdate = now;
+          }
+        }
+
+        updateLabels(); // project labels to screen
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(loop);
+
+    })(THREE);
+  </script>
+</body>
+
+</html>
