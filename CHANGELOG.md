@@ -2,7 +2,7 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
-## [1.7.1] - 2026-08-07
+## [1.7.0] - 2026-08-07
 
 ### Changed
 
