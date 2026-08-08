@@ -459,6 +459,32 @@
       text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
     }
 
+    .assist-label-3d {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--violet);
+      white-space: nowrap;
+      opacity: 0.9;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .9), 0 0 8px rgba(0, 0, 0, .7);
+      transform: translate(-50%, -100%);
+      background: rgba(9, 6, 20, .55);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(183, 140, 255, .25);
+    }
+
+    .assist-label-3d.leg {
+      font-size: 8.5px;
+      opacity: 0.8;
+      color: #c9aeff;
+      transform: translate(-50%, -50%);
+      background: rgba(9, 6, 20, .5);
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid rgba(183, 140, 255, .18);
+    }
+
     /* ---------- SIDEBAR ---------- */
     .sidebar {
       width: 392px;
@@ -984,6 +1010,7 @@
           <span><span class="dot"
               style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
             ghost</span>
+          <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
         </div>
       </div>
 
@@ -1073,6 +1100,9 @@
 
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
+
+    // Version constant - automatically updated from CHANGELOG.md
+    const VERSION = 'v1.7.2';
 
     (function (THREE) {
       "use strict";
@@ -1747,6 +1777,8 @@
          ========================================================= */
       let assistArcGeos = [null, null], assistArcLines = [null, null];
       let assistDot = null, assistGlow = null;
+      let assistLabelEl = null, assistLegLabelEls = [null, null];
+      let assistGhostSphere = null, assistGhostGlow = null, assistGhostLabelEl = null;
 
       function initAssistArcs() {
         hideAssistArcs();
@@ -1766,6 +1798,39 @@
         scene.add(assistGlow);
         // Dim the direct arc so the assist route reads as the highlighted option
         if (arcLine) arcLine.material.opacity = 0.28;
+
+        // Labels: one on the flyby planet itself, one on each leg of the route
+        assistLabelEl = document.createElement('div');
+        assistLabelEl.className = 'assist-label-3d';
+        labelCtr.appendChild(assistLabelEl);
+
+        assistLegLabelEls[0] = document.createElement('div');
+        assistLegLabelEls[0].className = 'assist-label-3d leg';
+        labelCtr.appendChild(assistLegLabelEls[0]);
+
+        assistLegLabelEls[1] = document.createElement('div');
+        assistLegLabelEls[1].className = 'assist-label-3d leg';
+        labelCtr.appendChild(assistLegLabelEls[1]);
+
+        // Assist-route arrival ghost — where the destination REALLY is at the
+        // (typically very different) arrival time this route implies, shown
+        // in violet so it reads as belonging to the assist route rather than
+        // the direct transfer's own amber ghost.
+        assistGhostSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xb78cff, transparent: true, opacity: 0.28, depthWrite: false })
+        );
+        scene.add(assistGhostSphere);
+        assistGhostGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xb78cff, transparent: true, opacity: 0.07, depthWrite: false })
+        );
+        scene.add(assistGhostGlow);
+        assistGhostLabelEl = document.createElement('div');
+        assistGhostLabelEl.className = 'ghost-label-3d';
+        assistGhostLabelEl.style.color = 'var(--violet)';
+        assistGhostLabelEl.textContent = '⬡ Arrival (via assist)';
+        labelCtr.appendChild(assistGhostLabelEl);
       }
 
       function updateAssistArcs() {
@@ -1851,6 +1916,37 @@
         const encounterPos = toWorld(sA.x, sA.y, a.planet.incl);
         assistDot.position.copy(encounterPos);
         assistGlow.position.copy(encounterPos);
+
+        // Assist-route arrival ghost — the destination's real position at
+        // THIS route's (often very different) arrival time
+        const assistArrivalPos = toWorld(s3.x, s3.y, r.dest.incl);
+        if (assistGhostSphere) {
+          assistGhostSphere.position.copy(assistArrivalPos);
+          assistGhostGlow.position.copy(assistArrivalPos);
+          if (assistGhostLabelEl) assistGhostLabelEl._worldPos = assistArrivalPos;
+        }
+
+        // Label on the flyby planet itself
+        if (assistLabelEl) {
+          assistLabelEl.textContent = `◈ ${a.planet.name} flyby`;
+          assistLabelEl._worldPos = encounterPos;
+        }
+
+        // Leg labels, placed at the midpoint of each drawn curve so they sit
+        // readably along the arc rather than stacked on the endpoints
+        const midIdx = Math.floor(ARC_N / 2);
+        if (assistLegLabelEls[0]) {
+          const midArr = assistArcGeos[0].attributes.position.array;
+          const mi = midIdx * 3;
+          assistLegLabelEls[0].textContent = `${r.origin.name} → ${a.planet.name} · ${durationString(sol.tof1)}`;
+          assistLegLabelEls[0]._worldPos = new THREE.Vector3(midArr[mi], midArr[mi + 1], midArr[mi + 2]);
+        }
+        if (assistLegLabelEls[1]) {
+          const midArr = assistArcGeos[1].attributes.position.array;
+          const mi = midIdx * 3;
+          assistLegLabelEls[1].textContent = `${a.planet.name} → ${r.dest.name} · ${durationString(sol.tof2)}`;
+          assistLegLabelEls[1]._worldPos = new THREE.Vector3(midArr[mi], midArr[mi + 1], midArr[mi + 2]);
+        }
       }
 
       function hideAssistArcs() {
@@ -1859,6 +1955,11 @@
         if (assistDot) { scene.remove(assistDot); assistDot = null; }
         if (assistGlow) { scene.remove(assistGlow); assistGlow = null; }
         if (arcLine) arcLine.material.opacity = 0.9; // restore direct-arc brightness
+        if (assistLabelEl) { assistLabelEl.remove(); assistLabelEl = null; }
+        assistLegLabelEls.forEach((el, i) => { if (el) { el.remove(); assistLegLabelEls[i] = null; } });
+        if (assistGhostSphere) { scene.remove(assistGhostSphere); assistGhostSphere = null; }
+        if (assistGhostGlow) { scene.remove(assistGhostGlow); assistGhostGlow = null; }
+        if (assistGhostLabelEl) { assistGhostLabelEl.remove(); assistGhostLabelEl = null; }
       }
 
       /* =========================================================
@@ -2037,6 +2138,27 @@
           ghostLabelEl.style.left = s.x + 'px';
           ghostLabelEl.style.top = s.y + 'px';
           ghostLabelEl.style.display = s.behind ? 'none' : '';
+        }
+
+        if (assistLabelEl && assistLabelEl._worldPos) {
+          const s = worldToScreen(assistLabelEl._worldPos);
+          assistLabelEl.style.left = s.x + 'px';
+          assistLabelEl.style.top = (s.y - 8) + 'px'; // small gap above the flyby marker; CSS handles centering/anchor
+          assistLabelEl.style.display = s.behind ? 'none' : '';
+        }
+        assistLegLabelEls.forEach(el => {
+          if (!el || !el._worldPos) return;
+          const s = worldToScreen(el._worldPos);
+          el.style.left = s.x + 'px';
+          el.style.top = s.y + 'px';
+          el.style.display = s.behind ? 'none' : '';
+        });
+
+        if (assistGhostLabelEl && assistGhostLabelEl._worldPos) {
+          const s = worldToScreen(assistGhostLabelEl._worldPos);
+          assistGhostLabelEl.style.left = s.x + 'px';
+          assistGhostLabelEl.style.top = s.y + 'px';
+          assistGhostLabelEl.style.display = s.behind ? 'none' : '';
         }
       }
 
@@ -2380,6 +2502,65 @@
       function angNorm360(a) { a = a % 360; if (a < 0) a += 360; return a; }
       function angNormPM180(a) { a = angNorm360(a); if (a > 180) a -= 360; return a; }
 
+      /**
+       * Given a fixed departure angle/time, search for a flight duration such
+       * that the destination body ends up close to true opposition (180
+       * degrees away) at arrival — i.e. a well-phased, low-eccentricity
+       * transfer, rather than trusting the naive semi-major-axis-only Hohmann
+       * time estimate blindly.
+       *
+       * This matters specifically for gravity-assist legs: the main transfer
+       * window is optimized for reaching the *final* destination, so there's
+       * no guarantee an intermediate flyby planet is well-positioned relative
+       * to whichever body is next in the chain. Forcing the naive time
+       * estimate in that case can demand a near-parabolic (e~1) trajectory to
+       * connect two points that are barely apart in angle — which is both
+       * physically nonsensical and looks like a sharp, wrong-looking kink
+       * when drawn.
+       *
+       * Scans for genuine zero-crossings of the opposition gap (explicitly
+       * ignoring the +-180 degree branch-cut, which isn't a real crossing),
+       * bisects each one, and picks whichever root is closest to the naive
+       * guess (the most "natural" continuation). Falls back to the naive
+       * guess if no crossing is found. Nudges slightly off exact 180 degrees
+       * since that's the Lambert solver's own singularity.
+       */
+      function refineFlightTimeForOpposition(originAngleRad, destPlanet, tRef, tofGuess, mu) {
+        function gapAt(tof) {
+          const s = stateAt(destPlanet, tRef + Math.max(1, tof));
+          return angNormPM180((s.theta - originAngleRad) * 180 / Math.PI - 180);
+        }
+        const guess = Math.max(3600, tofGuess);
+        const lo = guess * 0.15, hi = guess * 4 + destPlanet.period;
+        const N = 400;
+        const step = (hi - lo) / N;
+        const brackets = [];
+        let prevT = lo, prevG = gapAt(lo);
+        for (let i = 1; i <= N; i++) {
+          const t = lo + i * step;
+          const g = gapAt(t);
+          // genuine zero-crossing only — a small sign-flipping jump, not the +-180 branch cut
+          if (Math.sign(g) !== Math.sign(prevG) && Math.abs(g - prevG) < 180) {
+            brackets.push([prevT, t]);
+          }
+          prevT = t; prevG = g;
+        }
+        if (brackets.length === 0) return tofGuess;
+        let best = null, bestDist = Infinity;
+        for (const [a, b] of brackets) {
+          let lo2 = a, hi2 = b, gLo = gapAt(lo2);
+          for (let i = 0; i < 50; i++) {
+            const mid = (lo2 + hi2) / 2;
+            const gMid = gapAt(mid);
+            if (Math.sign(gMid) === Math.sign(gLo)) { lo2 = mid; gLo = gMid; } else { hi2 = mid; }
+          }
+          const root = (lo2 + hi2) / 2;
+          const dist = Math.abs(root - guess);
+          if (dist < bestDist) { bestDist = dist; best = root; }
+        }
+        return best + destPlanet.period * 0.002; // nudge off the exact-180 Lambert singularity
+      }
+
       function computeTransfer(originName, destName) {
         const originSelected = findBody(originName);
         const destSelected = findBody(destName);
@@ -2469,13 +2650,16 @@
 
       function computeAssistTransfer(o, assistPlanet, d, tDep) {
         const at12 = (o.a + assistPlanet.a) / 2;
-        const tof1 = Math.PI * Math.sqrt(Math.pow(at12, 3) / KERBOL.mu);
-        const at23 = (assistPlanet.a + d.a) / 2;
-        const tof2 = Math.PI * Math.sqrt(Math.pow(at23, 3) / KERBOL.mu);
+        const tof1_naive = Math.PI * Math.sqrt(Math.pow(at12, 3) / KERBOL.mu);
 
         const s1 = stateAt(o, tDep);
+        const tof1 = refineFlightTimeForOpposition(s1.theta, assistPlanet, tDep, tof1_naive, KERBOL.mu);
         const sA_arr = stateAt(assistPlanet, tDep + tof1);
         const sA_dep = sA_arr; // flyby treated as instantaneous at the patched-conic level
+
+        const at23 = (assistPlanet.a + d.a) / 2;
+        const tof2_naive = Math.PI * Math.sqrt(Math.pow(at23, 3) / KERBOL.mu);
+        const tof2 = refineFlightTimeForOpposition(sA_dep.theta, d, tDep + tof1, tof2_naive, KERBOL.mu);
         const s3 = stateAt(d, tDep + tof1 + tof2);
 
         const sol1 = lambertSolve([s1.x, s1.y], [sA_arr.x, sA_arr.y], tof1, KERBOL.mu);
