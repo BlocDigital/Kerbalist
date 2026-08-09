@@ -39,7 +39,10 @@
 
 ### Sync to Your Save
 
-#### Option A: Save-File Watcher (Easiest, Chrome/Edge only)
+#### Option A: Manual Time Entry
+Just type into the **Sync to save** boxes and hit **Set** — no live sync needed, but you update manually.
+
+#### Option B: Save-File Watcher (Easiest, Chrome/Edge only, not tested yet)
 1. Click the new **Live Sync** button in the header
 2. Click **Choose Save File…**
 3. Navigate to your KSP2 persistent save:
@@ -49,18 +52,6 @@
 4. Pick the `.json` file for your active save
 5. Planner auto-syncs every 4 seconds when the game autosaves
 
-#### Option B: Python Bridge (Real-time, needs kRPC2 mod)
-1. Install kRPC2 into your SpaceWarp BepInEx folder (see kRPC2 GitHub for latest)
-2. Install Python kRPC client: `pip install krpc`
-3. Run the companion script:
-   ```bash
-   python kerbalist_bridge.py
-   ```
-4. In Kerbalist, **Live Sync** → **Local bridge**, leave URL as `http://localhost:5005/ut`, click **Connect**
-5. Clock syncs every ~2 seconds while KSP2 is running
-
-#### Option C: Manual Time Entry
-Just type into the **Sync to save** boxes and hit **Set** — no live sync needed, but you update manually.
 
 ## Map Controls
 
