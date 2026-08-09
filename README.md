@@ -6,6 +6,7 @@
 
 ### Core Transfer Planning
 - **All 7 stock planets** (Moho, Eve, Kerbin, Duna, Dres, Jool, Eeloo) with accurate orbital data
+- **11 moons** including the Dres moons Drast and Beyl, selectable as transfer origins or destinations below their parent planets
 - **Hohmann-style direct transfers** — shows phase angle, transfer time, Δv budget, and window countdown
 - **Live time control** — warp clock, manual UT input, or sync to your running KSP2 save (two methods)
 - **Interactive 3D map** — pan, zoom, watch planets orbit in real-time as you plan
@@ -20,7 +21,7 @@
 ## How to Use
 
 ### Basic Transfer
-1. Open **Kerbalist-GA.html** in your browser
+1. Open **index.html** in your browser
 2. Select **Origin** and **Destination** from the top dropdowns
 3. Click **Plan Transfer** to compute the direct Hohmann route
 4. The map shows the transfer arc (green dashed line)
@@ -81,7 +82,7 @@ Just type into the **Sync to save** boxes and hit **Set** — no live sync neede
 
 ## Files
 
-- **Kerbalist-GA.html** — The planner itself (single file, no dependencies)
+- **index.html** — The planner itself (single file, no local dependencies)
 - **kerbalist_bridge.py** — Companion bridge for live kRPC2 sync (Python 3.8+)
 
 ## Keyboard Shortcuts

@@ -1212,9 +1212,11 @@
         const r = planet.a * (1 - e * Math.cos(E));
         const theta = nu + planet.orient;
         const x = r * Math.cos(theta), y = r * Math.sin(theta);
-        const h = Math.sqrt(KERBOL.mu * planet.a * (1 - e * e));
-        const vr = KERBOL.mu / h * e * Math.sin(nu);
-        const vt = KERBOL.mu / h * (1 + e * Math.cos(nu));
+        const centralBody = planet.parent ? PLANETS.find(p => p.name === planet.parent) : KERBOL;
+        const centralMu = centralBody?.mu || KERBOL.mu;
+        const h = Math.sqrt(centralMu * planet.a * (1 - e * e));
+        const vr = centralMu / h * e * Math.sin(nu);
+        const vt = centralMu / h * (1 + e * Math.cos(nu));
         const vx = vr * Math.cos(theta) - vt * Math.sin(theta);
         const vy = vr * Math.sin(theta) + vt * Math.cos(theta);
         return { x, y, r, theta, vx, vy, nu };
@@ -1593,11 +1595,11 @@
           new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false })
         ));
 
-        // Dres Asteroid Ring System (KSP1 / KSP2 Dres Ring)
+        // Dres Asteroid Ring System
         if (p.name === 'Dres') {
-          const innerR = baseRadius * 1.8;
-          const outerR = baseRadius * 4.5;
-          const ringGeo = new THREE.RingGeometry(innerR, outerR, 48);
+          const innerR = baseRadius * 2.05;
+          const outerR = baseRadius * 2.35;
+          const ringGeo = new THREE.RingGeometry(innerR, outerR, 96);
           // Double-sided ring material with subtle grey asteroid dust opacity
           const ringMat = new THREE.MeshBasicMaterial({
             color: 0x8a929e,
@@ -1607,8 +1609,7 @@
             depthWrite: false
           });
           const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-          ringMesh.rotation.x = Math.PI / 2.8; // Tilted ring plane
-          ringMesh.rotation.y = Math.PI / 6;
+          ringMesh.rotation.x = Math.PI / 2;
           mesh.add(ringMesh);
         }
 

@@ -2,6 +2,17 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [1.7.3] - 2026-08-10
+
+### Added
+
+- **Dres Moon System Expansion**: Added Drast and Beyl as selectable moons of Dres, including local 3D orbits, physical display data from the supplied KSP2 screenshots, labels, click selection, and transfer dropdown entries
+
+### Changed
+
+- **Dres Ring Alignment**: Narrowed the Dres ring band and aligned it with Dres's equatorial plane so it matches the in-game ring appearance more closely
+- **Moon Velocity Display**: Moon body info now derives local orbital speed from the parent planet's gravitational parameter instead of Kerbol's
+
 ## [1.7.2] - 2026-08-09
 
 ### Added
