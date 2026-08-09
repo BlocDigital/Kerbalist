@@ -72,8 +72,7 @@ Just type into the **Sync to save** boxes and hit **Set** — no live sync neede
 
 ## Files
 
-- **Kerbalist-GA.html** — The planner itself (single file, no dependencies)
-- **kerbalist_bridge.py** — Companion bridge for live kRPC2 sync (Python 3.8+)
+- **index.html** — The planner itself (single file, no dependencies)
 
 ## Keyboard Shortcuts
 
@@ -85,11 +84,6 @@ Currently none — all UI is clickable. May add arrow keys for time scrubbing in
 - Not all routes have good flyby opportunities
 - Try Kerbin → Jool (outbound) or Eve → Jool (inbound) for classic assists
 - The detector finds assists positioned angularly between origin and destination at the midpoint of the transfer
-
-**"Live Sync won't connect"**
-- Check that KSP2 is running and kRPC2 is installed (bridge mode)
-- Verify `http://localhost:5005/ut` is reachable: try opening it in your browser — you should see `{"ut": <number>}`
-- If the property changed, edit `ATTR_PATHS` in `kerbalist_bridge.py`
 
 **"Save file sync shows old time"**
 - Autosave interval in KSP2 is typically 5+ minutes
