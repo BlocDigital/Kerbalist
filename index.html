@@ -400,6 +400,20 @@
       border-color: var(--border-bright);
     }
 
+    .map-version {
+      position: absolute;
+      bottom: 16px;
+      left: 52px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dimmer);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      opacity: .72;
+    }
+
     .legend {
       position: absolute;
       bottom: 14px;
@@ -1003,6 +1017,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
+        <div class="map-version" id="mapVersion">v2.0</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1102,7 +1117,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v1.7.2';
+    const VERSION = 'v2.0';
 
     (function (THREE) {
       "use strict";
@@ -1132,7 +1147,7 @@
         },
         {
           name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 180, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
-          desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Dres does exist.'
+          desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Orbited by the Dresteroids Drast and Beyl.'
         },
         {
           name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 6, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
@@ -1152,6 +1167,9 @@
         { name: 'Minmus', parent: 'Kerbin', color: '#9be5d0', a: 47000000, e: 0.00, orientDeg: 38, m0Deg: 0, period: 388380, incl: 6.0, radius: 60000, desc: 'Mint-green icy moon with flat salt flats.' },
         // Duna
         { name: 'Ike', parent: 'Duna', color: '#888888', a: 3200000, e: 0.03, orientDeg: 0, m0Deg: 0, period: 65518, incl: 0.2, radius: 130000, desc: 'Tidally locked moon orbiting Duna closely.' },
+        // Dres
+        { name: 'Drast', parent: 'Dres', color: '#8a877b', a: 43400, e: 0.00, orientDeg: 0, m0Deg: 0, period: 12312, incl: 0.0, radius: 1596, desc: 'Tiny inner Dresteroid embedded in Dres debris and ring material.' },
+        { name: 'Beyl', parent: 'Dres', color: '#6f6552', a: 8365000, e: 0.48, orientDeg: 0, m0Deg: 0, period: 1037016, incl: 216.0, radius: 4595, desc: 'Distant retrograde Dresteroid on a steep, eccentric orbit around Dres.' },
         // Jool
         { name: 'Laythe', parent: 'Jool', color: '#4ba3e3', a: 27184000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 52980, incl: 0.0, radius: 500000, desc: 'Ocean moon with breathable atmosphere.' },
         { name: 'Vall', parent: 'Jool', color: '#a8dadc', a: 43152000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 105960, incl: 0.0, radius: 300000, desc: 'Icy moon with cryovolcanic activity.' },
@@ -1209,9 +1227,11 @@
         const r = planet.a * (1 - e * Math.cos(E));
         const theta = nu + planet.orient;
         const x = r * Math.cos(theta), y = r * Math.sin(theta);
-        const h = Math.sqrt(KERBOL.mu * planet.a * (1 - e * e));
-        const vr = KERBOL.mu / h * e * Math.sin(nu);
-        const vt = KERBOL.mu / h * (1 + e * Math.cos(nu));
+        const centralBody = planet.parent ? PLANETS.find(p => p.name === planet.parent) : KERBOL;
+        const centralMu = centralBody?.mu || KERBOL.mu;
+        const h = Math.sqrt(centralMu * planet.a * (1 - e * e));
+        const vr = centralMu / h * e * Math.sin(nu);
+        const vt = centralMu / h * (1 + e * Math.cos(nu));
         const vx = vr * Math.cos(theta) - vt * Math.sin(theta);
         const vy = vr * Math.sin(theta) + vt * Math.cos(theta);
         return { x, y, r, theta, vx, vy, nu };
@@ -1590,11 +1610,11 @@
           new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false })
         ));
 
-        // Dres Asteroid Ring System (KSP1 / KSP2 Dres Ring)
+        // Dres Asteroid Ring System
         if (p.name === 'Dres') {
-          const innerR = baseRadius * 1.8;
-          const outerR = baseRadius * 4.5;
-          const ringGeo = new THREE.RingGeometry(innerR, outerR, 48);
+          const innerR = baseRadius * 2.05;
+          const outerR = baseRadius * 2.35;
+          const ringGeo = new THREE.RingGeometry(innerR, outerR, 96);
           // Double-sided ring material with subtle grey asteroid dust opacity
           const ringMat = new THREE.MeshBasicMaterial({
             color: 0x8a929e,
@@ -1604,8 +1624,7 @@
             depthWrite: false
           });
           const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-          ringMesh.rotation.x = Math.PI / 2.8; // Tilted ring plane
-          ringMesh.rotation.y = Math.PI / 6;
+          ringMesh.rotation.x = Math.PI / 2;
           mesh.add(ringMesh);
         }
 
