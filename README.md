@@ -2,7 +2,7 @@
 
 **Live sync-capable transfer calculator with optional gravity assist optimization.**
 
-Current version: **v2.0**
+Current version: **v2.2**
 
 ## Features
 
@@ -57,7 +57,16 @@ Current version: **v2.0**
 4. Pick the `.json` file for your active save.
 5. Planner auto-syncs when the game autosaves.
 
-#### Option B: Manual Time Entry
+#### Option B: Python Bridge
+1. Install kRPC2 into your SpaceWarp BepInEx folder.
+2. Install Python kRPC client: `pip install krpc`.
+3. Run the companion script:
+   ```bash
+   python kerbalist_bridge.py
+   ```
+4. In Kerbalist, choose **Live Sync** -> **Local bridge**, leave URL as `http://localhost:5005/ut`, then click **Connect**.
+
+#### Option C: Manual Time Entry
 Type into the **Sync to save** boxes and hit **Set**.
 
 ## Map Controls
