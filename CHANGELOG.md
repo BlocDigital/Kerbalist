@@ -2,6 +2,18 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [2.1] - 2026-08-10
+
+### Added
+
+- **Heliocentric Δv Total Display**: Added a supplementary heliocentric total m/s readout in a smaller font beneath the main ejection/capture parking orbit Δv budget.
+- **Ejection Angle Visual Schematic**: Added a local planetary orbit diagram to the Ejection Angles card showing the parking orbit around the origin body, the prograde marker, and the precise burn position with thrust vector exhaust flames.
+
+### Changed
+
+- **Card Layout & Workflow Reordering**: Moved the Ejection Angles card directly below the Δv Budget card for better visual sequence during mission planning.
+- **UI & Typography Scaling**: Scaled all sidebar UI elements, fonts, controls, padding, and borders up by +30% and increased note text size by +20% for improved readability, automatically scaling SVG diagrams to match.
+
 ## [2.0] - 2026-08-10
 
 ### Added
