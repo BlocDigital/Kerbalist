@@ -400,6 +400,20 @@
       border-color: var(--border-bright);
     }
 
+    .map-version {
+      position: absolute;
+      bottom: 16px;
+      left: 52px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dimmer);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      pointer-events: none;
+      opacity: .72;
+    }
+
     .legend {
       position: absolute;
       bottom: 14px;
@@ -1003,6 +1017,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
+        <div class="map-version" id="mapVersion">v2.0</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1102,7 +1117,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v1.7.3';
+    const VERSION = 'v2.0';
 
     (function (THREE) {
       "use strict";

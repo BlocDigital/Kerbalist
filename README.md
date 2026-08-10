@@ -1,113 +1,117 @@
-# Kerbalist — KSP2 Interplanetary Transfer Planner
+# Kerbalist - KSP2 Interplanetary Transfer Planner
 
 **Live sync-capable transfer calculator with optional gravity assist optimization.**
+
+Current version: **v2.0**
 
 ## Features
 
 ### Core Transfer Planning
 - **All 7 stock planets** (Moho, Eve, Kerbin, Duna, Dres, Jool, Eeloo) with accurate orbital data
 - **11 moons** including the Dres moons Drast and Beyl, selectable as transfer origins or destinations below their parent planets
-- **Hohmann-style direct transfers** — shows phase angle, transfer time, Δv budget, and window countdown
-- **Live time control** — warp clock, manual UT input, or sync to your running KSP2 save (two methods)
-- **Interactive 3D map** — pan, zoom, watch planets orbit in real-time as you plan
+- **Hohmann-style direct transfers** - shows phase angle, transfer time, delta-v budget, and window countdown
+- **Live time control** - warp clock, manual UT input, or sync to your running KSP2 save
+- **Interactive 3D map** - rotate, pan, zoom, and watch planets and moons orbit in real time
+- **Porkchop plot generator** - compare departure dates and flight times for lower delta-v options
 
-### Gravity Assists (NEW)
-- **Automatic detection** — finds planets positioned favorably for flybys on your chosen route
-- **Multi-leg visualization** — see both direct and assisted transfer arcs on the map simultaneously
-- **Δv savings calculation** — shows fuel economy vs. time tradeoff for each assist option
-- **Ghost planets** — displays assist planet position and SOI at the encounter time
-- **Per-leg timing** — know exactly how long each segment of the multi-leg journey takes
+### Gravity Assists
+- **Automatic detection** - finds planets positioned favorably for flybys on your chosen route
+- **Multi-leg visualization** - see direct and assisted transfer arcs on the map
+- **Delta-v savings calculation** - shows fuel economy vs. time tradeoff for each assist option
+- **Ghost planets** - displays assist and arrival positions at encounter times
+- **Per-leg timing** - shows how long each segment of the multi-leg journey takes
+
+### Dres System
+- **Drast and Beyl** - two Dres moons added from KSP2 reference data
+- **Narrow Dres ring** - rendered as a thin equatorial ring band matching the in-game look more closely
+- **Correct moon velocity display** - moon orbital speed uses the parent planet's gravitational parameter
 
 ## How to Use
 
 ### Basic Transfer
-1. Open **index.html** in your browser
-2. Select **Origin** and **Destination** from the top dropdowns
-3. Click **Plan Transfer** to compute the direct Hohmann route
-4. The map shows the transfer arc (green dashed line)
-5. Check **Transfer** tab for Δv, flight time, and window countdown
+1. Open **index.html** in your browser.
+2. Select **Origin** and **Destination** from the top dropdowns.
+3. Click **Plan Transfer** to compute the direct route.
+4. The map shows the transfer arc.
+5. Check the **Transfer** tab for delta-v, flight time, and window countdown.
 
 ### Gravity Assists
-1. After planning a transfer, open the **Assist Options** tab
-2. If available for your route, assists will list each candidate planet with:
-   - Flight time (total and time added vs. direct)
-   - Δv savings in m/s and percentage
-3. Click an assist to select it — the map updates to show:
-   - The multi-leg trajectory (violet arcs for each leg)
-   - Ghost planet at the assist encounter
-   - SOI of the assist planet (dashed circle)
-4. The **Transfer** tab updates to show the assist-specific Δv and timing
+1. After planning a transfer, open the **Assist Options** tab.
+2. If available for your route, assists list each candidate planet with flight time and delta-v savings.
+3. Click an assist to show the multi-leg trajectory, flyby marker, and assist-specific timing.
+
+### Porkchop Plot
+1. Open the **Porkchop** tab.
+2. Generate a departure-date vs. flight-time grid.
+3. Inspect lower-delta-v transfer options from the plotted solutions.
 
 ### Sync to Your Save
 
-#### Option A: Save-File Watcher (Easiest, Chrome/Edge only)
-1. Click the new **Live Sync** button in the header
-2. Click **Choose Save File…**
+#### Option A: Save-File Watcher
+1. Click **Live Sync** in the header.
+2. Click **Choose Save File...**.
 3. Navigate to your KSP2 persistent save:
-   ```
+   ```text
    C:\Users\[User]\AppData\LocalLow\Intercept Games\Kerbal Space Program 2\saves\
    ```
-4. Pick the `.json` file for your active save
-5. Planner auto-syncs every 4 seconds when the game autosaves
+4. Pick the `.json` file for your active save.
+5. Planner auto-syncs when the game autosaves.
 
-#### Option B: Python Bridge (Real-time, needs kRPC2 mod)
-1. Install kRPC2 into your SpaceWarp BepInEx folder (see kRPC2 GitHub for latest)
-2. Install Python kRPC client: `pip install krpc`
+#### Option B: Python Bridge
+1. Install kRPC2 into your SpaceWarp BepInEx folder.
+2. Install Python kRPC client: `pip install krpc`.
 3. Run the companion script:
    ```bash
    python kerbalist_bridge.py
    ```
-4. In Kerbalist, **Live Sync** → **Local bridge**, leave URL as `http://localhost:5005/ut`, click **Connect**
-5. Clock syncs every ~2 seconds while KSP2 is running
+4. In Kerbalist, choose **Live Sync** -> **Local bridge**, leave URL as `http://localhost:5005/ut`, then click **Connect**.
 
 #### Option C: Manual Time Entry
-Just type into the **Sync to save** boxes and hit **Set** — no live sync needed, but you update manually.
+Type into the **Sync to save** boxes and hit **Set**.
 
 ## Map Controls
 
 | Action | Result |
 |--------|--------|
 | **Scroll wheel** | Zoom in/out |
-| **Click & drag** | Pan around |
-| **+/− buttons** | Zoom (slower) |
-| **⤾ button** | Reset to full view |
-| **Click planet name** | Open its info panel |
+| **Click and drag** | Rotate orbit view |
+| **Shift + drag** | Pan view |
+| **+/- buttons** | Zoom controls |
+| **Reset button** | Reset to full view |
+| **Click planet or moon** | Open body info |
+| **Double click planet or moon** | Center camera on that body |
 
 ## Notes
 
-- **Coplanar approximation**: All orbits treated as 2D (ecliptic plane). Inclination shown in body info but not used in Δv calculations.
-- **Assists are rough estimates**: The gravity assist Δv is simplified; real assists need detailed SOI entry/exit and relative velocity analysis.
-- **Porkchop plots** (full grid of all departure/TOF combos) not yet in GA version — available in earlier version if needed.
-- **KSP2 UT**: The game uses a fixed 426-day year for calendar purposes, but UT (physical time) is in seconds and doesn't drift.
+- **Coplanar approximation**: Inclination is shown in body info and visualized in the map, but transfer delta-v calculations remain simplified.
+- **Assists are rough estimates**: Gravity assist delta-v is simplified; real assists need detailed SOI entry/exit and relative velocity analysis.
+- **Moon transfers**: Moon selections use the parent planet's heliocentric transfer window.
+- **KSP2 UT**: The game uses a fixed 426-day year for calendar purposes, but UT is stored as physical seconds.
 
 ## Files
 
-- **index.html** — The planner itself (single file, no local dependencies)
-- **kerbalist_bridge.py** — Companion bridge for live kRPC2 sync (Python 3.8+)
-
-## Keyboard Shortcuts
-
-Currently none — all UI is clickable. May add arrow keys for time scrubbing in a future update.
+- **index.html** - The planner itself
+- **kerbalist_bridge.py** - Companion bridge for live kRPC2 sync
+- **CHANGELOG.md** - Release history
+- **ARCHITECTURE_INDEX.md** - Architecture and maintenance notes
 
 ## Troubleshooting
 
 **"No gravity assists detected"**
-- Not all routes have good flyby opportunities
-- Try Kerbin → Jool (outbound) or Eve → Jool (inbound) for classic assists
-- The detector finds assists positioned angularly between origin and destination at the midpoint of the transfer
+- Not all routes have good flyby opportunities.
+- Try Kerbin -> Jool or Eve -> Jool for classic assist routes.
+- The detector depends on current orbital positions and selected departure time.
 
 **"Live Sync won't connect"**
-- Check that KSP2 is running and kRPC2 is installed (bridge mode)
-- Verify `http://localhost:5005/ut` is reachable: try opening it in your browser — you should see `{"ut": <number>}`
-- If the property changed, edit `ATTR_PATHS` in `kerbalist_bridge.py`
+- Check that KSP2 is running and kRPC2 is installed if using bridge mode.
+- Verify `http://localhost:5005/ut` is reachable in your browser.
+- If the save schema changed, inspect or update `ATTR_PATHS` in `kerbalist_bridge.py`.
 
 **"Save file sync shows old time"**
-- Autosave interval in KSP2 is typically 5+ minutes
-- The planner re-reads every 4 seconds but can only sync when the file changes
-- Force an autosave by quicksaving (F5) if you need an immediate refresh
+- Autosave intervals can be several minutes.
+- Force an autosave by quicksaving if you need an immediate refresh.
 
 ## Credits
 
-Built on accurate stock Kerbol orbital data from the KSP wiki.
-Lambert solver uses universal variable formulation (Battin's method).
-Hohmann transfer phase calculation from classical orbital mechanics.
+Built on stock Kerbol orbital data and classical orbital mechanics.
+Lambert solving uses a universal variable formulation.
