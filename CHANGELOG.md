@@ -2,6 +2,14 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [2.3] - 2026-08-27
+
+### Added
+
+- **Return-to-Kerbin Δv Budgeting**: Added mission time on target body controls to the Δv Budget card, with step buttons for -20, -10, -1, +1, +10, and +20 days.
+- **Return Window Details**: The Δv Budget card now estimates the next target-to-Kerbin transfer window after the mission stay, including return departure UT, Kerbin arrival UT, return ejection burn, Kerbin capture burn, return Δv, and round-trip Δv.
+- **Return Trip Map Visualization**: Added an optional checkbox to draw the return transfer arc on the 3D map with distinct colors, including return departure and Kerbin arrival ghost positions.
+
 ## [2.2] - 2026-08-11
 
 ### Added

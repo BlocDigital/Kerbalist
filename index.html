@@ -846,6 +846,79 @@
       color: var(--red);
     }
 
+    .mission-time-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .05);
+      font-size: 16px;
+    }
+
+    .mission-time-label {
+      color: var(--text-dim);
+    }
+
+    .mission-stepper {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(42px, 1fr)) minmax(76px, 1.25fr) repeat(3, minmax(42px, 1fr));
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .mission-stepper button {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      min-height: 34px;
+      padding: 0 7px;
+      cursor: pointer;
+      transition: .12s;
+    }
+
+    .mission-stepper button:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: var(--panel3);
+    }
+
+    .mission-days-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      background: rgba(79, 224, 232, .08);
+      border: 1px solid rgba(79, 224, 232, .24);
+      border-radius: 6px;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .return-visual-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .05);
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    .return-visual-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
     .big-num {
       font-family: var(--font-mono);
       font-size: 34px;
@@ -1144,7 +1217,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
-        <div class="map-version" id="mapVersion">v2.2</div>
+        <div class="map-version" id="mapVersion">v2.3</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1249,7 +1322,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v2.2';
+    const VERSION = 'v2.3';
 
     (function (THREE) {
       "use strict";
@@ -1954,6 +2027,167 @@
         arcGeo = null;
       }
 
+      let returnArcGeo = null, returnArcLine = null, returnDepDot = null, returnArrDot = null;
+      let returnDepGhost = null, returnDepGlow = null, returnDepLineGeo = null, returnDepLineObj = null, returnDepLabelEl = null;
+      let returnArrGhost = null, returnArrGlow = null, returnArrLineGeo = null, returnArrLineObj = null, returnArrLabelEl = null;
+
+      function initReturnTripOverlay() {
+        hideReturnTripOverlay();
+
+        returnArcGeo = new THREE.BufferGeometry();
+        returnArcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
+        returnArcLine = new THREE.Line(returnArcGeo, new THREE.LineDashedMaterial({
+          color: 0x4aa3ff, dashSize: 7, gapSize: 5, transparent: true, opacity: 0.9
+        }));
+        scene.add(returnArcLine);
+
+        returnDepDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x4aa3ff }));
+        returnArrDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.65 }));
+        scene.add(returnDepDot);
+        scene.add(returnArrDot);
+
+        returnDepGhost = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0x4aa3ff, transparent: true, opacity: 0.3, depthWrite: false })
+        );
+        returnDepGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0x4aa3ff, transparent: true, opacity: 0.08, depthWrite: false })
+        );
+        scene.add(returnDepGhost);
+        scene.add(returnDepGlow);
+
+        returnArrGhost = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.32, depthWrite: false })
+        );
+        returnArrGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.09, depthWrite: false })
+        );
+        scene.add(returnArrGhost);
+        scene.add(returnArrGlow);
+
+        returnDepLineGeo = new THREE.BufferGeometry();
+        returnDepLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        returnDepLineObj = new THREE.Line(returnDepLineGeo, new THREE.LineDashedMaterial({
+          color: 0x4aa3ff, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(returnDepLineObj);
+
+        returnArrLineGeo = new THREE.BufferGeometry();
+        returnArrLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        returnArrLineObj = new THREE.Line(returnArrLineGeo, new THREE.LineDashedMaterial({
+          color: 0xffb454, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(returnArrLineObj);
+
+        returnDepLabelEl = document.createElement('div');
+        returnDepLabelEl.className = 'ghost-label-3d';
+        returnDepLabelEl.style.color = '#4aa3ff';
+        returnDepLabelEl.textContent = '⬡ Return departure';
+        labelCtr.appendChild(returnDepLabelEl);
+
+        returnArrLabelEl = document.createElement('div');
+        returnArrLabelEl.className = 'ghost-label-3d';
+        returnArrLabelEl.style.color = 'var(--amber)';
+        returnArrLabelEl.textContent = '⬡ Kerbin return';
+        labelCtr.appendChild(returnArrLabelEl);
+      }
+
+      function updateReturnTripOverlay() {
+        if (!visualizeReturnTrip || !returnArcLine || !currentResult) return;
+        const plan = getReturnPlan(currentResult);
+        if (!plan) {
+          visualizeReturnTrip = false;
+          hideReturnTripOverlay();
+          return;
+        }
+
+        const ret = plan.ret;
+        const depUT = plan.returnDepartureUT;
+        const arrUT = plan.returnArrivalUT;
+        const osDep = stateAt(ret.origin, depUT);
+        const dsArr = stateAt(ret.dest, arrUT);
+        const ptDep = bodyWorldPositionAt(plan.departureBody, depUT);
+        const ptArr = bodyWorldPositionAt(ret.destSelected, arrUT);
+        const scaleStart = heliocentricDisplayScale(Math.hypot(osDep.x, osDep.y));
+        const scaleEnd = heliocentricDisplayScale(Math.hypot(dsArr.x, dsArr.y));
+        const lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, ret.tt, KERBOL.mu, ARC_N);
+        const arr = returnArcGeo.attributes.position.array;
+
+        if (lambertPts) {
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const curIncl = ret.origin.incl + (ret.dest.incl - ret.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const p = lambertPts[i];
+            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        } else {
+          const rA = Math.hypot(osDep.x, osDep.y);
+          const rB = Math.hypot(dsArr.x, dsArr.y);
+          const a_t = (rA + rB) / 2;
+          const e_t = Math.abs(rB - rA) / (rB + rA);
+          const inbound = rB < rA;
+          const periTheta = inbound ? (osDep.theta - Math.PI) : osDep.theta;
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const nu = inbound ? Math.PI * (1 - frac) : frac * Math.PI;
+            const rr = a_t * (1 - e_t * e_t) / (1 + e_t * Math.cos(nu));
+            const theta = nu + periTheta;
+            const curIncl = ret.origin.incl + (ret.dest.incl - ret.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        }
+
+        returnArcGeo.attributes.position.needsUpdate = true;
+        returnArcLine.computeLineDistances();
+        returnDepDot.position.copy(ptDep);
+        returnArrDot.position.copy(ptArr);
+        returnDepGhost.position.copy(ptDep);
+        returnDepGlow.position.copy(ptDep);
+        returnArrGhost.position.copy(ptArr);
+        returnArrGlow.position.copy(ptArr);
+
+        const currentDepBodyPos = bodyWorldPositionAt(plan.departureBody, UT);
+        const depLine = returnDepLineGeo.attributes.position.array;
+        depLine[0] = currentDepBodyPos.x; depLine[1] = currentDepBodyPos.y; depLine[2] = currentDepBodyPos.z;
+        depLine[3] = ptDep.x; depLine[4] = ptDep.y; depLine[5] = ptDep.z;
+        returnDepLineGeo.attributes.position.needsUpdate = true;
+        returnDepLineObj.computeLineDistances();
+
+        const currentKerbinPos = bodyWorldPositionAt(ret.destSelected, UT);
+        const arrLine = returnArrLineGeo.attributes.position.array;
+        arrLine[0] = currentKerbinPos.x; arrLine[1] = currentKerbinPos.y; arrLine[2] = currentKerbinPos.z;
+        arrLine[3] = ptArr.x; arrLine[4] = ptArr.y; arrLine[5] = ptArr.z;
+        returnArrLineGeo.attributes.position.needsUpdate = true;
+        returnArrLineObj.computeLineDistances();
+
+        if (returnDepLabelEl) returnDepLabelEl._worldPos = ptDep;
+        if (returnArrLabelEl) returnArrLabelEl._worldPos = ptArr;
+      }
+
+      function hideReturnTripOverlay() {
+        if (returnArcLine) { scene.remove(returnArcLine); returnArcLine = null; }
+        if (returnDepDot) { scene.remove(returnDepDot); returnDepDot = null; }
+        if (returnArrDot) { scene.remove(returnArrDot); returnArrDot = null; }
+        if (returnDepGhost) { scene.remove(returnDepGhost); returnDepGhost = null; }
+        if (returnDepGlow) { scene.remove(returnDepGlow); returnDepGlow = null; }
+        if (returnArrGhost) { scene.remove(returnArrGhost); returnArrGhost = null; }
+        if (returnArrGlow) { scene.remove(returnArrGlow); returnArrGlow = null; }
+        if (returnDepLineObj) { scene.remove(returnDepLineObj); returnDepLineObj = null; }
+        if (returnArrLineObj) { scene.remove(returnArrLineObj); returnArrLineObj = null; }
+        if (returnDepLabelEl) { returnDepLabelEl.remove(); returnDepLabelEl = null; }
+        if (returnArrLabelEl) { returnArrLabelEl.remove(); returnArrLabelEl = null; }
+        returnArcGeo = null;
+        returnDepLineGeo = null;
+        returnArrLineGeo = null;
+      }
+
       /* =========================================================
          PERSISTENT GEOMETRY — Gravity Assist Arcs (two Lambert legs)
          ========================================================= */
@@ -2341,6 +2575,20 @@
           assistGhostLabelEl.style.left = s.x + 'px';
           assistGhostLabelEl.style.top = s.y + 'px';
           assistGhostLabelEl.style.display = s.behind ? 'none' : '';
+        }
+
+        if (returnDepLabelEl && returnDepLabelEl._worldPos) {
+          const s = worldToScreen(returnDepLabelEl._worldPos);
+          returnDepLabelEl.style.left = s.x + 'px';
+          returnDepLabelEl.style.top = s.y + 'px';
+          returnDepLabelEl.style.display = s.behind ? 'none' : '';
+        }
+
+        if (returnArrLabelEl && returnArrLabelEl._worldPos) {
+          const s = worldToScreen(returnArrLabelEl._worldPos);
+          returnArrLabelEl.style.left = s.x + 'px';
+          returnArrLabelEl.style.top = s.y + 'px';
+          returnArrLabelEl.style.display = s.behind ? 'none' : '';
         }
       }
 
@@ -2743,7 +2991,7 @@
         return best + destPlanet.period * 0.002; // nudge off the exact-180 Lambert singularity
       }
 
-      function computeTransfer(originName, destName) {
+      function computeTransfer(originName, destName, tRef = UT) {
         const originSelected = findBody(originName);
         const destSelected = findBody(destName);
         const o = transferBodyFor(originSelected);
@@ -2758,7 +3006,7 @@
         const n1 = o.n, n2 = d.n;
         let requiredPhase = 180 - (n2 * tt) * 180 / Math.PI;
         requiredPhase = angNormPM180(requiredPhase);
-        const os = stateAt(o, UT), ds = stateAt(d, UT);
+        const os = stateAt(o, tRef), ds = stateAt(d, tRef);
         let currentPhase = angNormPM180((ds.theta - os.theta) * 180 / Math.PI);
         const rate = (n2 - n1);
         let waitSec = null;
@@ -2784,10 +3032,12 @@
         }
         const depEj = ejection(Math.abs(dv1_helio), o);
         const arrEj = ejection(Math.abs(dv2_helio), d);
-        return { origin: o, dest: d, originSelected, destSelected, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+        return { origin: o, dest: d, originSelected, destSelected, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
       }
 
       let currentResult = null;
+      let missionTimeOnTargetDays = 0;
+      let visualizeReturnTrip = false;
       let lastSidebarUpdate = 0;
       let currentAssists = [];
       let selectedAssistIdx = null;
@@ -2890,6 +3140,7 @@
         currentAssists = [];
         selectedAssistIdx = null;
         hideTransferArc();
+        hideReturnTripOverlay();
         hidePhaseLines();
         clearGhost();
         hideAssistArcs();
@@ -2920,6 +3171,10 @@
         updatePhaseLines();
         initGhost(currentResult.destSelected);
         updateGhostPosition();
+        if (visualizeReturnTrip) {
+          initReturnTripOverlay();
+          updateReturnTripOverlay();
+        }
         // Gravity assist options
         refreshAssistsForCurrentResult();
         renderAssistOptions();
@@ -2927,6 +3182,58 @@
       };
 
       document.getElementById('clearTransferBtn').onclick = clearTransfer;
+
+      function getReturnPlan(r) {
+        const destBodyName = r.destSelected.name;
+        const returnOriginName = r.destSelected.parent ? r.destSelected.parent : destBodyName;
+        if (returnOriginName === 'Kerbin') return null;
+
+        const outboundWaitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
+        const outboundArrivalUT = UT + outboundWaitSec + r.tt;
+        const missionStaySec = Math.max(0, missionTimeOnTargetDays) * DAY_SEC;
+        const returnReadyUT = outboundArrivalUT + missionStaySec;
+        const ret = computeTransfer(returnOriginName, 'Kerbin', returnReadyUT);
+        if (!ret) return null;
+
+        const returnWaitSec = ret.waitSec !== null ? Math.max(0, ret.waitSec) : 0;
+        const returnDepartureUT = returnReadyUT + returnWaitSec;
+        const returnArrivalUT = returnDepartureUT + ret.tt;
+        const returnEjectionBurn = Math.abs(ret.dv1_helio) > 0 ? ret.depEj.dvBurn : 0;
+        const kerbinCaptureBurn = ret.arrEj.dvBurn;
+        const returnDv = returnEjectionBurn + kerbinCaptureBurn;
+        const outboundDv = (Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0) + r.arrEj.dvBurn;
+        const departureBody = r.destSelected.parent ? r.destSelected : ret.originSelected;
+
+        return {
+          ret, destBodyName, returnOriginName, returnReadyUT, returnWaitSec,
+          returnDepartureUT, returnArrivalUT, returnEjectionBurn,
+          kerbinCaptureBurn, returnDv, roundTripDv: outboundDv + returnDv,
+          departureBody
+        };
+      }
+
+      function returnBudgetHtml(r) {
+        const plan = getReturnPlan(r);
+        if (!plan) {
+          return '<div class="note">Return-to-Kerbin budget is not shown because Kerbin is already the selected destination.</div>';
+        }
+
+        const targetLabel = r.destSelected.parent ? `${plan.destBodyName} / ${plan.returnOriginName}` : plan.destBodyName;
+
+        return `
+      <div class="stat-row"><span class="k">Return origin</span><span class="v">${targetLabel}</span></div>
+      <div class="return-visual-toggle">
+        <label for="visualizeReturnTrip">Visualize return trip on map</label>
+        <input type="checkbox" id="visualizeReturnTrip" ${visualizeReturnTrip ? 'checked' : ''} onchange="window.setReturnTripVisualization(this.checked)">
+      </div>
+      <div class="stat-row"><span class="k">Return window wait</span><span class="v warn">${plan.returnWaitSec < 1 ? 'Open now' : durationString(plan.returnWaitSec)}</span></div>
+      <div class="stat-row"><span class="k">Return departure UT</span><span class="v">${utToDateString(plan.returnDepartureUT)}</span></div>
+      <div class="stat-row"><span class="k">Return arrival UT</span><span class="v">${utToDateString(plan.returnArrivalUT)}</span></div>
+      <div class="stat-row"><span class="k">Return ejection burn @ ${plan.returnOriginName}</span><span class="v hi">${plan.returnEjectionBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Kerbin capture burn</span><span class="v hi">${plan.kerbinCaptureBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Return Δv budget</span><span class="v hi">${plan.returnDv.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Round-trip Δv budget</span><span class="v warn">${plan.roundTripDv.toFixed(0)} m/s</span></div>`;
+      }
 
       function renderTransferResults() {
         const r = currentResult;
@@ -2970,6 +3277,19 @@
       <div class="stat-row"><span class="k">Capture burn @ ${destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
+      <div class="mission-time-row">
+        <div class="mission-time-label">Mission time on target planet</div>
+        <div class="mission-stepper" aria-label="Mission time on target planet in days">
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(-20)" title="Decrease mission time by 20 days">-20</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(-10)" title="Decrease mission time by 10 days">-10</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(-1)" title="Decrease mission time by 1 day">-1</button>
+          <div class="mission-days-display">${missionTimeOnTargetDays}d</div>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(1)" title="Increase mission time by 1 day">+1</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(10)" title="Increase mission time by 10 days">+10</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(20)" title="Increase mission time by 20 days">+20</button>
+        </div>
+      </div>
+      ${returnBudgetHtml(r)}
       <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. Capture burn can be omitted for a flyby / aerocapture mission.</div>
     </div>
     <div class="card">
@@ -2992,6 +3312,26 @@
       <div class="note">The translucent ghost on the 3D map shows where ${destName} will be when your craft arrives. A dashed line connects its current position to the arrival position. The ghost updates live as UT advances.</div>
     </div>`;
       }
+
+      window.adjustMissionTimeOnTarget = (deltaDays) => {
+        missionTimeOnTargetDays = Math.max(0, missionTimeOnTargetDays + deltaDays);
+        renderTransferResults();
+        if (visualizeReturnTrip) {
+          if (!returnArcLine) initReturnTripOverlay();
+          updateReturnTripOverlay();
+        }
+      };
+
+      window.setReturnTripVisualization = (checked) => {
+        visualizeReturnTrip = checked;
+        if (visualizeReturnTrip) {
+          initReturnTripOverlay();
+          updateReturnTripOverlay();
+        } else {
+          hideReturnTripOverlay();
+        }
+        renderTransferResults();
+      };
 
       function renderAssistOptions() {
         const list = document.getElementById('assistList');
@@ -3285,12 +3625,20 @@
           updateTransferArc();   // update transfer ellipse
           updatePhaseLines();    // update phase angle spokes
           updateGhostPosition(); // move ghost sphere
+          if (visualizeReturnTrip) {
+            if (!returnArcLine) initReturnTripOverlay();
+            updateReturnTripOverlay();
+          }
           if (selectedAssistIdx !== null) updateAssistArcs(); // move assist arcs/marker if a flyby route is selected
 
           // Rate-limited sidebar update (every ~1.2 s)
           if (now - lastSidebarUpdate > 1200) {
             renderTransferResults();
             refreshAssistsForCurrentResult();
+            if (visualizeReturnTrip) {
+              if (!returnArcLine) initReturnTripOverlay();
+              updateReturnTripOverlay();
+            }
             if (selectedAssistIdx !== null) { initAssistArcs(); updateAssistArcs(); }
             renderAssistOptions();
             lastSidebarUpdate = now;
