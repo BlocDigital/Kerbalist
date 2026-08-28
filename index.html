@@ -1152,7 +1152,7 @@
         <div class="mark"></div>
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 stock system</div>
+          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 Redux Beta system</div>
         </div>
       </div>
       <div class="ut-clock">
@@ -1217,7 +1217,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
-        <div class="map-version" id="mapVersion">v2.3</div>
+        <div class="map-version" id="mapVersion">v2.4</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1328,7 +1328,7 @@
       "use strict";
 
       /* =========================================================
-         1. PHYSICAL DATA — stock Kerbol system (KSP / KSP2)
+         1. PHYSICAL DATA — Redux Beta Kerbol system (KSP2)
          ========================================================= */
       const KERBOL = { name: 'Kerbol', mu: 1.1723328e18, radius: 261600000, color: '#ffd166' };
       const DEG = Math.PI / 180;
@@ -3073,8 +3073,8 @@
         const o = transferBodyFor(originSelected);
         const d = transferBodyFor(destSelected);
         if (!originSelected || !destSelected || !o || !d || originSelected === destSelected) return null;
-        // Allow o === d for moon transfers (destination is moon of origin planet), but not for planet-to-planet
-        if (o === d && !destMoon) return null;
+        // Reject transfers where both bodies are in the same orbit
+        if (o === d) return null;
         const r1 = o.a, r2 = d.a, mu = KERBOL.mu;
         const at = (r1 + r2) / 2;
         const tt = Math.PI * Math.sqrt(Math.pow(at, 3) / mu);
@@ -3122,16 +3122,8 @@
           // Orbital velocity at desired altitude around the moon
           const moonCircularVelocity = Math.sqrt(destMoon.mu / moonOrbitRadius);
 
-          // Arrival velocity relative to parent planet (v-infinity at parent planet)
-          const arrivalVInfinityParent = Math.abs(r.dv2_helio);
-
-          // Moon's orbital velocity around parent
-          const moonOrbitalVelocity = Math.sqrt(d.mu / destMoon.a);
-
           // Rough estimate: need to shed most of the arrival velocity and then circularize
           // This is a simplification - actual cost depends on approach vector
-          // Factor in the moon's orbital velocity and circularization requirement
-          // Typical Δv ≈ moon_circular_velocity + velocity_matching_factor
           // Using 1.5x as a conservative estimate for velocity matching and circularization
           moonInsertionDv = moonCircularVelocity * 1.5;
         }
@@ -3259,10 +3251,26 @@
           document.getElementById('transferResults').innerHTML = '<div class="placeholder">Origin and destination must be different bodies.</div>';
           return;
         }
+
+        // Check if both bodies resolve to the same heliocentric transfer body
+        const originBody = findBody(o);
+        const destBody = findBody(d);
+        const originTransfer = transferBodyFor(originBody);
+        const destTransfer = transferBodyFor(destBody);
+
+        if (originTransfer === destTransfer) {
+          clearTransfer();
+          const msg = originBody.parent && destBody.parent ?
+            'Transfers between moons of the same planet require local maneuvers, not heliocentric transfers.' :
+            'These bodies orbit the same body, so a Hohmann transfer cannot be calculated.';
+          document.getElementById('transferResults').innerHTML = `<div class="placeholder">${msg}</div>`;
+          return;
+        }
+
         currentResult = computeTransfer(o, d);
         if (!currentResult) {
           clearTransfer();
-          document.getElementById('transferResults').innerHTML = '<div class="placeholder">Transfers between moons around the same planet are not supported by this interplanetary planner.</div>';
+          document.getElementById('transferResults').innerHTML = '<div class="placeholder">Unable to compute transfer for these bodies.</div>';
           return;
         }
         switchTab('transfer');
@@ -3395,12 +3403,6 @@
       <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec !== null ? utToDateString(ghostUT) : '—'}</span></div>
     </div>
     <div class="card">
-      <h3><span class="dot"></span>Transfer Time</h3>
-      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
-      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
-      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
-    </div>
-    <div class="card">
       <h3><span class="dot"></span>Phase Angle</h3>
       <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
       <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
@@ -3413,6 +3415,12 @@
       <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${r.depEj.ejAngleFromPeri.toFixed(1)}° ${r.outbound ? 'ahead of' : 'behind'} prograde</span></div>
       <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
       <div class="note">Angle between your parking-orbit periapsis (burn point) and the planet's prograde/retrograde velocity direction, derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Transfer Time</h3>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
+      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
+      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
     </div>
     <div class="card" style="border-color:rgba(255,180,84,.22);">
       <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival</h3>
