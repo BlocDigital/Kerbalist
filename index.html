@@ -1152,7 +1152,7 @@
         <div class="mark"></div>
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 Redux Beta System</div>
+          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 stock system</div>
         </div>
       </div>
       <div class="ut-clock">
@@ -1300,8 +1300,8 @@
               <div class="pk-controls">
                 <button id="pkGenerate">Generate</button>
               </div>
-              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = total heliocentric Δv (departure
-                v∞ + arrival v∞), Lambert-solved per cell. Click a cell to inspect it.</div>
+              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = total Δv (heliocentric + moon
+                insertion for moon destinations), Lambert-solved per cell. Click a cell to inspect it.</div>
             </div>
             <div class="card" id="pkSelected" style="display:none;">
               <h3><span class="dot"></span>Selected Point</h3>
@@ -1328,7 +1328,7 @@
       "use strict";
 
       /* =========================================================
-         1. PHYSICAL DATA — Redux Beta Snapshot system (KSP2)
+         1. PHYSICAL DATA — stock Kerbol system (KSP / KSP2)
          ========================================================= */
       const KERBOL = { name: 'Kerbol', mu: 1.1723328e18, radius: 261600000, color: '#ffd166' };
       const DEG = Math.PI / 180;
@@ -1440,6 +1440,81 @@
         const vx = vr * Math.cos(theta) - vt * Math.sin(theta);
         const vy = vr * Math.sin(theta) + vt * Math.cos(theta);
         return { x, y, r, theta, vx, vy, nu };
+      }
+
+      // Diagnostic functions for orbital epoch synchronization
+      window.debugOrbitalState = function () {
+        console.log('=== ORBITAL STATE AT UT=0 ===');
+        PLANETS.forEach(p => {
+          const s = stateAt(p, 0);
+          const theta_deg = (s.theta / Math.PI * 180) % 360;
+          console.log(`${p.name}: theta=${theta_deg.toFixed(1)}° (m0=${(p.m0 * 180 / Math.PI).toFixed(1)}°, orient=${(p.orient * 180 / Math.PI).toFixed(1)}°)`);
+        });
+        MOONS.forEach(m => {
+          const s = stateAt(m, 0);
+          const theta_deg = (s.theta / Math.PI * 180) % 360;
+          console.log(`${m.name}: theta=${theta_deg.toFixed(1)}° (parent: ${m.parent})`);
+        });
+        return 'Check browser console for results';
+      };
+
+      window.calculateM0Correction = function (bodyName, actualTheta_deg, knownUT_sec) {
+        const body = findBody(bodyName);
+        if (!body) return `Body ${bodyName} not found`;
+        const predicted = stateAt(body, knownUT_sec);
+        const predicted_theta_deg = (predicted.theta * 180 / Math.PI) % 360;
+        let offset = actualTheta_deg - predicted_theta_deg;
+        while (offset > 180) offset -= 360;
+        while (offset < -180) offset += 360;
+        const current_m0_deg = body.m0 * 180 / Math.PI;
+        const corrected_m0_deg = current_m0_deg + offset;
+        return {
+          bodyName,
+          current_m0Deg: current_m0_deg.toFixed(2),
+          predicted_theta_deg: predicted_theta_deg.toFixed(2),
+          actual_theta_deg: actualTheta_deg.toFixed(2),
+          offset_deg: offset.toFixed(2),
+          corrected_m0Deg: corrected_m0_deg.toFixed(2),
+          explanation: `Change m0Deg from ${current_m0_deg.toFixed(1)} to ${corrected_m0_deg.toFixed(1)}`
+        };
+      };
+
+      window.calculateAllM0Corrections = function (correctionsArray) {
+        const knownUT_sec = UT;
+        console.log(`=== M0DEG CORRECTIONS AT UT=${utToDateString(knownUT_sec)} ===`);
+        const corrections = {};
+        correctionsArray.forEach(item => {
+          const result = window.calculateM0Correction(item.bodyName, item.actualTheta, knownUT_sec);
+          corrections[item.bodyName] = result;
+          console.log(`${item.bodyName}:`);
+          console.log(`  Current m0Deg: ${result.current_m0Deg}°`);
+          console.log(`  Predicted theta: ${result.predicted_theta_deg}°`);
+          console.log(`  Actual theta: ${result.actual_theta_deg}°`);
+          console.log(`  Correction needed: ${result.offset_deg}° offset`);
+          console.log(`  NEW m0Deg should be: ${result.corrected_m0Deg}°`);
+        });
+        return corrections;
+      };
+
+      window.generateCorrectedOrbitalData = function (correctionsObject) {
+        console.log('=== CORRECTED ORBITAL DATA ===');
+        console.log('Copy this into the index.html RAW_PLANETS and RAW_MOONS sections:\n');
+        let output = 'const RAW_PLANETS = [\n';
+        RAW_PLANETS.forEach(p => {
+          const correction = correctionsObject[p.name];
+          const newM0Deg = correction ? parseFloat(correction.corrected_m0Deg) : p.m0Deg;
+          output += `  { name: '${p.name}', color: '${p.color}', a: ${p.a}, e: ${p.e.toFixed(3)}, orientDeg: ${p.orientDeg}, m0Deg: ${newM0Deg.toFixed(1)}, period: ${p.period}, mu: ${p.mu}, radius: ${p.radius}, incl: ${p.incl}, desc: '${p.desc}' },\n`;
+        });
+        output += '];\n\n';
+        output += 'const RAW_MOONS = [\n';
+        RAW_MOONS.forEach(m => {
+          const correction = correctionsObject[m.name];
+          const newM0Deg = correction ? parseFloat(correction.corrected_m0Deg) : m.m0Deg;
+          output += `  { name: '${m.name}', parent: '${m.parent}', color: '${m.color}', a: ${m.a}, e: ${m.e.toFixed(2)}, orientDeg: ${m.orientDeg}, m0Deg: ${newM0Deg.toFixed(1)}, period: ${m.period}, incl: ${m.incl}, radius: ${m.radius}, desc: '${m.desc}' },\n`;
+        });
+        output += '];\n';
+        console.log(output);
+        return output;
       }
 
       function stumpC(z) { if (z > 1e-6) return (1 - Math.cos(Math.sqrt(z))) / z; if (z < -1e-6) { const s = Math.sqrt(-z); return (Math.cosh(s) - 1) / (-z); } return 0.5; }
@@ -2994,9 +3069,12 @@
       function computeTransfer(originName, destName, tRef = UT) {
         const originSelected = findBody(originName);
         const destSelected = findBody(destName);
+        const destMoon = destSelected && destSelected.parent ? destSelected : null;  // Track if destination is a moon
         const o = transferBodyFor(originSelected);
         const d = transferBodyFor(destSelected);
-        if (!originSelected || !destSelected || !o || !d || originSelected === destSelected || o === d) return null;
+        if (!originSelected || !destSelected || !o || !d || originSelected === destSelected) return null;
+        // Allow o === d for moon transfers (destination is moon of origin planet), but not for planet-to-planet
+        if (o === d && !destMoon) return null;
         const r1 = o.a, r2 = d.a, mu = KERBOL.mu;
         const at = (r1 + r2) / 2;
         const tt = Math.PI * Math.sqrt(Math.pow(at, 3) / mu);
@@ -3032,7 +3110,33 @@
         }
         const depEj = ejection(Math.abs(dv1_helio), o);
         const arrEj = ejection(Math.abs(dv2_helio), d);
-        return { origin: o, dest: d, originSelected, destSelected, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+
+        // Additional Δv for moon orbit insertion (if destination is a moon)
+        let moonInsertionDv = 0;
+        if (destMoon) {
+          // More accurate moon insertion calculation
+          // Accounts for: velocity matching + circularization in moon's gravity well
+          const moonOrbitAlt = Math.max(10000, destMoon.radius * 0.2); // 20% of moon radius or 10km min
+          const moonOrbitRadius = destMoon.radius + moonOrbitAlt;
+
+          // Orbital velocity at desired altitude around the moon
+          const moonCircularVelocity = Math.sqrt(destMoon.mu / moonOrbitRadius);
+
+          // Arrival velocity relative to parent planet (v-infinity at parent planet)
+          const arrivalVInfinityParent = Math.abs(r.dv2_helio);
+
+          // Moon's orbital velocity around parent
+          const moonOrbitalVelocity = Math.sqrt(d.mu / destMoon.a);
+
+          // Rough estimate: need to shed most of the arrival velocity and then circularize
+          // This is a simplification - actual cost depends on approach vector
+          // Factor in the moon's orbital velocity and circularization requirement
+          // Typical Δv ≈ moon_circular_velocity + velocity_matching_factor
+          // Using 1.5x as a conservative estimate for velocity matching and circularization
+          moonInsertionDv = moonCircularVelocity * 1.5;
+        }
+
+        return { origin: o, dest: d, originSelected, destSelected, destMoon, moonInsertionDv, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
       }
 
       let currentResult = null;
@@ -3201,7 +3305,7 @@
         const returnEjectionBurn = Math.abs(ret.dv1_helio) > 0 ? ret.depEj.dvBurn : 0;
         const kerbinCaptureBurn = ret.arrEj.dvBurn;
         const returnDv = returnEjectionBurn + kerbinCaptureBurn;
-        const outboundDv = (Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0) + r.arrEj.dvBurn;
+        const outboundDv = (Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0) + r.arrEj.dvBurn + (r.moonInsertionDv || 0);
         const departureBody = r.destSelected.parent ? r.destSelected : ret.originSelected;
 
         return {
@@ -3240,7 +3344,8 @@
         if (!r) { document.getElementById('transferResults').innerHTML = '<div class="placeholder">No transfer computed.</div>'; return; }
         const ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
         const ejArrBurn = r.arrEj.dvBurn;
-        const totalDv = ejDepBurn + ejArrBurn;
+        const moonInsertDv = r.moonInsertionDv || 0;
+        const totalDv = ejDepBurn + ejArrBurn + moonInsertDv;
         const totalHelioDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
         const phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
         const closeEnough = Math.abs(phaseDiff) < 2;
@@ -3248,33 +3353,24 @@
         const ghostUT = UT + waitSec + r.tt;
         const originName = r.originSelected.name;
         const destName = r.destSelected.name;
-        const parentNote = (r.originSelected.parent || r.destSelected.parent)
-          ? `<div class="note">Moon selections use the parent planet's heliocentric transfer window, with map markers and arrival ghost placed on the selected moon.</div>`
+        const isMoonOrigin = r.originSelected.parent;
+        const isMoonDest = r.destMoon;
+        const parentPlanetName = isMoonDest ? r.destMoon.parent : null;
+        const parentNote = (isMoonOrigin || isMoonDest)
+          ? `<div class="note">${isMoonDest ? `Moon transfers use ${parentPlanetName}'s heliocentric transfer window. Total budget includes parent planet capture + moon orbit insertion (~${moonInsertDv.toFixed(0)} m/s).` : `Moon origin uses the parent planet's heliocentric frame.`} Map markers and arrival ghost are placed on the selected moon.</div>`
           : '';
 
         document.getElementById('transferResults').innerHTML = `
     ${parentNote}
-    <div class="card">
-      <h3><span class="dot"></span>Transfer Time</h3>
-      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
-      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
-      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
-    </div>
-    <div class="card">
-      <h3><span class="dot"></span>Phase Angle</h3>
-      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
-      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough ? 'good' : ''}">${phaseDiff.toFixed(1)}°</span></div>
-    </div>
-    <div class="card">
+      <div class="card">
       <h3><span class="dot"></span>Δv Budget (from ${(PARK_ALT / 1000) | 0} km parking orbit)</h3>
       <div class="big-num">
         <div>${totalDv.toFixed(0)}<small>m/s total</small></div>
         <div style="font-size: 16px; color: var(--text-dim); font-weight: 400; text-shadow: none; margin-top: 4px;">${totalHelioDv.toFixed(0)}<small style="font-size: 11px;">m/s heliocentric total</small></div>
       </div>
       <div class="stat-row"><span class="k">Ejection burn @ ${originName}</span><span class="v hi">${ejDepBurn.toFixed(0)} m/s</span></div>
-      <div class="stat-row"><span class="k">Capture burn @ ${destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Capture burn @ ${parentPlanetName || destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
+      ${isMoonDest ? `<div class="stat-row"><span class="k">Moon orbit insertion @ ${destName}</span><span class="v hi">${moonInsertDv.toFixed(0)} m/s</span></div>` : ''}
       <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
       <div class="mission-time-row">
@@ -3290,7 +3386,26 @@
         </div>
       </div>
       ${returnBudgetHtml(r)}
-      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. Capture burn can be omitted for a flyby / aerocapture mission.</div>
+      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. ${isMoonDest ? `Moon insertion estimate (~${moonInsertDv.toFixed(0)} m/s) assumes velocity matching + circularization from parent planet sphere of influence; actual cost depends on approach geometry and final orbit altitude.` : `Capture burn can be omitted for a flyby / aerocapture mission.`}</div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Next Transfer Window</h3>
+      <div class="countdown ${r.waitSec === null ? 'past' : ''}">${r.waitSec === null ? 'Synodic period ≈ 0 (same period)' : (r.waitSec < 1 ? 'WINDOW OPEN NOW' : 'T‑minus ' + durationString(r.waitSec))}</div>
+      ${r.waitSec !== null ? `<div class="stat-row"><span class="k">Window opens at UT</span><span class="v">${utToDateString(UT + r.waitSec)}</span></div>` : ''}
+      <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec !== null ? utToDateString(ghostUT) : '—'}</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Transfer Time</h3>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
+      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
+      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
+    </div>
+    <div class="card">
+      <h3><span class="dot"></span>Phase Angle</h3>
+      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough ? 'good' : ''}">${phaseDiff.toFixed(1)}°</span></div>
     </div>
     <div class="card">
       <h3><span class="dot"></span>Ejection Angle (from prograde marker)</h3>
@@ -3298,12 +3413,6 @@
       <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${r.depEj.ejAngleFromPeri.toFixed(1)}° ${r.outbound ? 'ahead of' : 'behind'} prograde</span></div>
       <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
       <div class="note">Angle between your parking-orbit periapsis (burn point) and the planet's prograde/retrograde velocity direction, derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
-    </div>
-    <div class="card">
-      <h3><span class="dot"></span>Next Transfer Window</h3>
-      <div class="countdown ${r.waitSec === null ? 'past' : ''}">${r.waitSec === null ? 'Synodic period ≈ 0 (same period)' : (r.waitSec < 1 ? 'WINDOW OPEN NOW' : 'T‑minus ' + durationString(r.waitSec))}</div>
-      ${r.waitSec !== null ? `<div class="stat-row"><span class="k">Window opens at UT</span><span class="v">${utToDateString(UT + r.waitSec)}</span></div>` : ''}
-      <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec !== null ? utToDateString(ghostUT) : '—'}</span></div>
     </div>
     <div class="card" style="border-color:rgba(255,180,84,.22);">
       <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival</h3>
@@ -3495,8 +3604,11 @@
       function generatePorkchop() {
         const oName = originSelect.value, dName = destSelect.value;
         const originSelected = findBody(oName), destSelected = findBody(dName);
+        const destMoon = destSelected && destSelected.parent ? destSelected : null;
         const o = transferBodyFor(originSelected), d = transferBodyFor(destSelected);
-        if (!o || !d || o === d) return;
+        if (!o || !d) return;
+        // Allow o === d for moon transfers, but not for planet-to-planet
+        if (o === d && !destMoon) return;
         resizePkCanvas();
         const synPeriod = Math.abs(1 / (1 / o.period - 1 / d.period));
         const depSpan = Math.min(synPeriod * 1.05, o.period * 1.2);
@@ -3520,6 +3632,16 @@
               const vd = Math.hypot(sol.v1[0] - s1.vx, sol.v1[1] - s1.vy);
               const va = Math.hypot(sol.v2[0] - s2.vx, sol.v2[1] - s2.vy);
               dv = vd + va;
+
+              // Add moon insertion Δv for moon destinations
+              if (destMoon) {
+                const moonOrbitAlt = Math.max(10000, destMoon.radius * 0.2);
+                const moonOrbitRadius = destMoon.radius + moonOrbitAlt;
+                const moonCircularVelocity = Math.sqrt(destMoon.mu / moonOrbitRadius);
+                const moonInsertionDv = moonCircularVelocity * 1.5;
+                dv += moonInsertionDv;
+              }
+
               if (dv < dvMin) dvMin = dv;
               if (dv > dvMax) dvMax = dv;
             }
@@ -3527,7 +3649,7 @@
           }
           dvGrid.push(row);
         }
-        pkGrid = { depTimes, tofTimes, dvGrid, dvMin, dvMax, GRID, o, d };
+        pkGrid = { depTimes, tofTimes, dvGrid, dvMin, dvMax, GRID, o, d, destMoon };
         drawPorkchop();
       }
 
@@ -3580,10 +3702,11 @@
         const body = document.getElementById('pkSelectedBody');
         if (dv !== null) {
           card.style.display = '';
+          const dvLabel = pkGrid.destMoon ? 'Total Δv (heliocentric + moon insertion)' : 'Total heliocentric Δv';
           body.innerHTML = `
       <div class="stat-row"><span class="k">Departure UT</span><span class="v">${utToDateString(tDep)}</span></div>
       <div class="stat-row"><span class="k">Time of Flight</span><span class="v">${durationString(tof)}</span></div>
-      <div class="stat-row"><span class="k">Total heliocentric Δv</span><span class="v hi">${dv.toFixed(0)} m/s</span></div>`;
+      <div class="stat-row"><span class="k">${dvLabel}</span><span class="v hi">${dv.toFixed(0)} m/s</span></div>`;
         } else {
           card.style.display = 'none';
         }
