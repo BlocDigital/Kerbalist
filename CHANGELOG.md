@@ -2,6 +2,21 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [2.4] - 2026-08-28
+
+### Added
+
+- **Moon Transfer Δv Budgeting**: Fixed moon destination transfers showing identical Δv budget to parent planet by adding automatic moon orbit insertion cost calculation (~1.5x the moon's circular orbital velocity). Now correctly displays: ejection burn @ origin, capture burn @ parent planet, and moon orbit insertion @ destination with separate line items in total budget.
+- **Moon Insertion Cost Display**: Added dedicated line item "Moon orbit insertion @ [moon name]" showing estimated Δv cost for orbit insertion at destination moon.
+- **Porkchop Plot Moon Support**: Moon destinations now appear in porkchop plot generator with colors including moon insertion cost, labeled as "Total Δv (heliocentric + moon insertion)".
+- **Return Trip Moon Budgeting**: Round-trip return-to-Kerbin calculations now include outbound moon orbit insertion cost for accurate mission budgeting.
+
+### Technical Updates
+
+- **Validation Logic**: Modified transfer validation to allow same parent planet when destination is a moon (previously rejected such transfers).
+- **Orbit Insertion Formula**: Uses `V_insertion = 1.5 × sqrt(μ_moon / r_orbit)` where orbit altitude = max(20% of moon radius, 10km) to estimate capture and circularization burns.
+- **UI Clarifications**: Updated notes to distinguish heliocentric-only Δv from total budget including moon insertion costs.
+
 ## [2.3] - 2026-08-27
 
 ### Added
