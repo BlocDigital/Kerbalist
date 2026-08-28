@@ -191,46 +191,170 @@
       background: #164048;
     }
 
-    .live-sync-wrap { position: relative; }
+    .live-sync-wrap {
+      position: relative;
+    }
 
     .live-btn {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--panel2); border: 1px solid var(--border); color: var(--text-dim);
-      font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .05em;
-      padding: 7px 11px; border-radius: 8px; cursor: pointer; text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: .05em;
+      padding: 7px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
     }
-    .live-btn:hover { border-color: var(--border-bright); color: var(--text); }
-    .live-btn .pip { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dimmer); }
-    .live-btn.on { color: var(--green); border-color: #1f5d2e; }
-    .live-btn.on .pip { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 1.4s infinite; }
-    .live-btn.err .pip { background: var(--red); }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+    .live-btn:hover {
+      border-color: var(--border-bright);
+      color: var(--text);
+    }
+
+    .live-btn .pip {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-dimmer);
+    }
+
+    .live-btn.on {
+      color: var(--green);
+      border-color: #1f5d2e;
+    }
+
+    .live-btn.on .pip {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 1.4s infinite;
+    }
+
+    .live-btn.err .pip {
+      background: var(--red);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .35;
+      }
+    }
 
     .live-panel {
-      display: none; position: absolute; top: 42px; right: 0; z-index: 40;
-      width: 300px; background: var(--panel); border: 1px solid var(--border-bright);
-      border-radius: 10px; padding: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.5);
+      display: none;
+      position: absolute;
+      top: 42px;
+      right: 0;
+      z-index: 40;
+      width: 300px;
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 13px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
     }
-    .live-panel.open { display: block; }
-    .live-panel h4 { margin: 0 0 8px; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
-    .live-panel .opt { border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; margin-bottom: 9px; }
-    .live-panel .opt-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-    .live-panel .opt-desc { font-size: 10.5px; color: var(--text-dimmer); line-height: 1.5; margin-bottom: 8px; }
+
+    .live-panel.open {
+      display: block;
+    }
+
+    .live-panel h4 {
+      margin: 0 0 8px;
+      font-size: 10.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .live-panel .opt {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      margin-bottom: 9px;
+    }
+
+    .live-panel .opt-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .live-panel .opt-desc {
+      font-size: 10.5px;
+      color: var(--text-dimmer);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
     .live-panel input[type=text] {
-      width: 100%; background: var(--panel3); border: 1px solid var(--border); border-radius: 5px;
-      color: var(--text); font-family: var(--font-mono); font-size: 11.5px; padding: 6px 7px; outline: none; margin-bottom: 7px;
+      width: 100%;
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      padding: 6px 7px;
+      outline: none;
+      margin-bottom: 7px;
     }
-    .live-panel input[type=text]:focus { border-color: var(--cyan); }
+
+    .live-panel input[type=text]:focus {
+      border-color: var(--cyan);
+    }
+
     .live-panel .opt button {
-      width: 100%; background: var(--cyan-dim); border: 1px solid var(--cyan-dim); color: var(--cyan);
-      font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .05em;
-      padding: 7px; border-radius: 6px; cursor: pointer; text-transform: uppercase;
+      width: 100%;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-dim);
+      color: var(--cyan);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: .05em;
+      padding: 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
     }
-    .live-panel .opt button:hover { background: #164048; }
-    .live-panel .opt button.stop { background: var(--amber-dim); border-color: var(--amber-dim); color: var(--amber); }
-    .live-status { font-size: 10.5px; color: var(--text-dimmer); margin-top: 2px; font-family: var(--font-mono); line-height: 1.4; }
-    .live-status.ok { color: var(--green); }
-    .live-status.err { color: var(--red); }
+
+    .live-panel .opt button:hover {
+      background: #164048;
+    }
+
+    .live-panel .opt button.stop {
+      background: var(--amber-dim);
+      border-color: var(--amber-dim);
+      color: var(--amber);
+    }
+
+    .live-status {
+      font-size: 10.5px;
+      color: var(--text-dimmer);
+      margin-top: 2px;
+      font-family: var(--font-mono);
+      line-height: 1.4;
+    }
+
+    .live-status.ok {
+      color: var(--green);
+    }
+
+    .live-status.err {
+      color: var(--red);
+    }
 
     .warp-controls {
       display: flex;
@@ -722,6 +846,79 @@
       color: var(--red);
     }
 
+    .mission-time-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .05);
+      font-size: 16px;
+    }
+
+    .mission-time-label {
+      color: var(--text-dim);
+    }
+
+    .mission-stepper {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(42px, 1fr)) minmax(76px, 1.25fr) repeat(3, minmax(42px, 1fr));
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .mission-stepper button {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      min-height: 34px;
+      padding: 0 7px;
+      cursor: pointer;
+      transition: .12s;
+    }
+
+    .mission-stepper button:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: var(--panel3);
+    }
+
+    .mission-days-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      background: rgba(79, 224, 232, .08);
+      border: 1px solid rgba(79, 224, 232, .24);
+      border-radius: 6px;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .return-visual-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, .05);
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+
+    .return-visual-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
     .big-num {
       font-family: var(--font-mono);
       font-size: 34px;
@@ -955,7 +1152,7 @@
         <div class="mark"></div>
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 stock system</div>
+          <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 Redux Beta System</div>
         </div>
       </div>
       <div class="ut-clock">
@@ -981,13 +1178,16 @@
           <h4>Sync UT with a running KSP2</h4>
           <div class="opt">
             <div class="opt-title">① Local bridge (recommended)</div>
-            <div class="opt-desc">Run a small companion script (e.g. using the <b>kRPC2</b> mod) that reads live UT from KSP2 and serves it on localhost. This page polls it every 2s. Works while flying — no manual saving needed.</div>
+            <div class="opt-desc">Run a small companion script (e.g. using the <b>kRPC2</b> mod) that reads live UT from
+              KSP2 and serves it on localhost. This page polls it every 2s. Works while flying — no manual saving
+              needed.</div>
             <input type="text" id="bridgeUrl" value="http://localhost:5005/ut" placeholder="http://localhost:5005/ut">
             <button id="bridgeConnectBtn">Connect</button>
           </div>
           <div class="opt">
             <div class="opt-title">② Watch save file</div>
-            <div class="opt-desc">No mod required. Pick your KSP2 persistent save file — this page re-reads it every few seconds and syncs UT whenever the game autosaves. Chrome/Edge only.</div>
+            <div class="opt-desc">No mod required. Pick your KSP2 persistent save file — this page re-reads it every few
+              seconds and syncs UT whenever the game autosaves. Chrome/Edge only.</div>
             <button id="fileWatchBtn">Choose Save File…</button>
           </div>
           <div class="live-status" id="liveStatus">Not connected — UT is manual / warp-driven.</div>
@@ -1017,7 +1217,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
-        <div class="map-version" id="mapVersion">v2.0</div>
+        <div class="map-version" id="mapVersion">v2.3</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1076,11 +1276,16 @@
 
           <div class="tab-panel" id="panel-assists">
             <div class="card">
-              <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity Assist Routes</h3>
+              <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity
+                Assist Routes</h3>
               <div id="assistList">
-                <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a flyby, it'll show up here as an optional route.</div>
+                <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a
+                  flyby, it'll show up here as an optional route.</div>
               </div>
-              <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not a flight plan.</div>
+              <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and
+                comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories
+                also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not
+                a flight plan.</div>
             </div>
           </div>
 
@@ -1117,13 +1322,13 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v2.0';
+    const VERSION = 'v2.3';
 
     (function (THREE) {
       "use strict";
 
       /* =========================================================
-         1. PHYSICAL DATA — stock Kerbol system (KSP / KSP2)
+         1. PHYSICAL DATA — Redux Beta Snapshot system (KSP2)
          ========================================================= */
       const KERBOL = { name: 'Kerbol', mu: 1.1723328e18, radius: 261600000, color: '#ffd166' };
       const DEG = Math.PI / 180;
@@ -1534,14 +1739,42 @@
         return acc;
       }, {});
 
+      function createDresRingTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 1;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 256, 0);
+
+        grad.addColorStop(0.00, 'rgba(180, 175, 165, 0.00)');
+        grad.addColorStop(0.12, 'rgba(195, 188, 175, 0.30)');
+        grad.addColorStop(0.28, 'rgba(215, 208, 194, 0.60)');
+        grad.addColorStop(0.38, 'rgba(150, 144, 134, 0.20)');
+        grad.addColorStop(0.48, 'rgba(240, 232, 218, 0.90)');
+        grad.addColorStop(0.52, 'rgba(245, 237, 222, 0.90)');
+        grad.addColorStop(0.64, 'rgba(160, 154, 142, 0.25)');
+        grad.addColorStop(0.78, 'rgba(210, 203, 189, 0.65)');
+        grad.addColorStop(0.90, 'rgba(175, 168, 156, 0.30)');
+        grad.addColorStop(1.00, 'rgba(160, 155, 145, 0.00)');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 256, 1);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+      }
+
       function moonOrbitDisplayRadius(m) {
         const parentRadius = planetDisplayRadii[m.parent] || 2;
         const maxA = maxMoonAByParent[m.parent] || m.a;
         const parentTuning = {
           Eve: { base: 2.4, span: 6.8 },
           Kerbin: { base: 2.6, span: 9.2 },
-          Duna: { base: 2.4, span: 6.5 }
+          Duna: { base: 2.4, span: 6.5 },
+          Dres: { base: 2.5, span: 7.5 }
         };
+
         if (parentTuning[m.parent]) {
           const t = parentTuning[m.parent];
           const ratio = Math.sqrt(m.a / maxA);
@@ -1610,17 +1843,20 @@
           new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false })
         ));
 
-        // Dres Asteroid Ring System
+        // Dres Asteroid Ring System (Embedded in and centered along Drast's orbit)
         if (p.name === 'Dres') {
-          const innerR = baseRadius * 2.05;
-          const outerR = baseRadius * 2.35;
-          const ringGeo = new THREE.RingGeometry(innerR, outerR, 96);
-          // Double-sided ring material with subtle grey asteroid dust opacity
+          const drast = RAW_MOONS.find(m => m.name === 'Drast');
+          const drastOrbitRad = drast ? moonOrbitDisplayRadius(drast) : baseRadius * 3.5;
+          const ringWidth = 1.8; // ring width spanning across Drast's orbit
+          const innerR = Math.max(baseRadius * 1.25, drastOrbitRad - ringWidth / 2);
+          const outerR = drastOrbitRad + ringWidth / 2;
+
+          const ringGeo = new THREE.RingGeometry(innerR, outerR, 128);
           const ringMat = new THREE.MeshBasicMaterial({
-            color: 0x8a929e,
+            map: createDresRingTexture(),
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.45,
+            opacity: 0.85,
             depthWrite: false
           });
           const ringMesh = new THREE.Mesh(ringGeo, ringMat);
@@ -1789,6 +2025,167 @@
         if (arcDepDot) { scene.remove(arcDepDot); arcDepDot = null; }
         if (arcArrDot) { scene.remove(arcArrDot); arcArrDot = null; }
         arcGeo = null;
+      }
+
+      let returnArcGeo = null, returnArcLine = null, returnDepDot = null, returnArrDot = null;
+      let returnDepGhost = null, returnDepGlow = null, returnDepLineGeo = null, returnDepLineObj = null, returnDepLabelEl = null;
+      let returnArrGhost = null, returnArrGlow = null, returnArrLineGeo = null, returnArrLineObj = null, returnArrLabelEl = null;
+
+      function initReturnTripOverlay() {
+        hideReturnTripOverlay();
+
+        returnArcGeo = new THREE.BufferGeometry();
+        returnArcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
+        returnArcLine = new THREE.Line(returnArcGeo, new THREE.LineDashedMaterial({
+          color: 0x4aa3ff, dashSize: 7, gapSize: 5, transparent: true, opacity: 0.9
+        }));
+        scene.add(returnArcLine);
+
+        returnDepDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x4aa3ff }));
+        returnArrDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.65 }));
+        scene.add(returnDepDot);
+        scene.add(returnArrDot);
+
+        returnDepGhost = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0x4aa3ff, transparent: true, opacity: 0.3, depthWrite: false })
+        );
+        returnDepGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0x4aa3ff, transparent: true, opacity: 0.08, depthWrite: false })
+        );
+        scene.add(returnDepGhost);
+        scene.add(returnDepGlow);
+
+        returnArrGhost = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.32, depthWrite: false })
+        );
+        returnArrGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.09, depthWrite: false })
+        );
+        scene.add(returnArrGhost);
+        scene.add(returnArrGlow);
+
+        returnDepLineGeo = new THREE.BufferGeometry();
+        returnDepLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        returnDepLineObj = new THREE.Line(returnDepLineGeo, new THREE.LineDashedMaterial({
+          color: 0x4aa3ff, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(returnDepLineObj);
+
+        returnArrLineGeo = new THREE.BufferGeometry();
+        returnArrLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        returnArrLineObj = new THREE.Line(returnArrLineGeo, new THREE.LineDashedMaterial({
+          color: 0xffb454, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(returnArrLineObj);
+
+        returnDepLabelEl = document.createElement('div');
+        returnDepLabelEl.className = 'ghost-label-3d';
+        returnDepLabelEl.style.color = '#4aa3ff';
+        returnDepLabelEl.textContent = '⬡ Return departure';
+        labelCtr.appendChild(returnDepLabelEl);
+
+        returnArrLabelEl = document.createElement('div');
+        returnArrLabelEl.className = 'ghost-label-3d';
+        returnArrLabelEl.style.color = 'var(--amber)';
+        returnArrLabelEl.textContent = '⬡ Kerbin return';
+        labelCtr.appendChild(returnArrLabelEl);
+      }
+
+      function updateReturnTripOverlay() {
+        if (!visualizeReturnTrip || !returnArcLine || !currentResult) return;
+        const plan = getReturnPlan(currentResult);
+        if (!plan) {
+          visualizeReturnTrip = false;
+          hideReturnTripOverlay();
+          return;
+        }
+
+        const ret = plan.ret;
+        const depUT = plan.returnDepartureUT;
+        const arrUT = plan.returnArrivalUT;
+        const osDep = stateAt(ret.origin, depUT);
+        const dsArr = stateAt(ret.dest, arrUT);
+        const ptDep = bodyWorldPositionAt(plan.departureBody, depUT);
+        const ptArr = bodyWorldPositionAt(ret.destSelected, arrUT);
+        const scaleStart = heliocentricDisplayScale(Math.hypot(osDep.x, osDep.y));
+        const scaleEnd = heliocentricDisplayScale(Math.hypot(dsArr.x, dsArr.y));
+        const lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, ret.tt, KERBOL.mu, ARC_N);
+        const arr = returnArcGeo.attributes.position.array;
+
+        if (lambertPts) {
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const curIncl = ret.origin.incl + (ret.dest.incl - ret.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const p = lambertPts[i];
+            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        } else {
+          const rA = Math.hypot(osDep.x, osDep.y);
+          const rB = Math.hypot(dsArr.x, dsArr.y);
+          const a_t = (rA + rB) / 2;
+          const e_t = Math.abs(rB - rA) / (rB + rA);
+          const inbound = rB < rA;
+          const periTheta = inbound ? (osDep.theta - Math.PI) : osDep.theta;
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const nu = inbound ? Math.PI * (1 - frac) : frac * Math.PI;
+            const rr = a_t * (1 - e_t * e_t) / (1 + e_t * Math.cos(nu));
+            const theta = nu + periTheta;
+            const curIncl = ret.origin.incl + (ret.dest.incl - ret.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
+        }
+
+        returnArcGeo.attributes.position.needsUpdate = true;
+        returnArcLine.computeLineDistances();
+        returnDepDot.position.copy(ptDep);
+        returnArrDot.position.copy(ptArr);
+        returnDepGhost.position.copy(ptDep);
+        returnDepGlow.position.copy(ptDep);
+        returnArrGhost.position.copy(ptArr);
+        returnArrGlow.position.copy(ptArr);
+
+        const currentDepBodyPos = bodyWorldPositionAt(plan.departureBody, UT);
+        const depLine = returnDepLineGeo.attributes.position.array;
+        depLine[0] = currentDepBodyPos.x; depLine[1] = currentDepBodyPos.y; depLine[2] = currentDepBodyPos.z;
+        depLine[3] = ptDep.x; depLine[4] = ptDep.y; depLine[5] = ptDep.z;
+        returnDepLineGeo.attributes.position.needsUpdate = true;
+        returnDepLineObj.computeLineDistances();
+
+        const currentKerbinPos = bodyWorldPositionAt(ret.destSelected, UT);
+        const arrLine = returnArrLineGeo.attributes.position.array;
+        arrLine[0] = currentKerbinPos.x; arrLine[1] = currentKerbinPos.y; arrLine[2] = currentKerbinPos.z;
+        arrLine[3] = ptArr.x; arrLine[4] = ptArr.y; arrLine[5] = ptArr.z;
+        returnArrLineGeo.attributes.position.needsUpdate = true;
+        returnArrLineObj.computeLineDistances();
+
+        if (returnDepLabelEl) returnDepLabelEl._worldPos = ptDep;
+        if (returnArrLabelEl) returnArrLabelEl._worldPos = ptArr;
+      }
+
+      function hideReturnTripOverlay() {
+        if (returnArcLine) { scene.remove(returnArcLine); returnArcLine = null; }
+        if (returnDepDot) { scene.remove(returnDepDot); returnDepDot = null; }
+        if (returnArrDot) { scene.remove(returnArrDot); returnArrDot = null; }
+        if (returnDepGhost) { scene.remove(returnDepGhost); returnDepGhost = null; }
+        if (returnDepGlow) { scene.remove(returnDepGlow); returnDepGlow = null; }
+        if (returnArrGhost) { scene.remove(returnArrGhost); returnArrGhost = null; }
+        if (returnArrGlow) { scene.remove(returnArrGlow); returnArrGlow = null; }
+        if (returnDepLineObj) { scene.remove(returnDepLineObj); returnDepLineObj = null; }
+        if (returnArrLineObj) { scene.remove(returnArrLineObj); returnArrLineObj = null; }
+        if (returnDepLabelEl) { returnDepLabelEl.remove(); returnDepLabelEl = null; }
+        if (returnArrLabelEl) { returnArrLabelEl.remove(); returnArrLabelEl = null; }
+        returnArcGeo = null;
+        returnDepLineGeo = null;
+        returnArrLineGeo = null;
       }
 
       /* =========================================================
@@ -2178,6 +2575,20 @@
           assistGhostLabelEl.style.left = s.x + 'px';
           assistGhostLabelEl.style.top = s.y + 'px';
           assistGhostLabelEl.style.display = s.behind ? 'none' : '';
+        }
+
+        if (returnDepLabelEl && returnDepLabelEl._worldPos) {
+          const s = worldToScreen(returnDepLabelEl._worldPos);
+          returnDepLabelEl.style.left = s.x + 'px';
+          returnDepLabelEl.style.top = s.y + 'px';
+          returnDepLabelEl.style.display = s.behind ? 'none' : '';
+        }
+
+        if (returnArrLabelEl && returnArrLabelEl._worldPos) {
+          const s = worldToScreen(returnArrLabelEl._worldPos);
+          returnArrLabelEl.style.left = s.x + 'px';
+          returnArrLabelEl.style.top = s.y + 'px';
+          returnArrLabelEl.style.display = s.behind ? 'none' : '';
         }
       }
 
@@ -2580,7 +2991,7 @@
         return best + destPlanet.period * 0.002; // nudge off the exact-180 Lambert singularity
       }
 
-      function computeTransfer(originName, destName) {
+      function computeTransfer(originName, destName, tRef = UT) {
         const originSelected = findBody(originName);
         const destSelected = findBody(destName);
         const o = transferBodyFor(originSelected);
@@ -2595,7 +3006,7 @@
         const n1 = o.n, n2 = d.n;
         let requiredPhase = 180 - (n2 * tt) * 180 / Math.PI;
         requiredPhase = angNormPM180(requiredPhase);
-        const os = stateAt(o, UT), ds = stateAt(d, UT);
+        const os = stateAt(o, tRef), ds = stateAt(d, tRef);
         let currentPhase = angNormPM180((ds.theta - os.theta) * 180 / Math.PI);
         const rate = (n2 - n1);
         let waitSec = null;
@@ -2621,10 +3032,12 @@
         }
         const depEj = ejection(Math.abs(dv1_helio), o);
         const arrEj = ejection(Math.abs(dv2_helio), d);
-        return { origin: o, dest: d, originSelected, destSelected, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+        return { origin: o, dest: d, originSelected, destSelected, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
       }
 
       let currentResult = null;
+      let missionTimeOnTargetDays = 0;
+      let visualizeReturnTrip = false;
       let lastSidebarUpdate = 0;
       let currentAssists = [];
       let selectedAssistIdx = null;
@@ -2727,6 +3140,7 @@
         currentAssists = [];
         selectedAssistIdx = null;
         hideTransferArc();
+        hideReturnTripOverlay();
         hidePhaseLines();
         clearGhost();
         hideAssistArcs();
@@ -2757,6 +3171,10 @@
         updatePhaseLines();
         initGhost(currentResult.destSelected);
         updateGhostPosition();
+        if (visualizeReturnTrip) {
+          initReturnTripOverlay();
+          updateReturnTripOverlay();
+        }
         // Gravity assist options
         refreshAssistsForCurrentResult();
         renderAssistOptions();
@@ -2764,6 +3182,58 @@
       };
 
       document.getElementById('clearTransferBtn').onclick = clearTransfer;
+
+      function getReturnPlan(r) {
+        const destBodyName = r.destSelected.name;
+        const returnOriginName = r.destSelected.parent ? r.destSelected.parent : destBodyName;
+        if (returnOriginName === 'Kerbin') return null;
+
+        const outboundWaitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
+        const outboundArrivalUT = UT + outboundWaitSec + r.tt;
+        const missionStaySec = Math.max(0, missionTimeOnTargetDays) * DAY_SEC;
+        const returnReadyUT = outboundArrivalUT + missionStaySec;
+        const ret = computeTransfer(returnOriginName, 'Kerbin', returnReadyUT);
+        if (!ret) return null;
+
+        const returnWaitSec = ret.waitSec !== null ? Math.max(0, ret.waitSec) : 0;
+        const returnDepartureUT = returnReadyUT + returnWaitSec;
+        const returnArrivalUT = returnDepartureUT + ret.tt;
+        const returnEjectionBurn = Math.abs(ret.dv1_helio) > 0 ? ret.depEj.dvBurn : 0;
+        const kerbinCaptureBurn = ret.arrEj.dvBurn;
+        const returnDv = returnEjectionBurn + kerbinCaptureBurn;
+        const outboundDv = (Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0) + r.arrEj.dvBurn;
+        const departureBody = r.destSelected.parent ? r.destSelected : ret.originSelected;
+
+        return {
+          ret, destBodyName, returnOriginName, returnReadyUT, returnWaitSec,
+          returnDepartureUT, returnArrivalUT, returnEjectionBurn,
+          kerbinCaptureBurn, returnDv, roundTripDv: outboundDv + returnDv,
+          departureBody
+        };
+      }
+
+      function returnBudgetHtml(r) {
+        const plan = getReturnPlan(r);
+        if (!plan) {
+          return '<div class="note">Return-to-Kerbin budget is not shown because Kerbin is already the selected destination.</div>';
+        }
+
+        const targetLabel = r.destSelected.parent ? `${plan.destBodyName} / ${plan.returnOriginName}` : plan.destBodyName;
+
+        return `
+      <div class="stat-row"><span class="k">Return origin</span><span class="v">${targetLabel}</span></div>
+      <div class="return-visual-toggle">
+        <label for="visualizeReturnTrip">Visualize return trip on map</label>
+        <input type="checkbox" id="visualizeReturnTrip" ${visualizeReturnTrip ? 'checked' : ''} onchange="window.setReturnTripVisualization(this.checked)">
+      </div>
+      <div class="stat-row"><span class="k">Return window wait</span><span class="v warn">${plan.returnWaitSec < 1 ? 'Open now' : durationString(plan.returnWaitSec)}</span></div>
+      <div class="stat-row"><span class="k">Return departure UT</span><span class="v">${utToDateString(plan.returnDepartureUT)}</span></div>
+      <div class="stat-row"><span class="k">Return arrival UT</span><span class="v">${utToDateString(plan.returnArrivalUT)}</span></div>
+      <div class="stat-row"><span class="k">Return ejection burn @ ${plan.returnOriginName}</span><span class="v hi">${plan.returnEjectionBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Kerbin capture burn</span><span class="v hi">${plan.kerbinCaptureBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Return Δv budget</span><span class="v hi">${plan.returnDv.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Round-trip Δv budget</span><span class="v warn">${plan.roundTripDv.toFixed(0)} m/s</span></div>`;
+      }
 
       function renderTransferResults() {
         const r = currentResult;
@@ -2807,10 +3277,23 @@
       <div class="stat-row"><span class="k">Capture burn @ ${destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
+      <div class="mission-time-row">
+        <div class="mission-time-label">Mission time on target planet</div>
+        <div class="mission-stepper" aria-label="Mission time on target planet in days">
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(-20)" title="Decrease mission time by 20 days">-20</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(-10)" title="Decrease mission time by 10 days">-10</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(-1)" title="Decrease mission time by 1 day">-1</button>
+          <div class="mission-days-display">${missionTimeOnTargetDays}d</div>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(1)" title="Increase mission time by 1 day">+1</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(10)" title="Increase mission time by 10 days">+10</button>
+          <button type="button" onclick="window.adjustMissionTimeOnTarget(20)" title="Increase mission time by 20 days">+20</button>
+        </div>
+      </div>
+      ${returnBudgetHtml(r)}
       <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. Capture burn can be omitted for a flyby / aerocapture mission.</div>
     </div>
     <div class="card">
-      <h3><span class="dot"></span>Ejection Angles (from prograde marker)</h3>
+      <h3><span class="dot"></span>Ejection Angle (from prograde marker)</h3>
       ${ejectionDiagramSvg(r)}
       <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${r.depEj.ejAngleFromPeri.toFixed(1)}° ${r.outbound ? 'ahead of' : 'behind'} prograde</span></div>
       <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
@@ -2829,6 +3312,26 @@
       <div class="note">The translucent ghost on the 3D map shows where ${destName} will be when your craft arrives. A dashed line connects its current position to the arrival position. The ghost updates live as UT advances.</div>
     </div>`;
       }
+
+      window.adjustMissionTimeOnTarget = (deltaDays) => {
+        missionTimeOnTargetDays = Math.max(0, missionTimeOnTargetDays + deltaDays);
+        renderTransferResults();
+        if (visualizeReturnTrip) {
+          if (!returnArcLine) initReturnTripOverlay();
+          updateReturnTripOverlay();
+        }
+      };
+
+      window.setReturnTripVisualization = (checked) => {
+        visualizeReturnTrip = checked;
+        if (visualizeReturnTrip) {
+          initReturnTripOverlay();
+          updateReturnTripOverlay();
+        } else {
+          hideReturnTripOverlay();
+        }
+        renderTransferResults();
+      };
 
       function renderAssistOptions() {
         const list = document.getElementById('assistList');
@@ -2888,19 +3391,19 @@
         // Inbound:  burn is ejAngle° CW  from prograde → svgDeg = 90 + ejAngle
         const burnSvgDeg = r.outbound ? (90 - ejAngle) : (90 + ejAngle);
         const [pgX, pgY] = pt(90, OR);
-        const [bX,  bY ] = pt(burnSvgDeg, OR);
+        const [bX, bY] = pt(burnSvgDeg, OR);
 
         // Thrust vector: tangent to orbit (CCW direction) at burn point; flip sign for inbound (retro)
         const burnRad = (burnSvgDeg - 90) * Math.PI / 180;
         const sign = r.outbound ? 1 : -1;
         const thrX = -Math.sin(burnRad) * sign;
-        const thrY =  Math.cos(burnRad) * sign;
+        const thrY = Math.cos(burnRad) * sign;
         const perpX = thrY, perpY = -thrX; // perpendicular for flange spread
 
         // Exhaust (opposite to thrust): main line + two flanges
         const ex0X = (bX - thrX * 7).toFixed(1), ex0Y = (bY - thrY * 7).toFixed(1);
         const ex1X = (bX - thrX * 17).toFixed(1), ex1Y = (bY - thrY * 17).toFixed(1);
-        const emX  = (bX - thrX * 12).toFixed(1), emY  = (bY - thrY * 12).toFixed(1);
+        const emX = (bX - thrX * 12).toFixed(1), emY = (bY - thrY * 12).toFixed(1);
         const ef1X = (bX - thrX * 16 + perpX * 5).toFixed(1);
         const ef1Y = (bY - thrY * 16 + perpY * 5).toFixed(1);
         const ef2X = (bX - thrX * 16 - perpX * 5).toFixed(1);
@@ -3122,12 +3625,20 @@
           updateTransferArc();   // update transfer ellipse
           updatePhaseLines();    // update phase angle spokes
           updateGhostPosition(); // move ghost sphere
+          if (visualizeReturnTrip) {
+            if (!returnArcLine) initReturnTripOverlay();
+            updateReturnTripOverlay();
+          }
           if (selectedAssistIdx !== null) updateAssistArcs(); // move assist arcs/marker if a flyby route is selected
 
           // Rate-limited sidebar update (every ~1.2 s)
           if (now - lastSidebarUpdate > 1200) {
             renderTransferResults();
             refreshAssistsForCurrentResult();
+            if (visualizeReturnTrip) {
+              if (!returnArcLine) initReturnTripOverlay();
+              updateReturnTripOverlay();
+            }
             if (selectedAssistIdx !== null) { initAssistArcs(); updateAssistArcs(); }
             renderAssistOptions();
             lastSidebarUpdate = now;

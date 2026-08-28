@@ -2,18 +2,26 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
-## [2.1] - 2026-08-10
+## [2.3] - 2026-08-27
+
+### Added
+
+- **Return-to-Kerbin Δv Budgeting**: Added mission time on target body controls to the Δv Budget card, with step buttons for -20, -10, -1, +1, +10, and +20 days.
+- **Return Window Details**: The Δv Budget card now estimates the next target-to-Kerbin transfer window after the mission stay, including return departure UT, Kerbin arrival UT, return ejection burn, Kerbin capture burn, return Δv, and round-trip Δv.
+- **Return Trip Map Visualization**: Added an optional checkbox to draw the return transfer arc on the 3D map with distinct colors, including return departure and Kerbin arrival ghost positions.
+
+## [2.2] - 2026-08-11
 
 ### Added
 
 - **Heliocentric Δv Total Display**: Added a supplementary heliocentric total m/s readout in a smaller font beneath the main ejection/capture parking orbit Δv budget.
-- **Ejection Angle Visual Schematic**: Added a local planetary orbit diagram to the Ejection Angles card showing the parking orbit around the origin body, the prograde marker, and the precise burn position with thrust vector exhaust flames.
+- **Ejection Angle Visual Schematic**: Added a local planetary orbit diagram to the Ejection Angle card showing the parking orbit around the origin body, the prograde marker, and the precise burn position with thrust vector exhaust flames.
 
 ### Changed
 
-- **Card Layout & Workflow Reordering**: Moved the Ejection Angles card directly below the Δv Budget card for better visual sequence during mission planning.
+- **Card Layout & Workflow Reordering**: Moved the Ejection Angle card directly below the Δv Budget card for better visual sequence during mission planning.
 - **UI & Typography Scaling**: Scaled all sidebar UI elements, fonts, controls, padding, and borders up by +30% and increased note text size by +20% for improved readability, automatically scaling SVG diagrams to match.
-- **Dres Ring System & Drast Orbit Integration**: Re-centered Dres's ring system directly along the orbit of   Drast with multi-band ring texturing so Drast orbits embedded within the ring band, matching KSP2 screenshots.
+- **Dres Ring System & Drast Orbit Integration**: Re-centered Dres's ring system directly along the orbit of Drast with multi-band ring texturing so Drast orbits embedded within the ring band.
 
 ## [2.0] - 2026-08-10
 
