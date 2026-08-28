@@ -1,0 +1,40 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "lmstudio2/deepseek-r1-distill-qwen-14b",
+  "provider": {
+    "lmstudio2": {
+      "name": "LmStudio",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://localhost:1234/v1"
+      },
+      "models": {
+        "deepseek-r1-distill-qwen-14b": {
+          "name": "DeepSeek R1 Distill Qwen 14B",
+          "modalities": {
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "systemPrompt": "Keep responses to the point. One step at a time."
+        },
+        "qwen/qwen3.5-9b": {
+          "name": "Qwen3.5 9B",
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "systemPrompt": "Keep responses to the point. One step at a time."
+        }
+      }
+    }
+  }
+}
