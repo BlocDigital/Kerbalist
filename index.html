@@ -1327,704 +1327,6 @@
     (function (THREE) {
       "use strict";
 
-      /* =========================================================
-         1. PHYSICAL DATA — stock Kerbol system (KSP / KSP2)
-         ========================================================= */
-      const KERBOL = { name: 'Kerbol', mu: 1.1723328e18, radius: 261600000, color: '#ffd166' };
-      const DEG = Math.PI / 180;
-
-      const RAW_PLANETS = [
-        {
-          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 180, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
-          desc: 'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.'
-        },
-        {
-          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 180, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
-          desc: 'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.'
-        },
-        {
-          name: 'Kerbin', color: '#4b9eff', a: 13599840256, e: 0.000, orientDeg: 0, m0Deg: 180, period: 9203544.6, mu: 3.5316000e12, radius: 600000, incl: 0.00,
-          desc: 'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.'
-        },
-        {
-          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 180, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
-          desc: 'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.'
-        },
-        {
-          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 180, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
-          desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Orbited by the Dresteroids Drast and Beyl.'
-        },
-        {
-          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 6, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
-          desc: 'A gas giant with a swirling green atmosphere and an enormous sphere of influence hosting five moons: Laythe, Vall, Tylo, Bop and Pol. Dominates the outer Kerbol system.'
-        },
-        {
-          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 180, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
-          desc: 'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.'
-        }
-      ];
-
-      const RAW_MOONS = [
-        // Eve
-        { name: 'Gilly', parent: 'Eve', color: '#bda892', a: 31500000, e: 0.55, orientDeg: 10, m0Deg: 0, period: 288600, incl: 12.0, radius: 13000, desc: 'Tiny captured asteroid orbiting Eve.' },
-        // Kerbin
-        { name: 'Mun', parent: 'Kerbin', color: '#bcbcbc', a: 12000000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 138984, incl: 0.0, radius: 200000, desc: 'Kerbin\'s large, cratered primary moon.' },
-        { name: 'Minmus', parent: 'Kerbin', color: '#9be5d0', a: 47000000, e: 0.00, orientDeg: 38, m0Deg: 0, period: 388380, incl: 6.0, radius: 60000, desc: 'Mint-green icy moon with flat salt flats.' },
-        // Duna
-        { name: 'Ike', parent: 'Duna', color: '#888888', a: 3200000, e: 0.03, orientDeg: 0, m0Deg: 0, period: 65518, incl: 0.2, radius: 130000, desc: 'Tidally locked moon orbiting Duna closely.' },
-        // Dres
-        { name: 'Drast', parent: 'Dres', color: '#8a877b', a: 43400, e: 0.00, orientDeg: 0, m0Deg: 0, period: 12312, incl: 0.0, radius: 1596, desc: 'Tiny inner Dresteroid embedded in Dres debris and ring material.' },
-        { name: 'Beyl', parent: 'Dres', color: '#6f6552', a: 8365000, e: 0.48, orientDeg: 0, m0Deg: 0, period: 1037016, incl: 216.0, radius: 4595, desc: 'Distant retrograde Dresteroid on a steep, eccentric orbit around Dres.' },
-        // Jool
-        { name: 'Laythe', parent: 'Jool', color: '#4ba3e3', a: 27184000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 52980, incl: 0.0, radius: 500000, desc: 'Ocean moon with breathable atmosphere.' },
-        { name: 'Vall', parent: 'Jool', color: '#a8dadc', a: 43152000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 105960, incl: 0.0, radius: 300000, desc: 'Icy moon with cryovolcanic activity.' },
-        { name: 'Tylo', parent: 'Jool', color: '#e0e1dd', a: 68500000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 211920, incl: 0.025, radius: 600000, desc: 'Large, airless moon with intense gravity.' },
-        { name: 'Bop', parent: 'Jool', color: '#7f6a54', a: 128500000, e: 0.235, orientDeg: 10, m0Deg: 0, period: 544507, incl: 15.0, radius: 65000, desc: 'Small irregular brown moon on inclined orbit.' },
-        { name: 'Pol', parent: 'Jool', color: '#eddcd2', a: 179890000, e: 0.17, orientDeg: 15, m0Deg: 0, period: 901902, incl: 4.25, radius: 44000, desc: 'Outermost yellowish spiky moon of Jool.' }
-      ];
-
-      const PLANETS = RAW_PLANETS.map(p => ({
-        ...p,
-        orient: p.orientDeg * DEG,
-        m0: p.m0Deg * DEG,
-        n: 2 * Math.PI / p.period
-      }));
-
-      const MOONS = RAW_MOONS.map(m => ({
-        ...m,
-        orient: m.orientDeg * DEG,
-        m0: m.m0Deg * DEG,
-        n: 2 * Math.PI / m.period
-      }));
-
-      const BODY_OPTIONS = PLANETS.flatMap(p => [
-        { body: p, isMoon: false, label: p.name },
-        ...MOONS.filter(m => m.parent === p.name).map(m => ({ body: m, isMoon: true, label: `- ${m.name}` }))
-      ]);
-
-      function findBody(name) {
-        return PLANETS.find(p => p.name === name) || MOONS.find(m => m.name === name) || null;
-      }
-
-      function transferBodyFor(body) {
-        return body && body.parent ? PLANETS.find(p => p.name === body.parent) : body;
-      }
-
-      /* =========================================================
-         2. ORBITAL MECHANICS
-         ========================================================= */
-      function solveKepler(M, e) {
-        M = ((M % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-        let E = e < 0.8 ? M : Math.PI;
-        for (let i = 0; i < 60; i++) {
-          const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
-          E -= dE;
-          if (Math.abs(dE) < 1e-12) break;
-        }
-        return E;
-      }
-
-      function stateAt(planet, t) {
-        const M = planet.m0 + planet.n * t;
-        const E = solveKepler(M, planet.e);
-        const e = planet.e;
-        const nu = Math.atan2(Math.sqrt(1 - e * e) * Math.sin(E), Math.cos(E) - e);
-        const r = planet.a * (1 - e * Math.cos(E));
-        const theta = nu + planet.orient;
-        const x = r * Math.cos(theta), y = r * Math.sin(theta);
-        const centralBody = planet.parent ? PLANETS.find(p => p.name === planet.parent) : KERBOL;
-        const centralMu = centralBody?.mu || KERBOL.mu;
-        const h = Math.sqrt(centralMu * planet.a * (1 - e * e));
-        const vr = centralMu / h * e * Math.sin(nu);
-        const vt = centralMu / h * (1 + e * Math.cos(nu));
-        const vx = vr * Math.cos(theta) - vt * Math.sin(theta);
-        const vy = vr * Math.sin(theta) + vt * Math.cos(theta);
-        return { x, y, r, theta, vx, vy, nu };
-      }
-
-      function stumpC(z) { if (z > 1e-6) return (1 - Math.cos(Math.sqrt(z))) / z; if (z < -1e-6) { const s = Math.sqrt(-z); return (Math.cosh(s) - 1) / (-z); } return 0.5; }
-      function stumpS(z) { if (z > 1e-6) { const s = Math.sqrt(z); return (s - Math.sin(s)) / (s * s * s); } if (z < -1e-6) { const s = Math.sqrt(-z); return (Math.sinh(s) - s) / (s * s * s); } return 1 / 6; }
-
-      function lambertSolve(r1v, r2v, tof, mu) {
-        const r1 = Math.hypot(r1v[0], r1v[1]), r2 = Math.hypot(r2v[0], r2v[1]);
-        const th1 = Math.atan2(r1v[1], r1v[0]), th2 = Math.atan2(r2v[1], r2v[0]);
-        let dnu = th2 - th1; if (dnu <= 1e-9) dnu += 2 * Math.PI;
-        const A = Math.sin(dnu) * Math.sqrt(r1 * r2 / (1 - Math.cos(dnu)));
-        if (!isFinite(A) || Math.abs(A) < 1e-6) return null;
-        function yOf(z) { return r1 + r2 + A * (z * stumpS(z) - 1) / Math.sqrt(stumpC(z)); }
-        function Fz(z) {
-          const y = yOf(z); if (y < 0) return null;
-          const x = Math.sqrt(y / stumpC(z));
-          return (Math.pow(x, 3) * stumpS(z) + A * Math.sqrt(y)) / Math.sqrt(mu) - tof;
-        }
-        let zLow = -40, zHigh = 4 * Math.PI * Math.PI, guard = 0;
-        while (yOf(zLow) < 0 && guard < 2000) { zLow += 0.05; guard++; }
-        let fLow = Fz(zLow), fHigh = Fz(zHigh), tries = 0;
-        while ((fLow === null || fHigh === null || fLow * fHigh > 0) && tries < 300) { zHigh *= 1.08; fHigh = Fz(zHigh); tries++; }
-        if (fLow === null || fHigh === null || fLow * fHigh > 0) return null;
-        let z = 0, f = 0;
-        for (let i = 0; i < 200; i++) {
-          z = (zLow + zHigh) / 2; f = Fz(z);
-          if (f === null) { zLow = z; continue; }
-          if (Math.abs(f) < 1e-4) break;
-          if ((f > 0) === (fLow > 0)) { zLow = z; fLow = f; } else { zHigh = z; fHigh = f; }
-        }
-        const y = yOf(z);
-        const f_ = 1 - y / r1, g = A * Math.sqrt(y / mu), gdot = 1 - y / r2;
-        if (Math.abs(g) < 1e-6) return null;
-        const v1 = [(r2v[0] - f_ * r1v[0]) / g, (r2v[1] - f_ * r1v[1]) / g];
-        const v2 = [(gdot * r2v[0] - r1v[0]) / g, (gdot * r2v[1] - r1v[1]) / g];
-        return { v1, v2 };
-      }
-
-      /**
-       * Sample the *actual* transfer trajectory between two known position
-       * vectors and a known time-of-flight, by solving Lambert's problem for
-       * the departure velocity and then propagating that state forward with
-       * real two-body Kepler motion.
-       *
-       * Earlier arc-drawing code built an idealized Hohmann ellipse assuming
-       * an exact 180-degree transfer with periapsis pinned to one endpoint.
-       * That's only exact when both bodies are on circular orbits. For an
-       * eccentric destination (e.g. Eeloo, e=0.26) the real angular gap
-       * between departure and arrival isn't exactly 180 degrees, so that
-       * construction visibly missed the arrival point. Solving Lambert
-       * directly for the known endpoints/time-of-flight and propagating the
-       * resulting state guarantees the sampled curve starts and ends exactly
-       * on the real departure/arrival positions, regardless of eccentricity.
-       * Returns null if Lambert can't find a solution (near-degenerate
-       * geometry) so callers can fall back to the simple ellipse construction.
-       */
-      function buildLambertArcPoints(r1x, r1y, r2x, r2y, tof, mu, N) {
-        const sol = lambertSolve([r1x, r1y], [r2x, r2y], tof, mu);
-        if (!sol) return null;
-        const vx = sol.v1[0], vy = sol.v1[1];
-        const r = Math.hypot(r1x, r1y);
-        const v2 = vx * vx + vy * vy;
-        const energy = v2 / 2 - mu / r;
-        if (energy >= 0) return null; // hyperbolic/parabolic transfer orbit — shouldn't happen for bound Hohmann-style routes
-        const a = -mu / (2 * energy);
-        const rdotv = r1x * vx + r1y * vy;
-        const ex = ((v2 - mu / r) * r1x - rdotv * vx) / mu;
-        const ey = ((v2 - mu / r) * r1y - rdotv * vy) / mu;
-        const e = Math.hypot(ex, ey);
-        const periAngle = Math.atan2(ey, ex);
-        const theta1 = Math.atan2(r1y, r1x);
-        let nu1 = theta1 - periAngle;
-        nu1 = ((nu1 + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
-        const E1 = 2 * Math.atan2(Math.sqrt(Math.max(0, 1 - e)) * Math.sin(nu1 / 2), Math.sqrt(Math.max(0, 1 + e)) * Math.cos(nu1 / 2));
-        const M1 = E1 - e * Math.sin(E1);
-        const n = Math.sqrt(mu / Math.pow(a, 3));
-        const pts = [];
-        for (let i = 0; i <= N; i++) {
-          const t = (i / N) * tof;
-          const M = M1 + n * t;
-          const E = solveKepler(M, e);
-          const nu = Math.atan2(Math.sqrt(1 - e * e) * Math.sin(E), Math.cos(E) - e);
-          const rr = a * (1 - e * Math.cos(E));
-          const theta = nu + periAngle;
-          pts.push({ x: rr * Math.cos(theta), y: rr * Math.sin(theta), r: rr, theta });
-        }
-        return pts;
-      }
-
-      /* =========================================================
-         3. SIMULATION CLOCK
-         ========================================================= */
-      let UT = 0;
-      let warpIndex = 2;
-      const WARP_LEVELS = [0, 1, 5, 50, 500, 5000, 50000, 500000];
-      let lastFrameTime = performance.now();
-      const DAY_SEC = 21600, YEAR_DAYS = 426;
-
-      function utToDateString(ut) {
-        const totalDays = Math.floor(ut / DAY_SEC);
-        const year = Math.floor(totalDays / YEAR_DAYS);
-        const day = totalDays % YEAR_DAYS;
-        const secOfDay = ((ut % DAY_SEC) + DAY_SEC) % DAY_SEC;
-        const h = Math.floor(secOfDay / 3600), m = Math.floor((secOfDay % 3600) / 60), s = Math.floor(secOfDay % 60);
-        const pad = (n, l = 2) => String(Math.floor(n)).padStart(l, '0');
-        return `T+${year}y,${day}d,${pad(h)}:${pad(m)}:${pad(s)}`;
-      }
-      function durationString(sec) {
-        if (sec < 0) sec = 0;
-        const y = Math.floor(sec / (DAY_SEC * YEAR_DAYS)); sec -= y * DAY_SEC * YEAR_DAYS;
-        const d = Math.floor(sec / DAY_SEC); sec -= d * DAY_SEC;
-        const h = Math.floor(sec / 3600); sec -= h * 3600;
-        const m = Math.floor(sec / 60);
-        const pad = (n) => String(Math.floor(n)).padStart(2, '0');
-        let out = '';
-        if (y > 0) out += y + 'y ';
-        out += d + 'd ' + pad(h) + 'h ' + pad(m) + 'm';
-        return out;
-      }
-
-      /* =========================================================
-         4. THREE.JS 3D MAP
-         ========================================================= */
-      const mapWrap = document.getElementById('mapWrap');
-      const canvas3d = document.getElementById('mapCanvas');
-      const labelCtr = document.getElementById('labelContainer');
-
-      /* ---- Scene ---- */
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x060a11);
-
-      /* ---- Stars ---- */
-      (() => {
-        const N = 1800, pos = new Float32Array(N * 3);
-        for (let i = 0; i < N * 3; i++) pos[i] = (Math.random() - 0.5) * 7000;
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.4, transparent: true, opacity: 0.5 })));
-      })();
-
-      /* ---- Camera ---- */
-      const camera = new THREE.PerspectiveCamera(52, 1, 0.5, 15000);
-      let camR = 620, camTheta = 0.15, camPhi = 0.30;
-      const camTarget = new THREE.Vector3(0, 0, 0);
-
-      /* ---- Camera Target Pivot Indicator ---- */
-      const targetPivotDot = new THREE.Mesh(
-        new THREE.SphereGeometry(1.25, 12, 12),
-        new THREE.MeshBasicMaterial({ color: 0x3a485e, transparent: true, opacity: 0.45, depthTest: false })
-      );
-      scene.add(targetPivotDot);
-
-      function updateCamera() {
-        const sinP = Math.sin(camPhi), cosP = Math.cos(camPhi);
-        const sinT = Math.sin(camTheta), cosT = Math.cos(camTheta);
-        camera.position.set(
-          camTarget.x + camR * sinP * sinT,
-          camTarget.y + camR * cosP,
-          camTarget.z + camR * sinP * cosT
-        );
-        camera.lookAt(camTarget);
-
-        // Position pivot indicator at focal center
-        targetPivotDot.position.copy(camTarget);
-        const isCentered = camTarget.length() < 1;
-        targetPivotDot.material.opacity = isCentered ? 0.15 : 0.45;
-      }
-
-      function resetView() {
-        camR = 620; camTheta = 0.15; camPhi = 0.30;
-        camTarget.set(0, 0, 0);
-        updateCamera();
-      }
-      updateCamera();
-
-      /* ---- Renderer ---- */
-      const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      function resizeRenderer() {
-        const w = mapWrap.clientWidth, h = mapWrap.clientHeight;
-        renderer.setSize(w, h, false);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-      }
-      resizeRenderer();
-      new ResizeObserver(resizeRenderer).observe(mapWrap);
-
-      /* ---- Scale ---- */
-      const EELOO_A = PLANETS[PLANETS.length - 1].a;
-      const SCALE = 430 / EELOO_A;
-      const INNER_EXPAND_REF = PLANETS.find(p => p.name === 'Duna').a;
-      const INNER_EXPAND_TAPER_END = PLANETS.find(p => p.name === 'Jool').a;
-
-      function smoothstep(t) {
-        t = Math.max(0, Math.min(1, t));
-        return t * t * (3 - 2 * t);
-      }
-
-      function heliocentricDisplayScale(r) {
-        if (r <= INNER_EXPAND_REF) return 1 + 0.32 * smoothstep(r / INNER_EXPAND_REF);
-        return 1 + 0.32 * (1 - smoothstep((r - INNER_EXPAND_REF) / (INNER_EXPAND_TAPER_END - INNER_EXPAND_REF)));
-      }
-
-      /**
-       * Convert ecliptic 2D coords + inclination (deg) → Three.js world Vector3.
-       * Ecliptic plane = XZ plane in Three.js (Y is "up/north of ecliptic").
-       * Inclination tilts orbits around the X axis.
-       */
-      function toWorld(xEcl, yEcl, inclDeg) {
-        const i = inclDeg * DEG;
-        const r = Math.hypot(xEcl, yEcl);
-        const displayScale = SCALE * heliocentricDisplayScale(r);
-        return new THREE.Vector3(
-          xEcl * displayScale,
-          yEcl * Math.sin(i) * displayScale,
-          -yEcl * Math.cos(i) * displayScale
-        );
-      }
-
-      /**
-       * Like toWorld(), but takes an explicit display-scale multiplier instead of
-       * recomputing heliocentricDisplayScale() from this point's own radius.
-       * Used for long transfer/assist arcs: resampling the nonlinear inner-system
-       * "bump" independently at every point along a wide-radius arc (e.g. Kerbin
-       * to Eeloo) inflates/deflates different parts of the same physical ellipse
-       * inconsistently and visibly distorts its shape. Instead we blend smoothly
-       * between the two endpoints' own (correct) compression values, so the arc
-       * still lands exactly on the departure/arrival markers but can't bulge or
-       * fold in between.
-       */
-      function toWorldBlendedScale(xEcl, yEcl, inclDeg, scale) {
-        const i = inclDeg * DEG;
-        const displayScale = SCALE * scale;
-        return new THREE.Vector3(
-          xEcl * displayScale,
-          yEcl * Math.sin(i) * displayScale,
-          -yEcl * Math.cos(i) * displayScale
-        );
-      }
-
-      /* ---- Kerbol (central star) ---- */
-      const kerbolMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(10, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0xffd166 })
-      );
-      scene.add(kerbolMesh);
-      // Glow halo
-      const kerbolGlow = new THREE.Mesh(
-        new THREE.SphereGeometry(16, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0xffd166, transparent: true, opacity: 0.15, depthWrite: false })
-      );
-      scene.add(kerbolGlow);
-
-      /* ---- Ecliptic grid ring (subtle) ---- */
-      (() => {
-        const N = 128, pts = [];
-        for (let i = 0; i <= N; i++) {
-          const a = (i / N) * 2 * Math.PI;
-          pts.push(new THREE.Vector3(SCALE * EELOO_A * 1.08 * Math.cos(a), 0, -SCALE * EELOO_A * 1.08 * Math.sin(a)));
-        }
-        scene.add(new THREE.Line(
-          new THREE.BufferGeometry().setFromPoints(pts),
-          new THREE.LineBasicMaterial({ color: 0x1d2c47, transparent: true, opacity: 0.3 })
-        ));
-      })();
-
-      /* ---- Orbit paths ---- */
-      function buildOrbitLine(planet) {
-        const N = 220, pts = [];
-        for (let i = 0; i <= N; i++) {
-          const nu = (i / N) * 2 * Math.PI;
-          const r = planet.a * (1 - planet.e * planet.e) / (1 + planet.e * Math.cos(nu));
-          const theta = nu + planet.orient;
-          pts.push(toWorld(r * Math.cos(theta), r * Math.sin(theta), planet.incl));
-        }
-        const geo = new THREE.BufferGeometry().setFromPoints(pts);
-        const mat = new THREE.LineBasicMaterial({ color: new THREE.Color(planet.color), transparent: true, opacity: 0.38 });
-        return new THREE.Line(geo, mat);
-      }
-      PLANETS.forEach(p => scene.add(buildOrbitLine(p)));
-
-      /* ---- Lighting for Photorealistic Shading ---- */
-      const sunLight = new THREE.PointLight(0xfffaed, 2.5, 0, 0);
-      scene.add(sunLight);
-      const ambientLight = new THREE.AmbientLight(0x1a2638, 0.4);
-      scene.add(ambientLight);
-
-      /* ---- Planet & Moon meshes ---- */
-      const planetMeshes = {};
-      const planetLabelEls = {};
-      const planetDisplayRadii = {};
-      const moonMeshes = {};
-      const moonLabelEls = {};
-
-      const maxMoonAByParent = MOONS.reduce((acc, m) => {
-        acc[m.parent] = Math.max(acc[m.parent] || 0, m.a);
-        return acc;
-      }, {});
-
-      function createDresRingTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 256;
-        canvas.height = 1;
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 256, 0);
-
-        grad.addColorStop(0.00, 'rgba(180, 175, 165, 0.00)');
-        grad.addColorStop(0.12, 'rgba(195, 188, 175, 0.30)');
-        grad.addColorStop(0.28, 'rgba(215, 208, 194, 0.60)');
-        grad.addColorStop(0.38, 'rgba(150, 144, 134, 0.20)');
-        grad.addColorStop(0.48, 'rgba(240, 232, 218, 0.90)');
-        grad.addColorStop(0.52, 'rgba(245, 237, 222, 0.90)');
-        grad.addColorStop(0.64, 'rgba(160, 154, 142, 0.25)');
-        grad.addColorStop(0.78, 'rgba(210, 203, 189, 0.65)');
-        grad.addColorStop(0.90, 'rgba(175, 168, 156, 0.30)');
-        grad.addColorStop(1.00, 'rgba(160, 155, 145, 0.00)');
-
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 256, 1);
-
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.needsUpdate = true;
-        return texture;
-      }
-
-      function moonOrbitDisplayRadius(m) {
-        const parentRadius = planetDisplayRadii[m.parent] || 2;
-        const maxA = maxMoonAByParent[m.parent] || m.a;
-        const parentTuning = {
-          Eve: { base: 2.4, span: 6.8 },
-          Kerbin: { base: 2.6, span: 9.2 },
-          Duna: { base: 2.4, span: 6.5 },
-          Dres: { base: 2.5, span: 7.5 }
-        };
-
-        if (parentTuning[m.parent]) {
-          const t = parentTuning[m.parent];
-          const ratio = Math.sqrt(m.a / maxA);
-          return parentRadius + t.base + ratio * t.span;
-        }
-        const parent = PLANETS.find(p => p.name === m.parent);
-        const outerRef = PLANETS.find(p => p.name === 'Jool') || PLANETS[PLANETS.length - 1];
-        const innerRef = PLANETS.find(p => p.name === 'Eve') || PLANETS[0];
-        const parentT = parent
-          ? Math.max(0, Math.min(1, (parent.a - innerRef.a) / (outerRef.a - innerRef.a)))
-          : 0;
-        const systemSpan = 10 + 14 * Math.sqrt(parentT);
-        const ratio = Math.sqrt(m.a / maxA);
-        return parentRadius + 3 + ratio * systemSpan;
-      }
-
-      function moonLocalPosition(m, t) {
-        const st = stateAt(m, t);
-        const orbitRad = moonOrbitDisplayRadius(m);
-        const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(st.nu));
-        const theta = st.nu + m.orient;
-        const inclRad = m.incl * DEG;
-        return new THREE.Vector3(
-          r * Math.cos(theta),
-          r * Math.sin(theta) * Math.sin(inclRad),
-          -r * Math.sin(theta) * Math.cos(inclRad)
-        );
-      }
-
-      function bodyWorldPositionAt(body, t) {
-        if (!body) return new THREE.Vector3();
-        if (body.parent) {
-          const parent = PLANETS.find(p => p.name === body.parent);
-          const ps = stateAt(parent, t);
-          return toWorld(ps.x, ps.y, parent.incl).add(moonLocalPosition(body, t));
-        }
-        const st = stateAt(body, t);
-        return toWorld(st.x, st.y, body.incl);
-      }
-
-      PLANETS.forEach(p => {
-        const col = new THREE.Color(p.color);
-
-        // Proportional size scaling based on physical radius (Kerbin r=600km -> ~1.8 units, Jool r=6000km -> ~4.2 units)
-        const baseRadius = Math.max(1.2, Math.min(4.8, Math.pow(p.radius / 600000, 0.45) * 1.8));
-        planetDisplayRadii[p.name] = baseRadius;
-
-        // Photorealistic standard material with physical shading & subtle emissive glow
-        const mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(baseRadius, 32, 32),
-          new THREE.MeshStandardMaterial({
-            color: col,
-            roughness: 0.65,
-            metalness: 0.1,
-            emissive: col,
-            emissiveIntensity: 0.15
-          })
-        );
-        mesh.userData.planetName = p.name;
-        scene.add(mesh);
-        planetMeshes[p.name] = mesh;
-
-        // Thin, crisp atmospheric glow outline (only 1.25x body size instead of giant blob)
-        mesh.add(new THREE.Mesh(
-          new THREE.SphereGeometry(baseRadius * 1.25, 24, 24),
-          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false })
-        ));
-
-        // Dres Asteroid Ring System (Embedded in and centered along Drast's orbit)
-        if (p.name === 'Dres') {
-          const drast = RAW_MOONS.find(m => m.name === 'Drast');
-          const drastOrbitRad = drast ? moonOrbitDisplayRadius(drast) : baseRadius * 3.5;
-          const ringWidth = 1.8; // ring width spanning across Drast's orbit
-          const innerR = Math.max(baseRadius * 1.25, drastOrbitRad - ringWidth / 2);
-          const outerR = drastOrbitRad + ringWidth / 2;
-
-          const ringGeo = new THREE.RingGeometry(innerR, outerR, 128);
-          const ringMat = new THREE.MeshBasicMaterial({
-            map: createDresRingTexture(),
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.85,
-            depthWrite: false
-          });
-          const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-          ringMesh.rotation.x = Math.PI / 2;
-          mesh.add(ringMesh);
-        }
-
-        // HTML label
-        const div = document.createElement('div');
-        div.className = 'planet-label-3d';
-        div.textContent = p.name;
-        labelCtr.appendChild(div);
-        planetLabelEls[p.name] = div;
-      });
-
-      // Render Moons attached to parent planets
-      MOONS.forEach(m => {
-        const parentMesh = planetMeshes[m.parent];
-        if (!parentMesh) return;
-
-        const col = new THREE.Color(m.color);
-
-        // Moon orbit ring relative to parent planet
-        const N = 120, pts = [];
-        const orbitRad = moonOrbitDisplayRadius(m);
-        for (let i = 0; i <= N; i++) {
-          const nu = (i / N) * 2 * Math.PI;
-          const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(nu));
-          const theta = nu + m.orient;
-          const inclRad = m.incl * DEG;
-          pts.push(new THREE.Vector3(
-            r * Math.cos(theta),
-            r * Math.sin(theta) * Math.sin(inclRad),
-            -r * Math.sin(theta) * Math.cos(inclRad)
-          ));
-        }
-        const orbitLine = new THREE.Line(
-          new THREE.BufferGeometry().setFromPoints(pts),
-          new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.35 })
-        );
-        parentMesh.add(orbitLine);
-
-        // Proportional moon size (Mun r=200km -> ~0.7 units, Gilly r=13km -> ~0.4 units)
-        const moonRadius = Math.max(0.35, Math.min(1.2, Math.pow(m.radius / 200000, 0.4) * 0.7));
-
-        // Moon Mesh with realistic lighting
-        const moonMesh = new THREE.Mesh(
-          new THREE.SphereGeometry(moonRadius, 20, 20),
-          new THREE.MeshStandardMaterial({
-            color: col,
-            roughness: 0.8,
-            metalness: 0.05,
-            emissive: col,
-            emissiveIntensity: 0.1
-          })
-        );
-        moonMesh.userData.planetName = m.name;
-
-        // Subtle moon glow outline
-        moonMesh.add(new THREE.Mesh(
-          new THREE.SphereGeometry(moonRadius * 1.3, 16, 16),
-          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.2, depthWrite: false })
-        ));
-
-        parentMesh.add(moonMesh);
-        moonMeshes[m.name] = moonMesh;
-
-        // HTML label for Moon
-        const div = document.createElement('div');
-        div.className = 'planet-label-3d';
-        div.style.fontSize = '8.5px';
-        div.style.color = '#a6b8d4';
-        div.textContent = m.name;
-        labelCtr.appendChild(div);
-        moonLabelEls[m.name] = div;
-      });
-
-      /* ---- Raycaster for planet clicks ---- */
-      const raycaster = new THREE.Raycaster();
-      raycaster.params.Mesh = {};
-
-      /* =========================================================
-         PERSISTENT GEOMETRY — Transfer Arc
-         ========================================================= */
-      const ARC_N = 120;
-      let arcGeo = null, arcLine = null, arcDepDot = null, arcArrDot = null;
-
-      function initTransferArc() {
-        if (arcLine) { scene.remove(arcLine); }
-        if (arcDepDot) { scene.remove(arcDepDot); }
-        if (arcArrDot) { scene.remove(arcArrDot); }
-
-        arcGeo = new THREE.BufferGeometry();
-        arcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
-        arcLine = new THREE.Line(arcGeo, new THREE.LineDashedMaterial({
-          color: 0x7ee787, dashSize: 7, gapSize: 5, transparent: true, opacity: 0.9
-        }));
-        scene.add(arcLine);
-
-        arcDepDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x7ee787 }));
-        arcArrDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x7ee787, transparent: true, opacity: 0.55 }));
-        scene.add(arcDepDot);
-        scene.add(arcArrDot);
-      }
-
-      function updateTransferArc() {
-        if (!arcLine || !currentResult) return;
-        const r = currentResult;
-        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
-        const depUT = UT + waitSec;
-        const arrUT = depUT + r.tt;
-
-        const osDep = stateAt(r.origin, depUT);
-        const dsArr = stateAt(r.dest, arrUT);
-
-        const ptDep = bodyWorldPositionAt(r.originSelected, depUT);
-        const ptArr = bodyWorldPositionAt(r.destSelected, arrUT);
-
-        const rA = Math.hypot(osDep.x, osDep.y);
-        const rB = Math.hypot(dsArr.x, dsArr.y);
-
-        const scaleStart = heliocentricDisplayScale(rA);
-        const scaleEnd = heliocentricDisplayScale(rB);
-
-        // Solve for the real trajectory connecting these two exact points in
-        // the known transfer time (handles eccentric destinations correctly —
-        // see buildLambertArcPoints for why the old fixed-180-degree ellipse
-        // construction could miss the arrival point). Falls back to the
-        // idealized ellipse only if Lambert can't find a solution.
-        let lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, r.tt, KERBOL.mu, ARC_N);
-
-        const arr = arcGeo.attributes.position.array;
-        if (lambertPts) {
-          for (let i = 0; i <= ARC_N; i++) {
-            const frac = i / ARC_N;
-            const curIncl = r.origin.incl + (r.dest.incl - r.origin.incl) * frac;
-            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
-            const p = lambertPts[i];
-            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
-            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
-          }
-        } else {
-          const a_t = (rA + rB) / 2;
-          const e_t = Math.abs(rB - rA) / (rB + rA);
-          const inbound = rB < rA;
-          const periTheta = inbound ? (osDep.theta - Math.PI) : osDep.theta;
-          for (let i = 0; i <= ARC_N; i++) {
-            const frac = i / ARC_N;
-            const nu = inbound ? Math.PI * (1 - frac) : frac * Math.PI;
-            const rr = a_t * (1 - e_t * e_t) / (1 + e_t * Math.cos(nu));
-            const theta = nu + periTheta;
-            const curIncl = r.origin.incl + (r.dest.incl - r.origin.incl) * frac;
-            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
-            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
-            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
-          }
-        }
-        arcGeo.attributes.position.needsUpdate = true;
-        arcLine.computeLineDistances();
-        arcDepDot.position.set(ptDep.x, ptDep.y, ptDep.z);
-        arcArrDot.position.set(ptArr.x, ptArr.y, ptArr.z);
-      }
-
-      function hideTransferArc() {
-        if (arcLine) { scene.remove(arcLine); arcLine = null; }
-        if (arcDepDot) { scene.remove(arcDepDot); arcDepDot = null; }
-        if (arcArrDot) { scene.remove(arcArrDot); arcArrDot = null; }
-        arcGeo = null;
       }
 
       let returnArcGeo = null, returnArcLine = null, returnDepDot = null, returnArrDot = null;
@@ -2188,394 +1490,167 @@
         returnArrLineGeo = null;
       }
 
-      /* =========================================================
-         PERSISTENT GEOMETRY — Gravity Assist Arcs (two Lambert legs)
-         ========================================================= */
-      let assistArcGeos = [null, null], assistArcLines = [null, null];
-      let assistDot = null, assistGlow = null;
-      let assistLabelEl = null, assistLegLabelEls = [null, null];
-      let assistGhostSphere = null, assistGhostGlow = null, assistGhostLabelEl = null;
+      let returnArcGeo = null, returnArcLine = null, returnDepDot = null, returnArrDot = null;
+      let returnDepGhost = null, returnDepGlow = null, returnDepLineGeo = null, returnDepLineObj = null, returnDepLabelEl = null;
+      let returnArrGhost = null, returnArrGlow = null, returnArrLineGeo = null, returnArrLineObj = null, returnArrLabelEl = null;
 
-      function initAssistArcs() {
-        hideAssistArcs();
-        for (let leg = 0; leg < 2; leg++) {
-          const geo = new THREE.BufferGeometry();
-          geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
-          const line = new THREE.Line(geo, new THREE.LineDashedMaterial({
-            color: 0xb78cff, dashSize: 6, gapSize: 4, transparent: true, opacity: 0.85
-          }));
-          scene.add(line);
-          assistArcGeos[leg] = geo;
-          assistArcLines[leg] = line;
-        }
-        assistDot = new THREE.Mesh(new THREE.SphereGeometry(3.6, 12, 12), new THREE.MeshBasicMaterial({ color: 0xb78cff }));
-        assistGlow = new THREE.Mesh(new THREE.SphereGeometry(7, 14, 14), new THREE.MeshBasicMaterial({ color: 0xb78cff, transparent: true, opacity: 0.18, depthWrite: false }));
-        scene.add(assistDot);
-        scene.add(assistGlow);
-        // Dim the direct arc so the assist route reads as the highlighted option
-        if (arcLine) arcLine.material.opacity = 0.28;
+      function initReturnTripOverlay() {
+        hideReturnTripOverlay();
 
-        // Labels: one on the flyby planet itself, one on each leg of the route
-        assistLabelEl = document.createElement('div');
-        assistLabelEl.className = 'assist-label-3d';
-        labelCtr.appendChild(assistLabelEl);
-
-        assistLegLabelEls[0] = document.createElement('div');
-        assistLegLabelEls[0].className = 'assist-label-3d leg';
-        labelCtr.appendChild(assistLegLabelEls[0]);
-
-        assistLegLabelEls[1] = document.createElement('div');
-        assistLegLabelEls[1].className = 'assist-label-3d leg';
-        labelCtr.appendChild(assistLegLabelEls[1]);
-
-        // Assist-route arrival ghost — where the destination REALLY is at the
-        // (typically very different) arrival time this route implies, shown
-        // in violet so it reads as belonging to the assist route rather than
-        // the direct transfer's own amber ghost.
-        assistGhostSphere = new THREE.Mesh(
-          new THREE.SphereGeometry(6.5, 18, 18),
-          new THREE.MeshBasicMaterial({ color: 0xb78cff, transparent: true, opacity: 0.28, depthWrite: false })
-        );
-        scene.add(assistGhostSphere);
-        assistGhostGlow = new THREE.Mesh(
-          new THREE.SphereGeometry(12, 18, 18),
-          new THREE.MeshBasicMaterial({ color: 0xb78cff, transparent: true, opacity: 0.07, depthWrite: false })
-        );
-        scene.add(assistGhostGlow);
-        assistGhostLabelEl = document.createElement('div');
-        assistGhostLabelEl.className = 'ghost-label-3d';
-        assistGhostLabelEl.style.color = 'var(--violet)';
-        assistGhostLabelEl.textContent = '⬡ Arrival (via assist)';
-        labelCtr.appendChild(assistGhostLabelEl);
-      }
-
-      function updateAssistArcs() {
-        if (selectedAssistIdx === null || !currentAssists[selectedAssistIdx] || !assistArcGeos[0]) return;
-        const r = currentResult;
-        const a = currentAssists[selectedAssistIdx];
-        const sol = a.solved;
-        const tDep = a.depUT;
-
-        // Leg 1: origin -> assist planet
-        const r1 = r.origin.a, r2a = a.planet.a;
-        const os = stateAt(r.origin, tDep);
-        const sAarr = stateAt(a.planet, tDep + sol.tof1);
-        const incl1a = r.origin.incl, incl1b = a.planet.incl;
-        const scale1Start = heliocentricDisplayScale(r1);
-        const scale1End = heliocentricDisplayScale(r2a);
-        let lambertPts1 = buildLambertArcPoints(os.x, os.y, sAarr.x, sAarr.y, sol.tof1, KERBOL.mu, ARC_N);
-        let arr = assistArcGeos[0].attributes.position.array;
-        if (lambertPts1) {
-          for (let i = 0; i <= ARC_N; i++) {
-            const frac = i / ARC_N;
-            const curIncl = incl1a + (incl1b - incl1a) * frac;
-            const blendedScale = scale1Start + (scale1End - scale1Start) * smoothstep(frac);
-            const p = lambertPts1[i];
-            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
-            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
-          }
-        } else {
-          const at1 = (r1 + r2a) / 2, e1 = Math.abs(r2a - r1) / (r2a + r1);
-          const inbound1 = r2a < r1;
-          const periTheta1 = inbound1 ? (os.theta - Math.PI) : os.theta;
-          for (let i = 0; i <= ARC_N; i++) {
-            const frac = i / ARC_N;
-            const nu = inbound1 ? Math.PI * (1 - frac) : frac * Math.PI;
-            const rr = at1 * (1 - e1 * e1) / (1 + e1 * Math.cos(nu));
-            const theta = nu + periTheta1;
-            const curIncl = incl1a + (incl1b - incl1a) * frac;
-            const blendedScale = scale1Start + (scale1End - scale1Start) * smoothstep(frac);
-            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
-            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
-          }
-        }
-        assistArcGeos[0].attributes.position.needsUpdate = true;
-        assistArcLines[0].computeLineDistances();
-
-        // Leg 2: assist planet -> destination
-        const r2b = a.planet.a, r3 = r.dest.a;
-        const sA = sAarr; // departure point of leg 2 = arrival point of leg 1
-        const s3 = stateAt(r.dest, tDep + sol.tof1 + sol.tof2);
-        const incl2a = a.planet.incl, incl2b = r.dest.incl;
-        const scale2Start = heliocentricDisplayScale(r2b);
-        const scale2End = heliocentricDisplayScale(r3);
-        let lambertPts2 = buildLambertArcPoints(sA.x, sA.y, s3.x, s3.y, sol.tof2, KERBOL.mu, ARC_N);
-        arr = assistArcGeos[1].attributes.position.array;
-        if (lambertPts2) {
-          for (let i = 0; i <= ARC_N; i++) {
-            const frac = i / ARC_N;
-            const curIncl = incl2a + (incl2b - incl2a) * frac;
-            const blendedScale = scale2Start + (scale2End - scale2Start) * smoothstep(frac);
-            const p = lambertPts2[i];
-            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
-            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
-          }
-        } else {
-          const at2 = (r2b + r3) / 2, e2 = Math.abs(r3 - r2b) / (r3 + r2b);
-          const inbound2 = r3 < r2b;
-          const periTheta2 = inbound2 ? (sA.theta - Math.PI) : sA.theta;
-          for (let i = 0; i <= ARC_N; i++) {
-            const frac = i / ARC_N;
-            const nu = inbound2 ? Math.PI * (1 - frac) : frac * Math.PI;
-            const rr = at2 * (1 - e2 * e2) / (1 + e2 * Math.cos(nu));
-            const theta = nu + periTheta2;
-            const curIncl = incl2a + (incl2b - incl2a) * frac;
-            const blendedScale = scale2Start + (scale2End - scale2Start) * smoothstep(frac);
-            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
-            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
-          }
-        }
-        assistArcGeos[1].attributes.position.needsUpdate = true;
-        assistArcLines[1].computeLineDistances();
-
-        // Ghost marker at the flyby encounter position
-        const encounterPos = toWorld(sA.x, sA.y, a.planet.incl);
-        assistDot.position.copy(encounterPos);
-        assistGlow.position.copy(encounterPos);
-
-        // Assist-route arrival ghost — the destination's real position at
-        // THIS route's (often very different) arrival time
-        const assistArrivalPos = toWorld(s3.x, s3.y, r.dest.incl);
-        if (assistGhostSphere) {
-          assistGhostSphere.position.copy(assistArrivalPos);
-          assistGhostGlow.position.copy(assistArrivalPos);
-          if (assistGhostLabelEl) assistGhostLabelEl._worldPos = assistArrivalPos;
-        }
-
-        // Label on the flyby planet itself
-        if (assistLabelEl) {
-          assistLabelEl.textContent = `◈ ${a.planet.name} flyby`;
-          assistLabelEl._worldPos = encounterPos;
-        }
-
-        // Leg labels, placed at the midpoint of each drawn curve so they sit
-        // readably along the arc rather than stacked on the endpoints
-        const midIdx = Math.floor(ARC_N / 2);
-        if (assistLegLabelEls[0]) {
-          const midArr = assistArcGeos[0].attributes.position.array;
-          const mi = midIdx * 3;
-          assistLegLabelEls[0].textContent = `${r.origin.name} → ${a.planet.name} · ${durationString(sol.tof1)}`;
-          assistLegLabelEls[0]._worldPos = new THREE.Vector3(midArr[mi], midArr[mi + 1], midArr[mi + 2]);
-        }
-        if (assistLegLabelEls[1]) {
-          const midArr = assistArcGeos[1].attributes.position.array;
-          const mi = midIdx * 3;
-          assistLegLabelEls[1].textContent = `${a.planet.name} → ${r.dest.name} · ${durationString(sol.tof2)}`;
-          assistLegLabelEls[1]._worldPos = new THREE.Vector3(midArr[mi], midArr[mi + 1], midArr[mi + 2]);
-        }
-      }
-
-      function hideAssistArcs() {
-        assistArcLines.forEach(l => { if (l) scene.remove(l); });
-        assistArcGeos = [null, null]; assistArcLines = [null, null];
-        if (assistDot) { scene.remove(assistDot); assistDot = null; }
-        if (assistGlow) { scene.remove(assistGlow); assistGlow = null; }
-        if (arcLine) arcLine.material.opacity = 0.9; // restore direct-arc brightness
-        if (assistLabelEl) { assistLabelEl.remove(); assistLabelEl = null; }
-        assistLegLabelEls.forEach((el, i) => { if (el) { el.remove(); assistLegLabelEls[i] = null; } });
-        if (assistGhostSphere) { scene.remove(assistGhostSphere); assistGhostSphere = null; }
-        if (assistGhostGlow) { scene.remove(assistGhostGlow); assistGhostGlow = null; }
-        if (assistGhostLabelEl) { assistGhostLabelEl.remove(); assistGhostLabelEl = null; }
-      }
-
-      /* =========================================================
-         PERSISTENT GEOMETRY — Phase Wedge Lines
-         Three lines: reference | current phase | required phase
-         ========================================================= */
-      let phaseGeos = [], phaseLines = [];
-
-      function initPhaseLines() {
-        phaseLines.forEach(l => scene.remove(l));
-        phaseGeos = []; phaseLines = [];
-        const defs = [
-          { color: 0x4d5d78, opacity: 0.65 },  // reference spoke
-          { color: 0x4fe0e8, opacity: 0.95 },  // current phase
-          { color: 0xffb454, opacity: 0.80 },  // required phase (dashed)
-        ];
-        defs.forEach((d, idx) => {
-          const geo = new THREE.BufferGeometry();
-          geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
-          const mat = idx === 2
-            ? new THREE.LineDashedMaterial({ color: d.color, dashSize: 5, gapSize: 4, transparent: true, opacity: d.opacity })
-            : new THREE.LineBasicMaterial({ color: d.color, transparent: true, opacity: d.opacity });
-          const line = new THREE.Line(geo, mat);
-          scene.add(line);
-          phaseGeos.push(geo);
-          phaseLines.push(line);
-        });
-      }
-
-      function updatePhaseLines() {
-        if (!phaseLines.length || !currentResult) return;
-        const r = currentResult;
-        const os = stateAt(r.origin, UT);
-        const rad = Math.min(r.r1, r.r2) * 0.52;
-        function pt(theta) { return toWorld(rad * Math.cos(theta), rad * Math.sin(theta), 0); }
-        const p0 = pt(os.theta);
-        const pCur = pt(os.theta + r.currentPhase * DEG);
-        const pReq = pt(os.theta + r.requiredPhase * DEG);
-        const endpoints = [p0, pCur, pReq];
-        endpoints.forEach((ep, idx) => {
-          const arr = phaseGeos[idx].attributes.position.array;
-          arr[0] = 0; arr[1] = 0; arr[2] = 0;
-          arr[3] = ep.x; arr[4] = ep.y; arr[5] = ep.z;
-          phaseGeos[idx].attributes.position.needsUpdate = true;
-          if (idx === 2) phaseLines[idx].computeLineDistances();
-        });
-      }
-
-      function hidePhaseLines() {
-        phaseLines.forEach(l => scene.remove(l));
-        phaseGeos = []; phaseLines = [];
-      }
-
-      /* =========================================================
-         PERSISTENT GEOMETRY — Ghost Planet
-         ========================================================= */
-      let ghostSphere = null, ghostGlow = null;
-      let ghostLineGeo = null, ghostLineObj = null;
-      let ghostLabelEl = null;
-      let ghostDest = null;
-
-      function initGhost(destPlanet) {
-        clearGhost();
-        ghostDest = destPlanet;
-        const col = new THREE.Color(destPlanet.color);
-
-        ghostSphere = new THREE.Mesh(
-          new THREE.SphereGeometry(6.5, 18, 18),
-          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.28, depthWrite: false })
-        );
-        scene.add(ghostSphere);
-
-        ghostGlow = new THREE.Mesh(
-          new THREE.SphereGeometry(12, 18, 18),
-          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.07, depthWrite: false })
-        );
-        scene.add(ghostGlow);
-
-        // Dashed line: current pos → ghost pos
-        ghostLineGeo = new THREE.BufferGeometry();
-        ghostLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
-        ghostLineObj = new THREE.Line(ghostLineGeo, new THREE.LineDashedMaterial({
-          color: col, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        returnArcGeo = new THREE.BufferGeometry();
+        returnArcGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((ARC_N + 1) * 3), 3));
+        returnArcLine = new THREE.Line(returnArcGeo, new THREE.LineDashedMaterial({
+          color: 0x4aa3ff, dashSize: 7, gapSize: 5, transparent: true, opacity: 0.9
         }));
-        scene.add(ghostLineObj);
+        scene.add(returnArcLine);
 
-        // Label
-        ghostLabelEl = document.createElement('div');
-        ghostLabelEl.className = 'ghost-label-3d';
-        ghostLabelEl.textContent = '⬡ Arrival';
-        labelCtr.appendChild(ghostLabelEl);
+        returnDepDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0x4aa3ff }));
+        returnArrDot = new THREE.Mesh(new THREE.SphereGeometry(3.8, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.65 }));
+        scene.add(returnDepDot);
+        scene.add(returnArrDot);
+
+        returnDepGhost = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0x4aa3ff, transparent: true, opacity: 0.3, depthWrite: false })
+        );
+        returnDepGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0x4aa3ff, transparent: true, opacity: 0.08, depthWrite: false })
+        );
+        scene.add(returnDepGhost);
+        scene.add(returnDepGlow);
+
+        returnArrGhost = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.32, depthWrite: false })
+        );
+        returnArrGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(12, 18, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffb454, transparent: true, opacity: 0.09, depthWrite: false })
+        );
+        scene.add(returnArrGhost);
+        scene.add(returnArrGlow);
+
+        returnDepLineGeo = new THREE.BufferGeometry();
+        returnDepLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        returnDepLineObj = new THREE.Line(returnDepLineGeo, new THREE.LineDashedMaterial({
+          color: 0x4aa3ff, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(returnDepLineObj);
+
+        returnArrLineGeo = new THREE.BufferGeometry();
+        returnArrLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+        returnArrLineObj = new THREE.Line(returnArrLineGeo, new THREE.LineDashedMaterial({
+          color: 0xffb454, dashSize: 5, gapSize: 5, transparent: true, opacity: 0.45
+        }));
+        scene.add(returnArrLineObj);
+
+        returnDepLabelEl = document.createElement('div');
+        returnDepLabelEl.className = 'ghost-label-3d';
+        returnDepLabelEl.style.color = '#4aa3ff';
+        returnDepLabelEl.textContent = '⬡ Return departure';
+        labelCtr.appendChild(returnDepLabelEl);
+
+        returnArrLabelEl = document.createElement('div');
+        returnArrLabelEl.className = 'ghost-label-3d';
+        returnArrLabelEl.style.color = 'var(--amber)';
+        returnArrLabelEl.textContent = '⬡ Kerbin return';
+        labelCtr.appendChild(returnArrLabelEl);
       }
 
-      function updateGhostPosition() {
-        if (!ghostSphere || !currentResult || !ghostDest) return;
-        const r = currentResult;
-        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
-        const ghostUT = UT + waitSec + r.tt;
+      function updateReturnTripOverlay() {
+        if (!visualizeReturnTrip || !returnArcLine || !currentResult) return;
+        const plan = getReturnPlan(currentResult);
+        if (!plan) {
+          visualizeReturnTrip = false;
+          hideReturnTripOverlay();
+          return;
+        }
 
-        const gPos = bodyWorldPositionAt(ghostDest, ghostUT);
-        ghostSphere.position.copy(gPos);
-        ghostGlow.position.copy(gPos);
+        const ret = plan.ret;
+        const depUT = plan.returnDepartureUT;
+        const arrUT = plan.returnArrivalUT;
+        const osDep = stateAt(ret.origin, depUT);
+        const dsArr = stateAt(ret.dest, arrUT);
+        const ptDep = bodyWorldPositionAt(plan.departureBody, depUT);
+        const ptArr = bodyWorldPositionAt(ret.destSelected, arrUT);
+        const scaleStart = heliocentricDisplayScale(Math.hypot(osDep.x, osDep.y));
+        const scaleEnd = heliocentricDisplayScale(Math.hypot(dsArr.x, dsArr.y));
+        const lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, ret.tt, KERBOL.mu, ARC_N);
+        const arr = returnArcGeo.attributes.position.array;
 
-        // Update line from current planet pos to ghost pos
-        const curPos = bodyWorldPositionAt(ghostDest, UT);
-        const la = ghostLineGeo.attributes.position.array;
-        la[0] = curPos.x; la[1] = curPos.y; la[2] = curPos.z;
-        la[3] = gPos.x; la[4] = gPos.y; la[5] = gPos.z;
-        ghostLineGeo.attributes.position.needsUpdate = true;
-        ghostLineObj.computeLineDistances();
-
-        // Store world pos for label projection
-        if (ghostLabelEl) ghostLabelEl._worldPos = gPos;
-      }
-
-      function clearGhost() {
-        if (ghostSphere) { scene.remove(ghostSphere); ghostSphere = null; }
-        if (ghostGlow) { scene.remove(ghostGlow); ghostGlow = null; }
-        if (ghostLineObj) { scene.remove(ghostLineObj); ghostLineObj = null; }
-        ghostLineGeo = null;
-        if (ghostLabelEl) { ghostLabelEl.remove(); ghostLabelEl = null; }
-        ghostDest = null;
-      }
-
-      /* ---- Planet & Moon position update (every frame) ---- */
-      function updateMap() {
-        PLANETS.forEach(p => {
-          const st = stateAt(p, UT);
-          p._state = st;
-          planetMeshes[p.name].position.copy(toWorld(st.x, st.y, p.incl));
-        });
-
-        MOONS.forEach(m => {
-          m._state = stateAt(m, UT);
-          moonMeshes[m.name].position.copy(moonLocalPosition(m, UT));
-        });
-      }
-
-      /* ---- Project world position to screen ---- */
-      function worldToScreen(worldPos) {
-        const v = worldPos.clone().project(camera);
-        const rect = canvas3d.getBoundingClientRect();
-        return {
-          x: (v.x + 1) / 2 * rect.width,
-          y: (-v.y + 1) / 2 * rect.height,
-          behind: v.z >= 1
-        };
-      }
-
-      /* ---- Label update (every frame) ---- */
-      function updateLabels() {
-        PLANETS.forEach(p => {
-          const s = worldToScreen(planetMeshes[p.name].position);
-          const el = planetLabelEls[p.name];
-          el.style.left = s.x + 'px';
-          el.style.top = s.y + 'px';
-          el.style.display = s.behind ? 'none' : '';
-        });
-
-        MOONS.forEach(m => {
-          const parentMesh = planetMeshes[m.parent];
-          const moonMesh = moonMeshes[m.name];
-          if (parentMesh && moonMesh) {
-            const worldPos = new THREE.Vector3();
-            moonMesh.getWorldPosition(worldPos);
-            const s = worldToScreen(worldPos);
-            const el = moonLabelEls[m.name];
-            el.style.left = s.x + 'px';
-            el.style.top = s.y + 'px';
-            el.style.display = s.behind ? 'none' : '';
+        if (lambertPts) {
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const curIncl = ret.origin.incl + (ret.dest.incl - ret.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const p = lambertPts[i];
+            const pt = toWorldBlendedScale(p.x, p.y, curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
           }
-        });
-
-        if (ghostLabelEl && ghostLabelEl._worldPos) {
-          const s = worldToScreen(ghostLabelEl._worldPos);
-          ghostLabelEl.style.left = s.x + 'px';
-          ghostLabelEl.style.top = s.y + 'px';
-          ghostLabelEl.style.display = s.behind ? 'none' : '';
+        } else {
+          const rA = Math.hypot(osDep.x, osDep.y);
+          const rB = Math.hypot(dsArr.x, dsArr.y);
+          const a_t = (rA + rB) / 2;
+          const e_t = Math.abs(rB - rA) / (rB + rA);
+          const inbound = rB < rA;
+          const periTheta = inbound ? (osDep.theta - Math.PI) : osDep.theta;
+          for (let i = 0; i <= ARC_N; i++) {
+            const frac = i / ARC_N;
+            const nu = inbound ? Math.PI * (1 - frac) : frac * Math.PI;
+            const rr = a_t * (1 - e_t * e_t) / (1 + e_t * Math.cos(nu));
+            const theta = nu + periTheta;
+            const curIncl = ret.origin.incl + (ret.dest.incl - ret.origin.incl) * frac;
+            const blendedScale = scaleStart + (scaleEnd - scaleStart) * smoothstep(frac);
+            const pt = toWorldBlendedScale(rr * Math.cos(theta), rr * Math.sin(theta), curIncl, blendedScale);
+            arr[i * 3] = pt.x; arr[i * 3 + 1] = pt.y; arr[i * 3 + 2] = pt.z;
+          }
         }
 
-        if (assistLabelEl && assistLabelEl._worldPos) {
-          const s = worldToScreen(assistLabelEl._worldPos);
-          assistLabelEl.style.left = s.x + 'px';
-          assistLabelEl.style.top = (s.y - 8) + 'px'; // small gap above the flyby marker; CSS handles centering/anchor
-          assistLabelEl.style.display = s.behind ? 'none' : '';
-        }
-        assistLegLabelEls.forEach(el => {
-          if (!el || !el._worldPos) return;
-          const s = worldToScreen(el._worldPos);
-          el.style.left = s.x + 'px';
-          el.style.top = s.y + 'px';
-          el.style.display = s.behind ? 'none' : '';
-        });
+        returnArcGeo.attributes.position.needsUpdate = true;
+        returnArcLine.computeLineDistances();
+        returnDepDot.position.copy(ptDep);
+        returnArrDot.position.copy(ptArr);
+        returnDepGhost.position.copy(ptDep);
+        returnDepGlow.position.copy(ptDep);
+        returnArrGhost.position.copy(ptArr);
+        returnArrGlow.position.copy(ptArr);
 
-        if (assistGhostLabelEl && assistGhostLabelEl._worldPos) {
-          const s = worldToScreen(assistGhostLabelEl._worldPos);
-          assistGhostLabelEl.style.left = s.x + 'px';
-          assistGhostLabelEl.style.top = s.y + 'px';
-          assistGhostLabelEl.style.display = s.behind ? 'none' : '';
-        }
+        const currentDepBodyPos = bodyWorldPositionAt(plan.departureBody, UT);
+        const depLine = returnDepLineGeo.attributes.position.array;
+        depLine[0] = currentDepBodyPos.x; depLine[1] = currentDepBodyPos.y; depLine[2] = currentDepBodyPos.z;
+        depLine[3] = ptDep.x; depLine[4] = ptDep.y; depLine[5] = ptDep.z;
+        returnDepLineGeo.attributes.position.needsUpdate = true;
+        returnDepLineObj.computeLineDistances();
+
+        const currentKerbinPos = bodyWorldPositionAt(ret.destSelected, UT);
+        const arrLine = returnArrLineGeo.attributes.position.array;
+        arrLine[0] = currentKerbinPos.x; arrLine[1] = currentKerbinPos.y; arrLine[2] = currentKerbinPos.z;
+        arrLine[3] = ptArr.x; arrLine[4] = ptArr.y; arrLine[5] = ptArr.z;
+        returnArrLineGeo.attributes.position.needsUpdate = true;
+        returnArrLineObj.computeLineDistances();
+
+        if (returnDepLabelEl) returnDepLabelEl._worldPos = ptDep;
+        if (returnArrLabelEl) returnArrLabelEl._worldPos = ptArr;
+      }
+
+      function hideReturnTripOverlay() {
+        if (returnArcLine) { scene.remove(returnArcLine); returnArcLine = null; }
+        if (returnDepDot) { scene.remove(returnDepDot); returnDepDot = null; }
+        if (returnArrDot) { scene.remove(returnArrDot); returnArrDot = null; }
+        if (returnDepGhost) { scene.remove(returnDepGhost); returnDepGhost = null; }
+        if (returnDepGlow) { scene.remove(returnDepGlow); returnDepGlow = null; }
+        if (returnArrGhost) { scene.remove(returnArrGhost); returnArrGhost = null; }
+        if (returnArrGlow) { scene.remove(returnArrGlow); returnArrGlow = null; }
+        if (returnDepLineObj) { scene.remove(returnDepLineObj); returnDepLineObj = null; }
+        if (returnArrLineObj) { scene.remove(returnArrLineObj); returnArrLineObj = null; }
+        if (returnDepLabelEl) { returnDepLabelEl.remove(); returnDepLabelEl = null; }
+        if (returnArrLabelEl) { returnArrLabelEl.remove(); returnArrLabelEl = null; }
+        returnArcGeo = null;
+        returnDepLineGeo = null;
+        returnArrLineGeo = null;
+      }
+
 
         if (returnDepLabelEl && returnDepLabelEl._worldPos) {
           const s = worldToScreen(returnDepLabelEl._worldPos);
@@ -2592,408 +1667,10 @@
         }
       }
 
-      /* =========================================================
-         CAMERA CONTROLS — rotate / pan (shift) / zoom
-         ========================================================= */
-      let dragging = false, dragMoved = false, isPanning = false;
-      let dStart = { x: 0, y: 0 };
-      let camAtDragStart = { theta: 0, phi: 0 };
-      const targetAtDragStart = new THREE.Vector3();
-
-      canvas3d.addEventListener('mousedown', e => {
-        dragging = true; dragMoved = false;
-        isPanning = e.shiftKey;
-        dStart = { x: e.clientX, y: e.clientY };
-        camAtDragStart = { theta: camTheta, phi: camPhi };
-        targetAtDragStart.copy(camTarget);
-        canvas3d.classList.add(isPanning ? 'panning' : 'grabbing');
-      });
-      window.addEventListener('mousemove', e => {
-        if (!dragging) return;
-        const dx = e.clientX - dStart.x, dy = e.clientY - dStart.y;
-        if (Math.abs(dx) + Math.abs(dy) > 3) dragMoved = true;
-        const rect = canvas3d.getBoundingClientRect();
-        if (isPanning) {
-          // Move pivot in camera-local XY plane
-          const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
-          const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
-          const scale = camR / rect.height * 1.8;
-          camTarget.copy(targetAtDragStart)
-            .addScaledVector(right, -dx * scale)
-            .addScaledVector(up, dy * scale);
-        } else {
-          camTheta = camAtDragStart.theta - (dx / rect.width) * Math.PI * 2.4;
-          camPhi = Math.max(0.01, Math.min(Math.PI - 0.01, camAtDragStart.phi - (dy / rect.height) * Math.PI));
-        }
-        updateCamera();
-      });
-      window.addEventListener('mouseup', () => {
-        dragging = false;
-        canvas3d.classList.remove('grabbing', 'panning');
-      });
-
-      // Planet & Moon click via raycasting
-      canvas3d.addEventListener('click', e => {
-        if (dragMoved) return;
-        const rect = canvas3d.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((e.clientX - rect.left) / rect.width) * 2 - 1,
-          -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
-        raycaster.setFromCamera(mouse, camera);
-        const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
-        const hits = raycaster.intersectObjects(targets, true);
-        if (hits.length > 0) {
-          let obj = hits[0].object;
-          while (obj && !obj.userData.planetName) obj = obj.parent;
-          if (obj && obj.userData.planetName) { showInfoFor(obj.userData.planetName); switchTab('info'); }
-        }
-      });
-
-      // Planet & Moon double-click to center camera view
-      canvas3d.addEventListener('dblclick', e => {
-        const rect = canvas3d.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((e.clientX - rect.left) / rect.width) * 2 - 1,
-          -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
-        raycaster.setFromCamera(mouse, camera);
-        const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
-        const hits = raycaster.intersectObjects(targets, true);
-        if (hits.length > 0) {
-          let obj = hits[0].object;
-          while (obj && !obj.userData.planetName) obj = obj.parent;
-          if (obj && obj.userData.planetName) {
-            const worldPos = new THREE.Vector3();
-            obj.getWorldPosition(worldPos);
-            camTarget.copy(worldPos);
-            updateCamera();
-          }
-        }
-      });
-
-      // Scroll zoom (zoom toward cursor by shifting camTarget slightly)
-      mapWrap.addEventListener('wheel', e => {
-        e.preventDefault();
-        const f = e.deltaY > 0 ? 1.12 : 1 / 1.12;
-        camR = Math.max(30, Math.min(2400, camR * f));
-        updateCamera();
-      }, { passive: false });
-
-      // Zoom buttons
-      document.getElementById('zoomIn').onclick = () => { camR = Math.max(30, camR / 1.35); updateCamera(); };
-      document.getElementById('zoomOut').onclick = () => { camR = Math.min(2400, camR * 1.35); updateCamera(); };
-      document.getElementById('zoomReset').onclick = resetView;
-
-      // Keyboard: R = reset view
-      window.addEventListener('keydown', e => {
-        if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-          // Don't steal R from text inputs
-          if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-          resetView();
-        }
-      });
-
-      // Touch: 1-finger = rotate, 2-finger pinch = zoom, 2-finger pan = pan
-      let tState = null;
-      canvas3d.addEventListener('touchstart', e => {
-        if (e.touches.length === 1) {
-          tState = { mode: 'rot', x: e.touches[0].clientX, y: e.touches[0].clientY, theta: camTheta, phi: camPhi };
-        } else if (e.touches.length === 2) {
-          const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-          const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-          tState = { mode: 'pinch', d, r: camR, mx, my, target: camTarget.clone() };
-        }
-      }, { passive: true });
-      canvas3d.addEventListener('touchmove', e => {
-        if (!tState) return;
-        const rect = canvas3d.getBoundingClientRect();
-        if (tState.mode === 'rot' && e.touches.length === 1) {
-          const dx = e.touches[0].clientX - tState.x, dy = e.touches[0].clientY - tState.y;
-          camTheta = tState.theta - (dx / rect.width) * Math.PI * 2.4;
-          camPhi = Math.max(0.01, Math.min(Math.PI - 0.01, tState.phi - (dy / rect.height) * Math.PI));
-          updateCamera();
-        } else if (tState.mode === 'pinch' && e.touches.length === 2) {
-          const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-          const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-          const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          camR = Math.max(30, Math.min(2400, tState.r * (tState.d / d)));
-          // Two-finger pan
-          const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
-          const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
-          const scale = camR / rect.height * 1.8;
-          camTarget.copy(tState.target)
-            .addScaledVector(right, -(mx - tState.mx) * scale)
-            .addScaledVector(up, (my - tState.my) * scale);
-          updateCamera();
-        }
-      }, { passive: true });
-      canvas3d.addEventListener('touchend', () => { tState = null; }, { passive: true });
-
-      /* =========================================================
-         5. UI SETUP
-         ========================================================= */
-      const originSelect = document.getElementById('originSelect');
-      const destSelect = document.getElementById('destSelect');
-      BODY_OPTIONS.forEach(({ body, isMoon, label }) => {
-        const o1 = document.createElement('option'); o1.value = body.name; o1.textContent = label;
-        const o2 = document.createElement('option'); o2.value = body.name; o2.textContent = label;
-        if (isMoon) {
-          o1.dataset.parent = body.parent;
-          o2.dataset.parent = body.parent;
-        }
-        originSelect.appendChild(o1); destSelect.appendChild(o2);
-      });
-      originSelect.value = 'Kerbin'; destSelect.value = 'Duna';
-
-      function refreshHud() {
-        document.getElementById('hudOrigin').textContent = 'ORIGIN — ' + originSelect.value;
-        document.getElementById('hudDest').textContent = 'DEST — ' + destSelect.value;
-      }
-      refreshHud();
-      originSelect.onchange = refreshHud;
-      destSelect.onchange = refreshHud;
-      document.getElementById('swapBtn').onclick = () => {
-        const a = originSelect.value; originSelect.value = destSelect.value; destSelect.value = a; refreshHud();
-      };
-
-      document.querySelectorAll('.tab').forEach(t => {
-        t.addEventListener('click', () => switchTab(t.dataset.tab));
-      });
-      function switchTab(name) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
-      }
-
-      // Warp controls
-      const warpWrap = document.getElementById('warpControls');
-      const warpLabels = ['II', '1x', '5x', '50x', '500x', '5,000x', '50,000x', '500,000x'];
-      WARP_LEVELS.forEach((lvl, i) => {
-        const b = document.createElement('button');
-        b.textContent = i === 0 ? '⏸' : warpLabels[i];
-        b.className = i === warpIndex ? 'active' : '';
-        b.onclick = () => { warpIndex = i; document.querySelectorAll('#warpControls button').forEach((x, j) => x.classList.toggle('active', j === i && x.dataset.reset !== '1')); };
-        warpWrap.appendChild(b);
-      });
-      const resetBtn = document.createElement('button');
-      resetBtn.textContent = 'Epoch ⟲'; resetBtn.className = 'reset-btn'; resetBtn.dataset.reset = '1';
-      resetBtn.title = 'Reset to UT=0 (T+0y,0d,00:00:00)';
-      resetBtn.onclick = () => { UT = 0; };
-      warpWrap.appendChild(resetBtn);
-
-      document.getElementById('setUtBtn').onclick = () => {
-        const y = Math.max(0, parseInt(document.getElementById('setYear').value) || 0);
-        const d = Math.max(0, Math.min(YEAR_DAYS - 1, parseInt(document.getElementById('setDay').value) || 0));
-        const h = Math.max(0, Math.min(23, parseInt(document.getElementById('setHour').value) || 0));
-        const mi = Math.max(0, Math.min(59, parseInt(document.getElementById('setMin').value) || 0));
-        const s = Math.max(0, Math.min(59, parseInt(document.getElementById('setSec').value) || 0));
-        UT = y * YEAR_DAYS * DAY_SEC + d * DAY_SEC + h * 3600 + mi * 60 + s;
-        if (currentResult) {
-          currentResult = computeTransfer(currentResult.originSelected.name, currentResult.destSelected.name);
-          renderTransferResults();
-        }
-      };
-
-      /* =========================================================
-         LIVE SYNC — keep UT locked to a running KSP2 session
-         Two independent methods; only one active at a time.
-         ========================================================= */
-      let liveMode = null;      // null | 'bridge' | 'file'
-      let liveIntervalId = null;
-      let saveFileHandle = null;
-
-      const liveBtn = document.getElementById('liveBtn');
-      const livePanel = document.getElementById('livePanel');
-      const liveStatusEl = document.getElementById('liveStatus');
-      const bridgeUrlInput = document.getElementById('bridgeUrl');
-      const bridgeConnectBtn = document.getElementById('bridgeConnectBtn');
-      const fileWatchBtn = document.getElementById('fileWatchBtn');
-
-      liveBtn.onclick = (e) => { e.stopPropagation(); livePanel.classList.toggle('open'); };
-      document.addEventListener('click', (e) => {
-        if (!livePanel.contains(e.target) && e.target !== liveBtn) livePanel.classList.remove('open');
-      });
-
-      function setLiveStatus(msg, cls) {
-        liveStatusEl.textContent = msg;
-        liveStatusEl.className = 'live-status' + (cls ? ' ' + cls : '');
-        liveBtn.classList.toggle('on', cls === 'ok');
-        liveBtn.classList.toggle('err', cls === 'err');
-      }
-
-      function stopLive() {
-        if (liveIntervalId) clearInterval(liveIntervalId);
-        liveIntervalId = null;
-        liveMode = null;
-        bridgeConnectBtn.textContent = 'Connect';
-        bridgeConnectBtn.classList.remove('stop');
-        fileWatchBtn.textContent = 'Choose Save File…';
-        fileWatchBtn.classList.remove('stop');
-        setLiveStatus('Not connected — UT is manual / warp-driven.', null);
-      }
-
-      function syncUtNow(newUt, sourceLabel) {
-        if (typeof newUt !== 'number' || !isFinite(newUt)) return false;
-        UT = newUt;
-        updateMap();
-        if (currentResult) {
-          currentResult = computeTransfer(currentResult.originSelected.name, currentResult.destSelected.name);
-          renderTransferResults();
-        }
-        setLiveStatus(`LIVE (${sourceLabel}) — synced ${utToDateString(UT)} @ ${new Date().toLocaleTimeString()}`, 'ok');
-        return true;
-      }
-
-      // --- Method 1: poll a local bridge (e.g. a kRPC2-backed script) ---
-      async function pollBridge(url) {
-        try {
-          const res = await fetch(url, { cache: 'no-store' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const data = await res.json();
-          const ut = typeof data.ut === 'number' ? data.ut : parseFloat(data.ut);
-          if (!syncUtNow(ut, 'bridge')) throw new Error('response had no numeric "ut" field');
-        } catch (err) {
-          setLiveStatus(`LIVE (bridge) — connection failed: ${err.message}. Is the companion script running?`, 'err');
-        }
-      }
-
-      bridgeConnectBtn.onclick = () => {
-        if (liveMode === 'bridge') { stopLive(); return; }
-        stopLive();
-        const url = bridgeUrlInput.value.trim();
-        if (!url) return;
-        liveMode = 'bridge';
-        bridgeConnectBtn.textContent = 'Disconnect';
-        bridgeConnectBtn.classList.add('stop');
-        pollBridge(url);
-        liveIntervalId = setInterval(() => pollBridge(url), 2000);
-      };
-
-      // --- Method 2: watch the local save file via the File System Access API ---
-      function findUtInObject(obj, depth) {
-        if (obj == null || depth > 6) return null;
-        if (typeof obj === 'object') {
-          for (const k in obj) {
-            if (/^(ut|universaltime)$/i.test(k) && typeof obj[k] === 'number') return obj[k];
-          }
-          for (const k in obj) {
-            const r = findUtInObject(obj[k], depth + 1);
-            if (r !== null) return r;
-          }
-        }
-        return null;
-      }
-
-      async function readUtFromFile() {
-        try {
-          const file = await saveFileHandle.getFile();
-          const text = await file.text();
-          let ut = null;
-          try { ut = findUtInObject(JSON.parse(text), 0); }
-          catch (e) {
-            const m = text.match(/"?UT"?\s*[:=]\s*([0-9.eE+-]+)/i) || text.match(/UniversalTime\s*[:=]\s*([0-9.eE+-]+)/i);
-            if (m) ut = parseFloat(m[1]);
-          }
-          if (ut !== null) syncUtNow(ut, 'save file');
-          else setLiveStatus('LIVE (save file) — could not find a UT field in this file.', 'err');
-        } catch (err) {
-          setLiveStatus(`LIVE (save file) — read error: ${err.message}`, 'err');
-        }
-      }
-
-      fileWatchBtn.onclick = async () => {
-        if (liveMode === 'file') { stopLive(); return; }
-        if (!window.showOpenFilePicker) {
-          setLiveStatus('Save-file watching needs Chrome or Edge (File System Access API).', 'err');
-          return;
-        }
-        try {
-          const [handle] = await window.showOpenFilePicker({
-            excludeAcceptAllOption: false,
-            multiple: false
-          });
-          saveFileHandle = handle;
-          stopLive();
-          liveMode = 'file';
-          fileWatchBtn.textContent = 'Stop Watching';
-          fileWatchBtn.classList.add('stop');
-          readUtFromFile();
-          liveIntervalId = setInterval(readUtFromFile, 4000);
-        } catch (err) {
-          // user cancelled the picker — no-op
-        }
-      };
-
-      /* =========================================================
-         6. TRANSFER CALCULATION
-         ========================================================= */
-      const PARK_ALT = 100000;
-      function angNorm360(a) { a = a % 360; if (a < 0) a += 360; return a; }
-      function angNormPM180(a) { a = angNorm360(a); if (a > 180) a -= 360; return a; }
-
-      /**
-       * Given a fixed departure angle/time, search for a flight duration such
-       * that the destination body ends up close to true opposition (180
-       * degrees away) at arrival — i.e. a well-phased, low-eccentricity
-       * transfer, rather than trusting the naive semi-major-axis-only Hohmann
-       * time estimate blindly.
-       *
-       * This matters specifically for gravity-assist legs: the main transfer
-       * window is optimized for reaching the *final* destination, so there's
-       * no guarantee an intermediate flyby planet is well-positioned relative
-       * to whichever body is next in the chain. Forcing the naive time
-       * estimate in that case can demand a near-parabolic (e~1) trajectory to
-       * connect two points that are barely apart in angle — which is both
-       * physically nonsensical and looks like a sharp, wrong-looking kink
-       * when drawn.
-       *
-       * Scans for genuine zero-crossings of the opposition gap (explicitly
-       * ignoring the +-180 degree branch-cut, which isn't a real crossing),
-       * bisects each one, and picks whichever root is closest to the naive
-       * guess (the most "natural" continuation). Falls back to the naive
-       * guess if no crossing is found. Nudges slightly off exact 180 degrees
-       * since that's the Lambert solver's own singularity.
-       */
-      function refineFlightTimeForOpposition(originAngleRad, destPlanet, tRef, tofGuess, mu) {
-        function gapAt(tof) {
-          const s = stateAt(destPlanet, tRef + Math.max(1, tof));
-          return angNormPM180((s.theta - originAngleRad) * 180 / Math.PI - 180);
-        }
-        const guess = Math.max(3600, tofGuess);
-        const lo = guess * 0.15, hi = guess * 4 + destPlanet.period;
-        const N = 400;
-        const step = (hi - lo) / N;
-        const brackets = [];
-        let prevT = lo, prevG = gapAt(lo);
-        for (let i = 1; i <= N; i++) {
-          const t = lo + i * step;
-          const g = gapAt(t);
-          // genuine zero-crossing only — a small sign-flipping jump, not the +-180 branch cut
-          if (Math.sign(g) !== Math.sign(prevG) && Math.abs(g - prevG) < 180) {
-            brackets.push([prevT, t]);
-          }
-          prevT = t; prevG = g;
-        }
-        if (brackets.length === 0) return tofGuess;
-        let best = null, bestDist = Infinity;
-        for (const [a, b] of brackets) {
-          let lo2 = a, hi2 = b, gLo = gapAt(lo2);
-          for (let i = 0; i < 50; i++) {
-            const mid = (lo2 + hi2) / 2;
-            const gMid = gapAt(mid);
-            if (Math.sign(gMid) === Math.sign(gLo)) { lo2 = mid; gLo = gMid; } else { hi2 = mid; }
-          }
-          const root = (lo2 + hi2) / 2;
-          const dist = Math.abs(root - guess);
-          if (dist < bestDist) { bestDist = dist; best = root; }
-        }
-        return best + destPlanet.period * 0.002; // nudge off the exact-180 Lambert singularity
-      }
-
       function computeTransfer(originName, destName, tRef = UT) {
         const originSelected = findBody(originName);
         const destSelected = findBody(destName);
+        const destMoon = destSelected && destSelected.parent ? destSelected : null;  // Track if destination is a moon
         const o = transferBodyFor(originSelected);
         const d = transferBodyFor(destSelected);
         if (!originSelected || !destSelected || !o || !d || originSelected === destSelected || o === d) return null;
@@ -3042,131 +1719,6 @@
       let currentAssists = [];
       let selectedAssistIdx = null;
 
-      /* =========================================================
-         GRAVITY ASSIST DETECTION & CALCULATION
-         Coplanar, patched-conic approximation. Finds planets that sit
-         angularly "between" origin and destination near the midpoint
-         of the direct transfer, then solves two Lambert arcs
-         (origin -> assist, assist -> destination) to estimate the
-         combined Δv and compare it against the direct Hohmann budget.
-         ========================================================= */
-      function detectPotentialAssists(o, d, tDep, tofDirect) {
-        if (!o || !d) return [];
-        const s1 = stateAt(o, tDep);
-        const s2 = stateAt(d, tDep + tofDirect);
-        let angDiff = s2.theta - s1.theta;
-        while (angDiff < 0) angDiff += 2 * Math.PI;
-        while (angDiff > 2 * Math.PI) angDiff -= 2 * Math.PI;
-
-        const rMin = Math.min(o.a, d.a), rMax = Math.max(o.a, d.a);
-        const candidates = [];
-
-        PLANETS.forEach(candidate => {
-          if (candidate === o || candidate === d) return;
-          // Only useful as an assist if its own orbit sits between origin's and destination's
-          if (candidate.a < rMin * 0.6 || candidate.a > rMax * 1.4) return;
-
-          const sC = stateAt(candidate, tDep + tofDirect * 0.5);
-          let angToCandidate = sC.theta - s1.theta;
-          while (angToCandidate < 0) angToCandidate += 2 * Math.PI;
-          while (angToCandidate > 2 * Math.PI) angToCandidate -= 2 * Math.PI;
-
-          // Angularly roughly "on the way" between origin and destination
-          if (angToCandidate > 0.15 && angToCandidate < Math.max(0.15, angDiff - 0.15)) {
-            candidates.push({ planet: candidate });
-          }
-        });
-
-        return candidates;
-      }
-
-      function computeAssistTransfer(o, assistPlanet, d, tDep) {
-        const at12 = (o.a + assistPlanet.a) / 2;
-        const tof1_naive = Math.PI * Math.sqrt(Math.pow(at12, 3) / KERBOL.mu);
-
-        const s1 = stateAt(o, tDep);
-        const tof1 = refineFlightTimeForOpposition(s1.theta, assistPlanet, tDep, tof1_naive, KERBOL.mu);
-        const sA_arr = stateAt(assistPlanet, tDep + tof1);
-        const sA_dep = sA_arr; // flyby treated as instantaneous at the patched-conic level
-
-        const at23 = (assistPlanet.a + d.a) / 2;
-        const tof2_naive = Math.PI * Math.sqrt(Math.pow(at23, 3) / KERBOL.mu);
-        const tof2 = refineFlightTimeForOpposition(sA_dep.theta, d, tDep + tof1, tof2_naive, KERBOL.mu);
-        const s3 = stateAt(d, tDep + tof1 + tof2);
-
-        const sol1 = lambertSolve([s1.x, s1.y], [sA_arr.x, sA_arr.y], tof1, KERBOL.mu);
-        if (!sol1) return null;
-        const sol2 = lambertSolve([sA_dep.x, sA_dep.y], [s3.x, s3.y], tof2, KERBOL.mu);
-        if (!sol2) return null;
-
-        const vInfDep = Math.hypot(sol1.v1[0] - s1.vx, sol1.v1[1] - s1.vy);
-        const vInfAtAssistIn = Math.hypot(sol1.v2[0] - sA_arr.vx, sol1.v2[1] - sA_arr.vy);
-        const vInfAtAssistOut = Math.hypot(sol2.v1[0] - sA_dep.vx, sol2.v1[1] - sA_dep.vy);
-        const vInfArr = Math.hypot(sol2.v2[0] - s3.vx, sol2.v2[1] - s3.vy);
-
-        return {
-          assistPlanet, tof1, tof2, totalTime: tof1 + tof2,
-          vInfDep, vInfArr,
-          totalDv: vInfDep + vInfArr,
-          arrivalPos: sA_arr, departurePosSame: sA_dep,
-          s1, s3
-        };
-      }
-
-      function refreshAssistsForCurrentResult() {
-        const previouslySelectedPlanet = selectedAssistIdx !== null && currentAssists[selectedAssistIdx]
-          ? currentAssists[selectedAssistIdx].planet : null;
-        currentAssists = [];
-        if (!currentResult) { selectedAssistIdx = null; return; }
-        const r = currentResult;
-        const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
-        const tDep = UT + waitSec;
-        const rawCandidates = detectPotentialAssists(r.origin, r.dest, tDep, r.tt);
-        const directDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
-        currentAssists = rawCandidates.map(c => {
-          const solved = computeAssistTransfer(r.origin, c.planet, r.dest, tDep);
-          if (!solved) return null;
-          return { planet: c.planet, solved, savings: directDv - solved.totalDv, depUT: tDep };
-        }).filter(Boolean).sort((a, b) => b.savings - a.savings);
-        // Re-find the previously selected planet in the refreshed list, if it's still a candidate
-        selectedAssistIdx = previouslySelectedPlanet
-          ? currentAssists.findIndex(a => a.planet === previouslySelectedPlanet)
-          : null;
-        if (selectedAssistIdx === -1) selectedAssistIdx = null;
-      }
-
-      function clearTransfer() {
-        currentResult = null;
-        currentAssists = [];
-        selectedAssistIdx = null;
-        hideTransferArc();
-        hideReturnTripOverlay();
-        hidePhaseLines();
-        clearGhost();
-        hideAssistArcs();
-        document.getElementById('transferResults').innerHTML = '<div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a Hohmann-style transfer window.</div>';
-        document.getElementById('assistList').innerHTML = '<div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a flyby, it\'ll show up here as an optional route.</div>';
-      }
-
-      document.getElementById('planBtn').onclick = () => {
-        const o = originSelect.value, d = destSelect.value;
-        if (o === d) {
-          clearTransfer();
-          document.getElementById('transferResults').innerHTML = '<div class="placeholder">Origin and destination must be different bodies.</div>';
-          return;
-        }
-        currentResult = computeTransfer(o, d);
-        if (!currentResult) {
-          clearTransfer();
-          document.getElementById('transferResults').innerHTML = '<div class="placeholder">Transfers between moons around the same planet are not supported by this interplanetary planner.</div>';
-          return;
-        }
-        switchTab('transfer');
-        renderTransferResults();
-        lastSidebarUpdate = performance.now();
-        // Init 3D overlays
-        initTransferArc();
-        updateTransferArc();
         initPhaseLines();
         updatePhaseLines();
         initGhost(currentResult.destSelected);
@@ -3248,8 +1800,11 @@
         const ghostUT = UT + waitSec + r.tt;
         const originName = r.originSelected.name;
         const destName = r.destSelected.name;
-        const parentNote = (r.originSelected.parent || r.destSelected.parent)
-          ? `<div class="note">Moon selections use the parent planet's heliocentric transfer window, with map markers and arrival ghost placed on the selected moon.</div>`
+        const isMoonOrigin = r.originSelected.parent;
+        const isMoonDest = r.destMoon;
+        const parentPlanetName = isMoonDest ? r.destMoon.parent : null;
+        const parentNote = (isMoonOrigin || isMoonDest)
+          ? `<div class="note">${isMoonDest ? `Moon transfers use ${parentPlanetName}'s heliocentric transfer window. Total budget includes parent planet capture + moon orbit insertion (~${moonInsertDv.toFixed(0)} m/s).` : `Moon origin uses the parent planet's heliocentric frame.`} Map markers and arrival ghost are placed on the selected moon.</div>`
           : '';
 
         document.getElementById('transferResults').innerHTML = `
@@ -3454,204 +2009,3 @@
     <circle cx="${cx}" cy="${cy}" r="3.5" fill="var(--text)"/>
   </svg>`;
       }
-
-      /* =========================================================
-         7. PLANET INFO PANEL
-         ========================================================= */
-      function showInfoFor(name) {
-        let p = PLANETS.find(x => x.name === name);
-        let isMoon = false;
-        if (!p) {
-          p = MOONS.find(x => x.name === name);
-          if (p) isMoon = true;
-        }
-        if (!p) return;
-        const s = p._state || stateAt(p, UT);
-        const semiMajorStr = isMoon ? `${(p.a / 1000).toFixed(0)} km` : `${(p.a / 1e9).toFixed(3)} Gm`;
-        document.getElementById('infoCard').innerHTML = `
-    <div class="info-title"><span class="planet-swatch" style="background:${p.color};color:${p.color};"></span>${p.name}${isMoon ? ` <small style="font-size:11px;color:var(--text-dim);margin-left:6px;">(Moon of ${p.parent})</small>` : ''}</div>
-    <div class="info-desc">${p.desc}</div>
-    <div class="stat-row"><span class="k">Semi-major axis</span><span class="v">${semiMajorStr}</span></div>
-    <div class="stat-row"><span class="k">Eccentricity</span><span class="v">${p.e.toFixed(3)}</span></div>
-    <div class="stat-row"><span class="k">Inclination</span><span class="v">${p.incl.toFixed(2)}°</span></div>
-    <div class="stat-row"><span class="k">Orbital period</span><span class="v">${durationString(p.period)}</span></div>
-    <div class="stat-row"><span class="k">Mean radius</span><span class="v">${(p.radius / 1000).toFixed(0)} km</span></div>
-    <div class="stat-row"><span class="k">Current orbital speed</span><span class="v hi">${Math.hypot(s.vx, s.vy).toFixed(0)} m/s</span></div>`;
-      }
-      showInfoFor('Kerbin');
-
-      /* =========================================================
-         8. PORKCHOP PLOT
-         ========================================================= */
-      const pkCanvas = document.getElementById('pkCanvas');
-      const pkCtx = pkCanvas.getContext('2d');
-      let pkGrid = null;
-
-      function resizePkCanvas() {
-        const w = pkCanvas.parentElement.clientWidth;
-        pkCanvas.width = w; pkCanvas.height = Math.round(w * 0.82);
-      }
-
-      function generatePorkchop() {
-        const oName = originSelect.value, dName = destSelect.value;
-        const originSelected = findBody(oName), destSelected = findBody(dName);
-        const o = transferBodyFor(originSelected), d = transferBodyFor(destSelected);
-        if (!o || !d || o === d) return;
-        resizePkCanvas();
-        const synPeriod = Math.abs(1 / (1 / o.period - 1 / d.period));
-        const depSpan = Math.min(synPeriod * 1.05, o.period * 1.2);
-        const at = (o.a + d.a) / 2;
-        const ttHohmann = Math.PI * Math.sqrt(Math.pow(at, 3) / KERBOL.mu);
-        const tofMin = ttHohmann * 0.35, tofMax = ttHohmann * 1.9;
-        const GRID = 42;
-        const depTimes = [], tofTimes = [];
-        for (let i = 0; i < GRID; i++) depTimes.push(UT + (i / (GRID - 1)) * depSpan);
-        for (let j = 0; j < GRID; j++) tofTimes.push(tofMin + (j / (GRID - 1)) * (tofMax - tofMin));
-        const dvGrid = [];
-        let dvMin = Infinity, dvMax = -Infinity;
-        for (let j = 0; j < GRID; j++) {
-          const row = [];
-          for (let i = 0; i < GRID; i++) {
-            const tDep = depTimes[i], tof = tofTimes[j];
-            const s1 = stateAt(o, tDep), s2 = stateAt(d, tDep + tof);
-            const sol = lambertSolve([s1.x, s1.y], [s2.x, s2.y], tof, KERBOL.mu);
-            let dv = null;
-            if (sol) {
-              const vd = Math.hypot(sol.v1[0] - s1.vx, sol.v1[1] - s1.vy);
-              const va = Math.hypot(sol.v2[0] - s2.vx, sol.v2[1] - s2.vy);
-              dv = vd + va;
-              if (dv < dvMin) dvMin = dv;
-              if (dv > dvMax) dvMax = dv;
-            }
-            row.push(dv);
-          }
-          dvGrid.push(row);
-        }
-        pkGrid = { depTimes, tofTimes, dvGrid, dvMin, dvMax, GRID, o, d };
-        drawPorkchop();
-      }
-
-      function dvColor(t) {
-        const stops = [[0.00, [47, 111, 255]], [0.22, [79, 224, 232]], [0.45, [126, 231, 135]], [0.65, [255, 224, 102]], [0.83, [255, 157, 77]], [1.00, [255, 91, 91]]];
-        for (let i = 0; i < stops.length - 1; i++) {
-          const [t0, c0] = stops[i], [t1, c1] = stops[i + 1];
-          if (t >= t0 && t <= t1) {
-            const f = (t - t0) / (t1 - t0);
-            return `rgb(${Math.round(c0[0] + (c1[0] - c0[0]) * f)},${Math.round(c0[1] + (c1[1] - c0[1]) * f)},${Math.round(c0[2] + (c1[2] - c0[2]) * f)})`;
-          }
-        }
-        return 'rgb(255,91,91)';
-      }
-
-      let pkSelectedCell = null;
-      function drawPorkchop() {
-        if (!pkGrid) return;
-        const { dvGrid, dvMin, dvMax, GRID } = pkGrid;
-        const W = pkCanvas.width, H = pkCanvas.height;
-        pkCtx.clearRect(0, 0, W, H);
-        const cw = W / GRID, ch = H / GRID;
-        for (let j = 0; j < GRID; j++) {
-          for (let i = 0; i < GRID; i++) {
-            const dv = dvGrid[j][i];
-            pkCtx.fillStyle = dv === null ? '#0a0f1c' : dvColor((dv - dvMin) / Math.max(1, (dvMax - dvMin)));
-            pkCtx.fillRect(i * cw, H - (j + 1) * ch, cw + 0.6, ch + 0.6);
-          }
-        }
-        if (pkSelectedCell) {
-          pkCtx.strokeStyle = '#ffffff'; pkCtx.lineWidth = 2;
-          pkCtx.strokeRect(pkSelectedCell.i * cw, H - (pkSelectedCell.j + 1) * ch, cw, ch);
-        }
-      }
-
-      pkCanvas.addEventListener('click', evt => {
-        if (!pkGrid) return;
-        const rect = pkCanvas.getBoundingClientRect();
-        const scaleX = pkCanvas.width / rect.width, scaleY = pkCanvas.height / rect.height;
-        const px = (evt.clientX - rect.left) * scaleX, py = (evt.clientY - rect.top) * scaleY;
-        const GRID = pkGrid.GRID;
-        const cw = pkCanvas.width / GRID, ch = pkCanvas.height / GRID;
-        const i = Math.min(GRID - 1, Math.floor(px / cw));
-        const j = Math.min(GRID - 1, Math.floor((pkCanvas.height - py) / ch));
-        pkSelectedCell = { i, j };
-        drawPorkchop();
-        const dv = pkGrid.dvGrid[j][i];
-        const tDep = pkGrid.depTimes[i], tof = pkGrid.tofTimes[j];
-        const card = document.getElementById('pkSelected');
-        const body = document.getElementById('pkSelectedBody');
-        if (dv !== null) {
-          card.style.display = '';
-          body.innerHTML = `
-      <div class="stat-row"><span class="k">Departure UT</span><span class="v">${utToDateString(tDep)}</span></div>
-      <div class="stat-row"><span class="k">Time of Flight</span><span class="v">${durationString(tof)}</span></div>
-      <div class="stat-row"><span class="k">Total heliocentric Δv</span><span class="v hi">${dv.toFixed(0)} m/s</span></div>`;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-      document.getElementById('pkGenerate').onclick = generatePorkchop;
-
-      /* =========================================================
-         9. MAIN ANIMATION LOOP
-         ========================================================= */
-      function loop(now) {
-        requestAnimationFrame(loop);
-        const dt = Math.min((now - lastFrameTime) / 1000, 0.2);
-        lastFrameTime = now;
-        UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]); // live sync ticks in real time between corrections
-        document.getElementById('utValue').textContent = utToDateString(UT);
-
-        updateMap(); // move planet meshes each frame
-
-        if (currentResult) {
-          // Recompute phase angles each frame (cheap)
-          const os = stateAt(currentResult.origin, UT);
-          const ds = stateAt(currentResult.dest, UT);
-          currentResult.currentPhase = angNormPM180((ds.theta - os.theta) * 180 / Math.PI);
-          // Recompute window countdown each frame
-          const rate = currentResult.dest.n - currentResult.origin.n;
-          if (Math.abs(rate) > 1e-12) {
-            const curRad = currentResult.currentPhase * DEG, reqRad = currentResult.requiredPhase * DEG;
-            if (rate > 0) {
-              let diff = reqRad - curRad;
-              diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-              currentResult.waitSec = diff / rate;
-            } else {
-              let diff = curRad - reqRad;
-              diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-              currentResult.waitSec = diff / (-rate);
-            }
-          }
-
-          updateTransferArc();   // update transfer ellipse
-          updatePhaseLines();    // update phase angle spokes
-          updateGhostPosition(); // move ghost sphere
-          if (visualizeReturnTrip) {
-            if (!returnArcLine) initReturnTripOverlay();
-            updateReturnTripOverlay();
-          }
-          if (selectedAssistIdx !== null) updateAssistArcs(); // move assist arcs/marker if a flyby route is selected
-
-          // Rate-limited sidebar update (every ~1.2 s)
-          if (now - lastSidebarUpdate > 1200) {
-            renderTransferResults();
-            refreshAssistsForCurrentResult();
-            if (visualizeReturnTrip) {
-              if (!returnArcLine) initReturnTripOverlay();
-              updateReturnTripOverlay();
-            }
-            if (selectedAssistIdx !== null) { initAssistArcs(); updateAssistArcs(); }
-            renderAssistOptions();
-            lastSidebarUpdate = now;
-          }
-        }
-
-        updateLabels(); // project labels to screen
-        renderer.render(scene, camera);
-      }
-      requestAnimationFrame(loop);
-
-    })(THREE);
-  </script>
-</body>
-
-</html>
