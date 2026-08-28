@@ -2,13 +2,14 @@
 
 **Live sync-capable transfer calculator with optional gravity assist optimization.**
 
-Current version: **v2.3**
+Current version: **v2.4**
 
 ## Features
 
 ### Core Transfer Planning
 - **All 7 stock planets** (Moho, Eve, Kerbin, Duna, Dres, Jool, Eeloo) with accurate orbital data
 - **11 moons** including the Dres moons Drast and Beyl, selectable as transfer origins or destinations below their parent planets
+- **Moon orbit insertion Δv calculation**: Automatic estimation of capture and circularization burns for moon destinations (~1.5x circular orbital velocity)
 - **Hohmann-style direct transfers** - shows phase angle, transfer time, delta-v budget, and window countdown
 - **Return-trip budgeting** - enter mission time on the target body and estimate the next return-to-Kerbin window and delta-v
 - **Live time control** - warp clock, manual UT input, or sync to your running KSP2 save
