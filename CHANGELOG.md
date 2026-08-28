@@ -13,6 +13,7 @@ All notable changes to Kerbalist will be documented in this file.
 
 - **Card Layout & Workflow Reordering**: Moved the Ejection Angles card directly below the Δv Budget card for better visual sequence during mission planning.
 - **UI & Typography Scaling**: Scaled all sidebar UI elements, fonts, controls, padding, and borders up by +30% and increased note text size by +20% for improved readability, automatically scaling SVG diagrams to match.
+- **Dres Ring System & Drast Orbit Integration**: Re-centered Dres's ring system directly along the orbit of   Drast with multi-band ring texturing so Drast orbits embedded within the ring band, matching KSP2 screenshots.
 
 ## [2.0] - 2026-08-10
 
