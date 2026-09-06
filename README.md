@@ -2,7 +2,7 @@
 
 **Live sync-capable transfer calculator with optional gravity assist optimization.**
 
-Current version: **v2.4**
+Current version: **v2.7**
 
 ## Features
 
