@@ -11,6 +11,7 @@ Requirements:
 
 Usage:
     python kerbalist_bridge.py
+    python kerbalist_bridge.py --dummy 100000   # Standalone demo/testing mode without kRPC
     python kerbalist_bridge.py --port 5005 --rpc-port 50000
 """
 
@@ -19,10 +20,17 @@ import json
 import sys
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import krpc
+
+try:
+    import krpc
+    HAS_KRPC = True
+except ImportError:
+    HAS_KRPC = False
 
 KRPC_CONN = None
 VERBOSE = False
+DUMMY_UT = None
+START_WALL_TIME = None
 
 
 class UTBridgeHandler(BaseHTTPRequestHandler):
@@ -31,26 +39,33 @@ class UTBridgeHandler(BaseHTTPRequestHandler):
             super().log_message(format, *args)
 
     def do_GET(self):
-        global KRPC_CONN
+        global KRPC_CONN, DUMMY_UT, START_WALL_TIME
         if self.path == '/ut' or self.path == '/':
             ut_val = None
-            if KRPC_CONN is not None:
-                try:
-                    ut_val = KRPC_CONN.space_center.ut
-                except Exception as e:
-                    print(f"[!] Warning: Error reading UT from kRPC: {e}", file=sys.stderr)
-                    KRPC_CONN = None
 
-            if ut_val is None:
-                # Attempt auto-reconnect if connection failed/dropped
-                try:
-                    KRPC_CONN = krpc.connect(name="Kerbalist Bridge QuickConnect")
-                    ut_val = KRPC_CONN.space_center.ut
-                except Exception:
-                    pass
+            # 1. Check for dummy mode (useful for testing when KSP is not open)
+            if DUMMY_UT is not None:
+                elapsed = time.time() - START_WALL_TIME
+                ut_val = DUMMY_UT + elapsed
 
+            # 2. Try kRPC connection
+            elif HAS_KRPC:
+                if KRPC_CONN is not None:
+                    try:
+                        ut_val = KRPC_CONN.space_center.ut
+                    except Exception:
+                        KRPC_CONN = None
+
+                if ut_val is None:
+                    try:
+                        KRPC_CONN = krpc.connect(name="Kerbalist Bridge QuickConnect")
+                        ut_val = KRPC_CONN.space_center.ut
+                    except Exception:
+                        pass
+
+            # 3. Serve UT if available
             if ut_val is not None:
-                payload = json.dumps({"ut": ut_val}).encode('utf-8')
+                payload = json.dumps({"ut": float(ut_val)}).encode('utf-8')
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json")
                 self.send_header("Access-Control-Allow-Origin", "*")
@@ -59,19 +74,23 @@ class UTBridgeHandler(BaseHTTPRequestHandler):
                 self.wfile.write(payload)
                 return
 
-            # Connection failed / kRPC unavailable
+            # 4. Connection failed / kRPC unavailable and not in dummy mode
+            error_msg = (
+                "Unable to connect to kRPC instance on 127.0.0.1:50000. "
+                "Ensure KSP / KSP2 is running with the kRPC mod enabled. "
+                "Or run 'python kerbalist_bridge.py --dummy 100000' to test without KSP."
+            )
             self.send_response(503)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            self.wfile.write(json.dumps({"error": "Unable to connect to kRPC instance"}).encode('utf-8'))
+            self.wfile.write(json.dumps({"error": error_msg}).encode('utf-8'))
             return
 
         self.send_response(404)
         self.end_headers()
 
     def do_OPTIONS(self):
-        # CORS preflight support
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -80,6 +99,10 @@ class UTBridgeHandler(BaseHTTPRequestHandler):
 
 
 def connect_krpc(address, rpc_port, stream_port):
+    if not HAS_KRPC:
+        print("[!] 'krpc' Python library is not installed (pip install krpc).")
+        return None
+
     print(f"[*] Connecting to kRPC server at {address}:{rpc_port}...")
     try:
         conn = krpc.connect(
@@ -92,24 +115,31 @@ def connect_krpc(address, rpc_port, stream_port):
         return conn
     except Exception as e:
         print(f"[!] Could not connect to kRPC on startup: {e}")
-        print("[!] The bridge HTTP server will still start and retry connecting when polled.")
+        print("[!] Note: Start KSP/KSP2 with kRPC server running to sync live game time.")
+        print("[!] Tip: You can also pass --dummy 100000 to test/demo without KSP.")
         return None
 
 
 def main():
-    global KRPC_CONN, VERBOSE
+    global KRPC_CONN, VERBOSE, DUMMY_UT, START_WALL_TIME
     parser = argparse.ArgumentParser(description="Kerbalist kRPC Companion Bridge Server")
     parser.add_argument("--port", type=int, default=5005, help="HTTP server port for Kerbalist (default: 5005)")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="HTTP server host (default: 127.0.0.1)")
     parser.add_argument("--rpc-address", type=str, default="127.0.0.1", help="kRPC server IP (default: 127.0.0.1)")
     parser.add_argument("--rpc-port", type=int, default=50000, help="kRPC RPC port (default: 50000)")
     parser.add_argument("--stream-port", type=int, default=50001, help="kRPC Stream port (default: 50001)")
+    parser.add_argument("--dummy", type=float, default=None, help="Start initial UT for dummy/testing mode without KSP running")
     parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose HTTP log output")
 
     args = parser.parse_args()
     VERBOSE = args.verbose
 
-    KRPC_CONN = connect_krpc(args.rpc_address, args.rpc_port, args.stream_port)
+    if args.dummy is not None:
+        DUMMY_UT = args.dummy
+        START_WALL_TIME = time.time()
+        print(f"[+] Dummy mode active! Simulating live UT starting at {DUMMY_UT} s")
+    else:
+        KRPC_CONN = connect_krpc(args.rpc_address, args.rpc_port, args.stream_port)
 
     server_address = (args.host, args.port)
     httpd = HTTPServer(server_address, UTBridgeHandler)
