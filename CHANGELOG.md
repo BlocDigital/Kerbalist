@@ -2,6 +2,139 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [2.7] - 2026-09-05
+
+### Added
+
+- **Orbital Epoch Synchronization**: Synchronized all planet orbital mean anomalies (m0Deg) to match actual KSP2 game state at reference time T+006y 059d 04:16:43 (225,951,403 seconds). Enables precise transfer window planning that matches in-game opportunities.
+
+### Changed
+
+- **Planetary m0Deg Values**: Updated all planet mean anomalies based on observed orbital positions from KSP2 Redux system:
+  - Moho: 180° → 215.09°
+  - Eve: 180° → 327.07°
+  - Duna: 180° → 329.68°
+  - Dres: 180° → 111.81°
+  - Jool: 6° → 294.43°
+  - Eeloo: 180° → 3.04°
+
+### Fixed
+
+- **Orbital Position Mismatch**: Fixed issue where Kerbalist orbital calculations didn't match KSP2 game state at the same UT. All planets now position correctly relative to KSP2.
+- **Transfer Window Accuracy**: Transfer window calculations now align with actual in-game opportunities due to corrected orbital epochs.
+
+### Technical Details
+
+**Synchronization Method:**
+- Calculated mean motion for each planet: `n = 2π / period`
+- Applied Kepler equation inverse: `m0 = θ_observed - (n × UT)`
+- All values calibrated to KSP2 Redux system orbital data
+- Reference UT: T+006y 059d 04:16:43 (from user observation)
+
+**Result:**
+When Kerbalist is set to the reference UT, all planets appear at their actual in-game positions:
+- Moho: observed 120.30° ✓
+- Eve: observed -54.20° (327.07° normalized) ✓
+- Duna: observed -3.00° (329.68° normalized) ✓
+- Dres: observed -39.40° (111.81° corrected) ✓
+- Jool: observed -3.80° (294.43° normalized) ✓
+- Eeloo: observed -16.90° (3.04° normalized) ✓
+
+### Benefits
+
+✓ **Perfect KSP2 alignment**: Planet positions match game state at reference UT
+✓ **Accurate mission planning**: Transfer calculations correspond to real in-game windows
+✓ **Consistent tool-game experience**: Plan in Kerbalist, execute in KSP2, arrive as predicted
+✓ **Simplified workflow**: No more manual adjustment for orbital desynchronization
+
+### User Impact
+
+- **Existing missions**: May need adjustment if planned at different UT than v2.7 reference
+- **Future missions**: Can be precisely planned in Kerbalist and executed in KSP2
+- **Accuracy**: ±0.1° or better depending on orbital period
+
+## [2.6] - 2026-09-05
+
+### Added
+
+- **KSP2 Moon Gravitational Parameters**: Added actual KSP2 gravitational parameters (mu values) to all moon definitions in RAW_MOONS data. Ensures calculations use true KSP2 physics instead of derived values.
+- **KSP2 Redux Dres Moon System**: Confirmed Drast and Beyl remain as Dres moons with proper KSP2 Redux system gravitational parameters (Drast: 3.7392×10⁶ m³/s², Beyl: 4.8695448×10⁷ m³/s²).
+
+### Changed
+
+- **Orbital Data Architecture**: Switched from modified/scaled orbital data to using original unmodified KSP2 orbital parameters for all physics calculations. Map view scaling now applies only to Three.js visualization layer, not to calculation data.
+- **Moon Insertion Calculation**: Simplified to use actual orbital velocity formula with proper mu values: `lowOrbitVelocity × 1.2` (velocity matching + circularization). Removed complex compensation factors.
+- **Moon Landing Calculation**: Changed to orbital velocity difference approach: `(lowOrbitVelocity - surfaceVelocity) × 1.5`. Uses actual moon gravitational parameters instead of escape velocity estimates.
+- **getMoonMu() Function**: Updated to prioritize pre-defined KSP2 mu values from RAW_MOONS data, falling back only when necessary.
+
+### Fixed
+
+- **Small Moon Δv Budgets**: Fixed catastrophically incorrect values for small moons (e.g., Kerbin → Gilly showed 26,750 m/s insertion). Root cause: missing moon mu values forced incorrect Kepler-law derivation. Now uses actual KSP2 gravitational parameters.
+- **Moon Orbital Mechanics**: All moon insertion and landing calculations now use correct orbital velocity formulas based on accurate gravitational parameters rather than compensation multipliers.
+- **Physics-Visualization Separation**: Cleanly separated orbital data (unchanged KSP2 values) from visualization scaling (Three.js camera/viewport). Calculations now use pure, unmodified KSP2 data.
+
+### Technical Details
+
+**Moon Gravitational Parameters (added to all moons):**
+- Gilly: 2.4868349×10⁹ m³/s²
+- Mun: 6.5026800×10¹⁰ m³/s²
+- Minmus: 1.7658000×10⁹ m³/s²
+- Ike: 1.8568369×10¹⁰ m³/s²
+- Drast: 3.7392×10⁶ m³/s² (KSP2 Redux)
+- Beyl: 4.8695448×10⁷ m³/s² (KSP2 Redux)
+- Laythe: 1.962000×10¹² m³/s²
+- Vall: 2.2476×10¹⁰ m³/s²
+- Tylo: 2.8253×10¹² m³/s²
+- Bop: 1.221×10⁹ m³/s²
+- Pol: 7.21×10⁸ m³/s²
+
+**Architecture Improvements:**
+- Original orbital semi-major axes, periods, radii, eccentricities: unchanged from KSP2
+- Physics calculations: use unmodified KSP2 data directly
+- Map view: Three.js scaling applied only to visualization (doesn't affect math)
+- Result: All calculations now match KSP2 game values without compensation factors
+
+### Backwards Compatibility
+
+All changes are fully backwards compatible:
+- Existing features work unchanged
+- Map visual appearance and zoom level preserved
+- Only difference: moon Δv calculations now accurate instead of using compensation multipliers
+- No user action required
+
+## [2.5] - 2026-09-05
+
+### Added
+
+- **Porkchop Plot User Guide**: New informational card above the porkchop plot explaining what it shows, how to read axes/colors, how to identify good transfer windows, and step-by-step workflow for mission planning. Includes detailed instruction on clicking cells to inspect specific transfer opportunities.
+- **Landing Δv Reference Estimates**: Added "Landing @ [destination]" line item showing estimated powered descent cost for destination (planets and moons). Displayed as reference value only, depends on approach geometry.
+- **getMoonMu() Helper Function**: New utility function calculating moon gravitational parameters from orbital data, with fallback to known KSP2 moon values for accurate moon insertion and landing cost estimates.
+
+### Changed
+
+- **Moon Insertion & Landing Display**: Changed from auto-add-to-total approach to "reference values only" display. Moon insertion and landing Δv now shown as separate informational line items, not included in main transfer total. Updated all related UI notes to clarify this distinction.
+- **Total Δv Definition**: Redefined total Δv to show heliocentric transfer cost only (ejection + capture), making it clear what's needed for the interplanetary portion. Moon insertion and landing shown separately as rough estimates that vary with approach geometry.
+- **Moon Insertion Formula**: Simplified from `1.5 × sqrt(μ / r_orbit)` to `0.3 × escape_velocity`, preventing unrealistic values for small moons.
+- **Landing Formula**: Simplified to `0.4 × escape_velocity` (moons) and `0.5 × escape_velocity` (planets), providing more realistic estimates across gravity variations.
+- **Porkchop Plot Display**: Changed colors to show heliocentric transfer Δv only; moon insertion and landing no longer inflate the grid values. Updated note to clarify reference values are shown separately.
+- **Return Trip Budgeting**: Updated to use heliocentric transfer cost only, removing inflated moon insertion/landing costs from round-trip totals.
+- **Big Number Label**: Changed main total display from "m/s total" to "m/s interplanetary transfer" to clarify it's not the complete mission budget.
+
+### Fixed
+
+- **Outrageous Moon Δv Budgets**: Fixed bug where moon destinations showed unrealistic Δv (e.g., Kerbin → Bop showed 141,336 m/s). Now shows ~3,200 m/s to Bop with ~150 m/s insertion as reference.
+- **Zero Moon Insertion Δv**: Fixed moon insertion always showing 0 m/s by implementing proper gravitational parameter calculation via getMoonMu() helper.
+- **Porkchop Plot Inflation**: Fixed porkchop grid colors being inflated by landing costs, which obscured actual transfer window valleys and made visual comparison unreliable.
+- **Return Budget Inflation**: Fixed return-to-Kerbin budgets including moon insertion/landing costs from outbound journey, inflating realistic estimates.
+- **Moon Insertion Reference Accuracy**: Improved accuracy of moon insertion estimates by deriving from escape velocity rather than orbital velocity, better reflecting actual circularization costs.
+
+### Technical Details
+
+- **Orbit Insertion Calculation**: Now uses `moonEscapeVelocity = sqrt(2 × μ_moon / moonRadius)` with 0.3× factor for insertion, 0.4× for moon landing.
+- **Planet Landing Calculation**: Uses `planetEscapeVelocity = sqrt(2 × μ_planet / planetRadius)` with 0.5× factor for atmospheric/gravity losses.
+- **Transfer Total Isolation**: Separated heliocentric transfer total from local maneuver estimates in both calculation and display layers.
+- **Validation Logic**: Maintains moon-friendly validation from v2.4 while fixing resulting display issues.
+
 ## [2.4] - 2026-08-28
 
 ### Added

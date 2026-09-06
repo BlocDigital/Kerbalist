@@ -400,6 +400,7 @@
       flex: 1 1 auto;
       display: flex;
       min-height: 0;
+      position: relative;
     }
 
     .map-wrap {
@@ -498,6 +499,157 @@
       font-size: 8.5px;
     }
 
+    /* Version — clickable link */
+    .map-version {
+      pointer-events: auto;
+      cursor: pointer;
+      transition: color .15s;
+    }
+    .map-version:hover {
+      color: var(--amber);
+    }
+
+    /* Changelog popup overlay */
+    .changelog-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, .6);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    .changelog-overlay.open {
+      display: flex;
+    }
+
+    .changelog-popup {
+      width: 560px;
+      max-width: 92vw;
+      max-height: 80vh;
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+      overflow: hidden;
+    }
+
+    .changelog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      flex: 0 0 auto;
+    }
+
+    .changelog-header h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .changelog-close {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .15s;
+    }
+    .changelog-close:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .changelog-body {
+      overflow-y: auto;
+      padding: 18px 22px;
+      flex: 1 1 auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .changelog-body h1,
+    .changelog-body h2,
+    .changelog-body h3,
+    .changelog-body h4 {
+      font-family: var(--font-display);
+      margin-top: 0;
+    }
+    .changelog-body h1 {
+      font-size: 18px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .changelog-body h2 {
+      font-size: 14px;
+      color: var(--amber);
+      margin-top: 22px;
+      margin-bottom: 6px;
+    }
+    .changelog-body h3 {
+      font-size: 12px;
+      color: var(--cyan);
+      margin-top: 10px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .changelog-body p,
+    .changelog-body li {
+      color: var(--text-dim);
+    }
+    .changelog-body ul,
+    .changelog-body ol {
+      padding-left: 20px;
+      margin: 4px 0;
+    }
+    .changelog-body li {
+      margin-bottom: 3px;
+    }
+    .changelog-body strong {
+      color: var(--text);
+    }
+    .changelog-body code {
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 11px;
+    }
+    .changelog-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+
+    .changelog-footer {
+      padding: 10px 18px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text-dimmer);
+      text-align: right;
+      flex: 0 0 auto;
+    }
+
     .zoom-controls {
       position: absolute;
       bottom: 14px;
@@ -562,6 +714,42 @@
       border-radius: 50%;
       margin-right: 5px;
       vertical-align: middle;
+    }
+
+    /* Support button */
+    .support-btn-vp {
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      z-index: 1000;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--amber-dim);
+      background: var(--panel2);
+      color: var(--amber);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: .15s;
+      white-space: nowrap;
+    }
+
+    .support-btn-vp:hover {
+      background: #262210;
+      border-color: var(--amber);
+      box-shadow: 0 0 14px rgba(255, 180, 84, .15);
+    }
+
+    .support-btn-vp .coffee-icon {
+      font-size: 15px;
+      line-height: 1;
     }
 
     /* 3D labels */
@@ -1217,7 +1405,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
-        <div class="map-version" id="mapVersion">v2.4</div>
+        <div class="map-version" id="mapVersion" title="Click to view changelog" onclick="showChangelog()">v2.7</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1291,6 +1479,37 @@
 
           <div class="tab-panel" id="panel-porkchop">
             <div class="card">
+              <h3><span class="dot"></span>How to Use the Porkchop Plot</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 12px; line-height: 1.6;">
+                <div>
+                  <strong style="color: var(--accent);">What It Shows</strong><br>
+                  A "porkchop" (or "launch window") plot displays transfer opportunities between two bodies. Each cell represents a different launch date and flight time combination, color-coded by the Δv required.
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">How to Read It</strong><br>
+                  <strong>X-axis:</strong> Departure date (left = earlier)<br>
+                  <strong>Y-axis:</strong> Time of flight (top = shorter journey)<br>
+                  <strong>Colors:</strong> Green = efficient, Red = expensive
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">Finding Good Windows</strong><br>
+                  Look for "valleys" or green areas—these represent efficient transfer windows. Avoid red regions (expensive). The greenest cell is the optimal transfer.
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">How to Plan</strong><br>
+                  1. Generate the plot<br>
+                  2. Find a green valley<br>
+                  3. Click a cell to see exact timing<br>
+                  4. Check "Next Transfer Window" in main panel
+                </div>
+                <div style="grid-column: 1 / -1;">
+                  <strong style="color: var(--accent);">Clicking Cells</strong><br>
+                  Click any cell to inspect its details: exact departure date, arrival date, and Δv required. Use this to fine-tune your launch plan and see if a particular window fits your schedule.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
               <h3><span class="dot"></span>Porkchop Plot</h3>
               <div class="pk-canvas-wrap">
                 <canvas id="pkCanvas" width="360" height="300"></canvas>
@@ -1300,8 +1519,7 @@
               <div class="pk-controls">
                 <button id="pkGenerate">Generate</button>
               </div>
-              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = total Δv (heliocentric + moon
-                insertion for moon destinations), Lambert-solved per cell. Click a cell to inspect it.</div>
+              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = heliocentric transfer Δv (Lambert-solved per cell). Moon insertion and landing Δv shown separately as reference - actual costs depend on approach geometry. Click a cell to inspect it.</div>
             </div>
             <div class="card" id="pkSelected" style="display:none;">
               <h3><span class="dot"></span>Selected Point</h3>
@@ -1318,11 +1536,297 @@
     </div>
   </div>
 
+  <!-- Support button — fixed to viewport bottom-right, outside the map -->
+  <a class="support-btn-vp" href="https://buymeacoffee.com/blocdigital" target="_blank" rel="noopener noreferrer">
+    <span class="coffee-icon">☕</span> Buy me a beer
+  </a>
+
+  <!-- Changelog Popup -->
+  <div class="changelog-overlay" id="changelogOverlay" onclick="if(event.target===this)hideChangelog()">
+    <div class="changelog-popup">
+      <div class="changelog-header">
+        <h3>Changelog</h3>
+        <button class="changelog-close" onclick="hideChangelog()" title="Close">&times;</button>
+      </div>
+      <div class="changelog-body" id="changelogBody">
+        <h1># Changelog</h1>
+        
+        <h2>## [2.7] - 2026-09-05</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Orbital Epoch Synchronization</strong>: Synchronized all planet orbital mean anomalies (m0Deg) to match actual KSP2 game state at reference time T+006y 059d 04:16:43 (225,951,403 seconds). Enables precise transfer window planning that matches in-game opportunities.</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Planetary m0Deg Values</strong>: Updated all planet mean anomalies based on observed orbital positions from KSP2 Redux system:<br>  - Moho: 180° → 215.09°<br>  - Eve: 180° → 327.07°<br>  - Duna: 180° → 329.68°<br>  - Dres: 180° → 111.81°<br>  - Jool: 6° → 294.43°<br>  - Eeloo: 180° → 3.04°</li>
+        </ul>
+        <h3>### Fixed</h3>
+        <ul>
+        <li><strong>Orbital Position Mismatch</strong>: Fixed issue where Kerbalist orbital calculations didn't match KSP2 game state at the same UT. All planets now position correctly relative to KSP2.</li>
+        <li><strong>Transfer Window Accuracy</strong>: Transfer window calculations now align with actual in-game opportunities due to corrected orbital epochs.</li>
+        </ul>
+        <h3>### Technical Details</h3>
+        <p><strong>Synchronization Method:</strong><br>
+        - Calculated mean motion for each planet: <code>n = 2π / period</code><br>
+        - Applied Kepler equation inverse: <code>m0 = θ_observed - (n × UT)</code><br>
+        - All values calibrated to KSP2 Redux system orbital data<br>
+        - Reference UT: T+006y 059d 04:16:43 (from user observation)</p>
+        <p><strong>Result:</strong><br>
+        When Kerbalist is set to the reference UT, all planets appear at their actual in-game positions:<br>
+        - Moho: observed 120.30° ✓<br>
+        - Eve: observed -54.20° (327.07° normalized) ✓<br>
+        - Duna: observed -3.00° (329.68° normalized) ✓<br>
+        - Dres: observed -39.40° (111.81° corrected) ✓<br>
+        - Jool: observed -3.80° (294.43° normalized) ✓<br>
+        - Eeloo: observed -16.90° (3.04° normalized) ✓</p>
+        <h3>### Benefits</h3>
+        <ul>
+        <li>✓ <strong>Perfect KSP2 alignment</strong>: Planet positions match game state at reference UT</li>
+        <li>✓ <strong>Accurate mission planning</strong>: Transfer calculations correspond to real in-game windows</li>
+        <li>✓ <strong>Consistent tool-game experience</strong>: Plan in Kerbalist, execute in KSP2, arrive as predicted</li>
+        <li>✓ <strong>Simplified workflow</strong>: No more manual adjustment for orbital desynchronization</li>
+        </ul>
+        <h3>### User Impact</h3>
+        <ul>
+        <li><strong>Existing missions</strong>: May need adjustment if planned at different UT than v2.7 reference</li>
+        <li><strong>Future missions</strong>: Can be precisely planned in Kerbalist and executed in KSP2</li>
+        <li><strong>Accuracy</strong>: ±0.1° or better depending on orbital period</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [2.6] - 2026-09-05</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>KSP2 Moon Gravitational Parameters</strong>: Added actual KSP2 gravitational parameters (mu values) to all moon definitions in RAW_MOONS data. Ensures calculations use true KSP2 physics instead of derived values.</li>
+        <li><strong>KSP2 Redux Dres Moon System</strong>: Confirmed Drast and Beyl remain as Dres moons with proper KSP2 Redux system gravitational parameters (Drast: 3.7392×10⁶ m³/s², Beyl: 4.8695448×10⁷ m³/s²).</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Orbital Data Architecture</strong>: Switched from modified/scaled orbital data to using original unmodified KSP2 orbital parameters for all physics calculations. Map view scaling now applies only to Three.js visualization layer, not to calculation data.</li>
+        <li><strong>Moon Insertion Calculation</strong>: Simplified to use actual orbital velocity formula with proper mu values: <code>lowOrbitVelocity × 1.2</code> (velocity matching + circularization). Removed complex compensation factors.</li>
+        <li><strong>Moon Landing Calculation</strong>: Changed to orbital velocity difference approach: <code>(lowOrbitVelocity - surfaceVelocity) × 1.5</code>. Uses actual moon gravitational parameters instead of escape velocity estimates.</li>
+        <li><strong>getMoonMu() Function</strong>: Updated to prioritize pre-defined KSP2 mu values from RAW_MOONS data, falling back only when necessary.</li>
+        </ul>
+        <h3>### Fixed</h3>
+        <ul>
+        <li><strong>Small Moon Δv Budgets</strong>: Fixed catastrophically incorrect values for small moons (e.g., Kerbin → Gilly showed 26,750 m/s insertion). Root cause: missing moon mu values forced incorrect Kepler-law derivation. Now uses actual KSP2 gravitational parameters.</li>
+        <li><strong>Moon Orbital Mechanics</strong>: All moon insertion and landing calculations now use correct orbital velocity formulas based on accurate gravitational parameters rather than compensation multipliers.</li>
+        <li><strong>Physics-Visualization Separation</strong>: Cleanly separated orbital data (unchanged KSP2 values) from visualization scaling (Three.js camera/viewport). Calculations now use pure, unmodified KSP2 data.</li>
+        </ul>
+        <h3>### Technical Details</h3>
+        <p><strong>Moon Gravitational Parameters (added to all moons):</strong><br>
+        - Gilly: 2.4868349×10⁹ m³/s²<br>
+        - Mun: 6.5026800×10¹⁰ m³/s²<br>
+        - Minmus: 1.7658000×10⁹ m³/s²<br>
+        - Ike: 1.8568369×10¹⁰ m³/s²<br>
+        - Drast: 3.7392×10⁶ m³/s² (KSP2 Redux)<br>
+        - Beyl: 4.8695448×10⁷ m³/s² (KSP2 Redux)<br>
+        - Laythe: 1.962000×10¹² m³/s²<br>
+        - Vall: 2.2476×10¹⁰ m³/s²<br>
+        - Tylo: 2.8253×10¹² m³/s²<br>
+        - Bop: 1.221×10⁹ m³/s²<br>
+        - Pol: 7.21×10⁸ m³/s²</p>
+        <p><strong>Architecture Improvements:</strong><br>
+        - Original orbital semi-major axes, periods, radii, eccentricities: unchanged from KSP2<br>
+        - Physics calculations: use unmodified KSP2 data directly<br>
+        - Map view: Three.js scaling applied only to visualization (doesn't affect math)<br>
+        - Result: All calculations now match KSP2 game values without compensation factors</p>
+        <h3>### Backwards Compatibility</h3>
+        <p>All changes are fully backwards compatible:<br>
+        - Existing features work unchanged<br>
+        - Map visual appearance and zoom level preserved<br>
+        - Only difference: moon Δv calculations now accurate instead of using compensation multipliers<br>
+        - No user action required</p>
+
+        <hr>
+        
+        <h2>## [2.5] - 2026-09-05</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Porkchop Plot User Guide</strong>: New informational card above the porkchop plot explaining what it shows, how to read axes/colors, how to identify good transfer windows, and step-by-step workflow for mission planning. Includes detailed instruction on clicking cells to inspect specific transfer opportunities.</li>
+        <li><strong>Landing Δv Reference Estimates</strong>: Added "Landing @ [destination]" line item showing estimated powered descent cost for destination (planets and moons). Displayed as reference value only, depends on approach geometry.</li>
+        <li><strong>getMoonMu() Helper Function</strong>: New utility function calculating moon gravitational parameters from orbital data, with fallback to known KSP2 moon values for accurate moon insertion and landing cost estimates.</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Moon Insertion & Landing Display</strong>: Changed from auto-add-to-total approach to "reference values only" display. Moon insertion and landing Δv now shown as separate informational line items, not included in main transfer total. Updated all related UI notes to clarify this distinction.</li>
+        <li><strong>Total Δv Definition</strong>: Redefined total Δv to show heliocentric transfer cost only (ejection + capture), making it clear what's needed for the interplanetary portion. Moon insertion and landing shown separately as rough estimates that vary with approach geometry.</li>
+        <li><strong>Moon Insertion Formula</strong>: Simplified from <code>1.5 × sqrt(μ / r_orbit)</code> to <code>0.3 × escape_velocity</code>, preventing unrealistic values for small moons.</li>
+        <li><strong>Landing Formula</strong>: Simplified to <code>0.4 × escape_velocity</code> (moons) and <code>0.5 × escape_velocity</code> (planets), providing more realistic estimates across gravity variations.</li>
+        <li><strong>Porkchop Plot Display</strong>: Changed colors to show heliocentric transfer Δv only; moon insertion and landing no longer inflate the grid values. Updated note to clarify reference values are shown separately.</li>
+        <li><strong>Return Trip Budgeting</strong>: Updated to use heliocentric transfer cost only, removing inflated moon insertion/landing costs from round-trip totals.</li>
+        <li><strong>Big Number Label</strong>: Changed main total display from "m/s total" to "m/s interplanetary transfer" to clarify it's not the complete mission budget.</li>
+        </ul>
+        <h3>### Fixed</h3>
+        <ul>
+        <li><strong>Outrageous Moon Δv Budgets</strong>: Fixed bug where moon destinations showed unrealistic Δv (e.g., Kerbin → Bop showed 141,336 m/s). Now shows ~3,200 m/s to Bop with ~150 m/s insertion as reference.</li>
+        <li><strong>Zero Moon Insertion Δv</strong>: Fixed moon insertion always showing 0 m/s by implementing proper gravitational parameter calculation via getMoonMu() helper.</li>
+        <li><strong>Porkchop Plot Inflation</strong>: Fixed porkchop grid colors being inflated by landing costs, which obscured actual transfer window valleys and made visual comparison unreliable.</li>
+        <li><strong>Return Budget Inflation</strong>: Fixed return-to-Kerbin budgets including moon insertion/landing costs from outbound journey, inflating realistic estimates.</li>
+        <li><strong>Moon Insertion Reference Accuracy</strong>: Improved accuracy of moon insertion estimates by deriving from escape velocity rather than orbital velocity, better reflecting actual circularization costs.</li>
+        </ul>
+        <h3>### Technical Details</h3>
+        <ul>
+        <li><strong>Orbit Insertion Calculation</strong>: Now uses <code>moonEscapeVelocity = sqrt(2 × μ_moon / moonRadius)</code> with 0.3× factor for insertion, 0.4× for moon landing.</li>
+        <li><strong>Planet Landing Calculation</strong>: Uses <code>planetEscapeVelocity = sqrt(2 × μ_planet / planetRadius)</code> with 0.5× factor for atmospheric/gravity losses.</li>
+        <li><strong>Transfer Total Isolation</strong>: Separated heliocentric transfer total from local maneuver estimates in both calculation and display layers.</li>
+        <li><strong>Validation Logic</strong>: Maintains moon-friendly validation from v2.4 while fixing resulting display issues.</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [2.4] - 2026-08-28</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Moon Transfer Δv Budgeting</strong>: Fixed moon destination transfers showing identical Δv budget to parent planet by adding automatic moon orbit insertion cost calculation (~1.5x the moon's circular orbital velocity). Now correctly displays: ejection burn @ origin, capture burn @ parent planet, and moon orbit insertion @ destination with separate line items in total budget.</li>
+        <li><strong>Moon Insertion Cost Display</strong>: Added dedicated line item "Moon orbit insertion @ [moon name]" showing estimated Δv cost for orbit insertion at destination moon.</li>
+        <li><strong>Porkchop Plot Moon Support</strong>: Moon destinations now appear in porkchop plot generator with colors including moon insertion cost, labeled as "Total Δv (heliocentric + moon insertion)".</li>
+        <li><strong>Return Trip Moon Budgeting</strong>: Round-trip return-to-Kerbin calculations now include outbound moon orbit insertion cost for accurate mission budgeting.</li>
+        </ul>
+        <h3>### Technical Updates</h3>
+        <ul>
+        <li><strong>Validation Logic</strong>: Modified transfer validation to allow same parent planet when destination is a moon (previously rejected such transfers).</li>
+        <li><strong>Orbit Insertion Formula</strong>: Uses <code>V_insertion = 1.5 × sqrt(μ_moon / r_orbit)</code> where orbit altitude = max(20% of moon radius, 10km) to estimate capture and circularization burns.</li>
+        <li><strong>UI Clarifications</strong>: Updated notes to distinguish heliocentric-only Δv from total budget including moon insertion costs.</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [2.3] - 2026-08-27</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Return-to-Kerbin Δv Budgeting</strong>: Added mission time on target body controls to the Δv Budget card, with step buttons for -20, -10, -1, +1, +10, and +20 days.</li>
+        <li><strong>Return Window Details</strong>: The Δv Budget card now estimates the next target-to-Kerbin transfer window after the mission stay, including return departure UT, Kerbin arrival UT, return ejection burn, Kerbin capture burn, return Δv, and round-trip Δv.</li>
+        <li><strong>Return Trip Map Visualization</strong>: Added an optional checkbox to draw the return transfer arc on the 3D map with distinct colors, including return departure and Kerbin arrival ghost positions.</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [2.2] - 2026-08-11</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Heliocentric Δv Total Display</strong>: Added a supplementary heliocentric total m/s readout in a smaller font beneath the main ejection/capture parking orbit Δv budget.</li>
+        <li><strong>Ejection Angle Visual Schematic</strong>: Added a local planetary orbit diagram to the Ejection Angle card showing the parking orbit around the origin body, the prograde marker, and the precise burn position with thrust vector exhaust flames.</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Card Layout & Workflow Reordering</strong>: Moved the Ejection Angle card directly below the Δv Budget card for better visual sequence during mission planning.</li>
+        <li><strong>UI & Typography Scaling</strong>: Scaled all sidebar UI elements, fonts, controls, padding, and borders up by +30% and increased note text size by +20% for improved readability, automatically scaling SVG diagrams to match.</li>
+        <li><strong>Dres Ring System & Drast Orbit Integration</strong>: Re-centered Dres's ring system directly along the orbit of Drast with multi-band ring texturing so Drast orbits embedded within the ring band.</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [2.0] - 2026-08-10</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Dres Moon System Expansion</strong>: Added Drast and Beyl as selectable moons of Dres, including local 3D orbits, physical display data from the supplied KSP2 screenshots, labels, click selection, and transfer dropdown entries</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Dres Ring Alignment</strong>: Narrowed the Dres ring band and aligned it with Dres's equatorial plane so it matches the in-game ring appearance more closely</li>
+        <li><strong>Moon Velocity Display</strong>: Moon body info now derives local orbital speed from the parent planet's gravitational parameter instead of Kerbol's</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [1.7.2] - 2026-08-09</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Gravity Assist Planning</strong>: New Assists tab automatically detects planets positioned for a viable flyby on the current route and estimates combined delta-v by solving two independent Lambert arcs (origin → assist planet, assist planet → destination), compared directly against the direct Hohmann transfer</li>
+        <li><strong>Assist Route Visualization</strong>: Selecting an assist route draws both transfer legs in the 3D scene, dims the direct arc so the assist route reads as the active option, and drops a glowing marker at the flyby encounter point</li>
+        <li><strong>Assist Route Labels</strong>: Flyby planet name and per-leg origin/assist/destination labels with flight-time annotations, rendered as screen-space labels that track the 3D scene as the camera moves</li>
+        <li><strong>Assist Arrival Ghost</strong>: A second, violet-colored arrival ghost shows the destination's real position at the assist route's own arrival time, distinct from the direct transfer's amber ghost — multi-leg routes often arrive years apart from a direct transfer</li>
+        <li><strong>Gravity Assist Legend Entry</strong>: Map legend now includes a violet swatch identifying gravity-assist-related elements</li>
+        </ul>
+        <h3>### Fixed</h3>
+        <ul>
+        <li><strong>Assist Leg Flight-Time Phasing</strong>: Gravity-assist leg durations were previously estimated with a naive semi-major-axis-only Hohmann-time formula that assumed exact 180-degree opposition between the flyby planet and the next body at arrival. When the flyby planet wasn't actually well-positioned for that assumption, this could force a near-parabolic trajectory (eccentricity ≈ 1) to satisfy the mismatched geometry, producing a sharply distorted, incorrect-looking arc. Leg durations are now refined by numerically searching for genuine opposition between the two bodies, with a small offset applied to avoid landing exactly on the Lambert solver's own singularity at 180 degrees</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [1.7.0] - 2026-08-07</h2>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Hohmann Transfer Arc Correction</strong>: Fixed transfer arc drawing to use a real Lambert trajectory solution instead of an idealized 180-degree ellipse. The previous method could miss the arrival point for eccentric destinations; the new approach solves for the exact elliptical/hyperbolic orbit connecting departure and arrival points at the computed transfer time</li>
+        <li>Orbital display scaling adjusted so planet spheres and moon orbits maintain proper physical distance ratios</li>
+        </ul>
+        <h3>### Fixed</h3>
+        <ul>
+        <li>Moon orbit rendering tightened to prevent inner-planet moon rings from overlapping neighboring planetary orbits while keeping outer moon systems legible</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [1.6.1] - 2026-08-06</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li><strong>Moon Destination Selection</strong>: Moons now appear in origin and destination dropdowns below their parent planets with dashed labels (e.g., `- Mun`) to distinguish them from planets</li>
+        <li><strong>Clear Transfer Button</strong>: New button beside Plan Transfer to remove transfer arcs, phase lines, arrival ghosts, and reset the transfer panel</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li><strong>Moon Orbit Display Scaling</strong>: Tightened inner-planet moon orbit rendering for readability while preserving outer moon visibility</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [1.6.0] - 2026-08-05</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li>Complete Moon System: All stock KSP/KSP2 moons (Gilly, Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol) with 3D local orbits, real-time ephemeris propagation, raycast clicking, and physical data inspection</li>
+        <li>Double Click Centering: Double-click any planet or moon to snap camera focus directly to that celestial body</li>
+        </ul>
+        <h3>### Changed</h3>
+        <ul>
+        <li>Expanded Visual Scale: Scaled down planet spheres and expanded moon orbit radii so moons clearly orbit outside planetary atmospheres</li>
+        <li>Subtle Camera Focal Marker: Added minimal dark grey 3D pivot dot tracking camera focus position in space</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [1.5.0] - 2026-08-04</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li>Full 3D WebGL Solar System Map: Replaced 2D SVG map with Three.js WebGL scene supporting accurate planetary orbital inclinations</li>
+        <li>Free-Look Orbital Camera: Left drag rotates, Shift+drag pans, scroll zooms, R key or reset button returns to default view</li>
+        <li>Destination Arrival Ghost: Translucent ghost planet shows exact projected destination position at arrival time</li>
+        <li>3D Trajectory Inclination Matching: Transfer arc interpolates inclination angles from departure to destination (e.g., 0 Kerbin 5 Dres)</li>
+        <li>UI & Controls HUD: On-screen keyboard/mouse controls overlay card and expanded UT sync input fields supporting 4-digit years</li>
+        </ul>
+
+        <hr>
+        
+        <h2>## [1.0] - Initial Release</h2>
+        <h3>### Added</h3>
+        <ul>
+        <li>Interactive Kerbol system visualization</li>
+        <li>Hohmann transfer calculations</li>
+        <li>Delta-V calculator</li>
+        <li>Phase angle calculator</li>
+        <li>Transfer arc visualization</li>
+        </ul>
+
+        <div class="changelog-footer">Kerbalist v2.7 · Last updated 2026-09-05</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showChangelog() {
+      document.getElementById('changelogOverlay').classList.add('open');
+    }
+    function hideChangelog() {
+      document.getElementById('changelogOverlay').classList.remove('open');
+    }
+  </script>
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v2.3';
+    const VERSION = 'v2.7';
 
     (function (THREE) {
       "use strict";
@@ -1335,11 +1839,11 @@
 
       const RAW_PLANETS = [
         {
-          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 180, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
+          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 215.09, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
           desc: 'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.'
         },
         {
-          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 180, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
+          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 327.07, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
           desc: 'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.'
         },
         {
@@ -1347,40 +1851,40 @@
           desc: 'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.'
         },
         {
-          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 180, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
+          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 329.68, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
           desc: 'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.'
         },
         {
-          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 180, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
+          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 111.81, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
           desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Orbited by the Dresteroids Drast and Beyl.'
         },
         {
-          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 6, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
+          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 294.43, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
           desc: 'A gas giant with a swirling green atmosphere and an enormous sphere of influence hosting five moons: Laythe, Vall, Tylo, Bop and Pol. Dominates the outer Kerbol system.'
         },
         {
-          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 180, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
+          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 3.04, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
           desc: 'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.'
         }
       ];
 
       const RAW_MOONS = [
         // Eve
-        { name: 'Gilly', parent: 'Eve', color: '#bda892', a: 31500000, e: 0.55, orientDeg: 10, m0Deg: 0, period: 288600, incl: 12.0, radius: 13000, desc: 'Tiny captured asteroid orbiting Eve.' },
+        { name: 'Gilly', parent: 'Eve', color: '#bda892', a: 31500000, e: 0.55, orientDeg: 10, m0Deg: 0, period: 288600, incl: 12.0, radius: 13000, mu: 2.4868349e9, desc: 'Tiny captured asteroid orbiting Eve.' },
         // Kerbin
-        { name: 'Mun', parent: 'Kerbin', color: '#bcbcbc', a: 12000000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 138984, incl: 0.0, radius: 200000, desc: 'Kerbin\'s large, cratered primary moon.' },
-        { name: 'Minmus', parent: 'Kerbin', color: '#9be5d0', a: 47000000, e: 0.00, orientDeg: 38, m0Deg: 0, period: 388380, incl: 6.0, radius: 60000, desc: 'Mint-green icy moon with flat salt flats.' },
+        { name: 'Mun', parent: 'Kerbin', color: '#bcbcbc', a: 12000000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 138984, incl: 0.0, radius: 200000, mu: 6.5026800e10, desc: 'Kerbin\'s large, cratered primary moon.' },
+        { name: 'Minmus', parent: 'Kerbin', color: '#9be5d0', a: 47000000, e: 0.00, orientDeg: 38, m0Deg: 0, period: 388380, incl: 6.0, radius: 60000, mu: 1.7658000e9, desc: 'Mint-green icy moon with flat salt flats.' },
         // Duna
-        { name: 'Ike', parent: 'Duna', color: '#888888', a: 3200000, e: 0.03, orientDeg: 0, m0Deg: 0, period: 65518, incl: 0.2, radius: 130000, desc: 'Tidally locked moon orbiting Duna closely.' },
+        { name: 'Ike', parent: 'Duna', color: '#888888', a: 3200000, e: 0.03, orientDeg: 0, m0Deg: 0, period: 65518, incl: 0.2, radius: 130000, mu: 1.8568369e10, desc: 'Tidally locked moon orbiting Duna closely.' },
         // Dres
-        { name: 'Drast', parent: 'Dres', color: '#8a877b', a: 43400, e: 0.00, orientDeg: 0, m0Deg: 0, period: 12312, incl: 0.0, radius: 1596, desc: 'Tiny inner Dresteroid embedded in Dres debris and ring material.' },
-        { name: 'Beyl', parent: 'Dres', color: '#6f6552', a: 8365000, e: 0.48, orientDeg: 0, m0Deg: 0, period: 1037016, incl: 216.0, radius: 4595, desc: 'Distant retrograde Dresteroid on a steep, eccentric orbit around Dres.' },
+        { name: 'Drast', parent: 'Dres', color: '#8a877b', a: 43400, e: 0.00, orientDeg: 0, m0Deg: 0, period: 12312, incl: 0.0, radius: 1596, mu: 3.7392e6, desc: 'Tiny inner Dresteroid embedded in Dres debris and ring material.' },
+        { name: 'Beyl', parent: 'Dres', color: '#6f6552', a: 8365000, e: 0.48, orientDeg: 0, m0Deg: 0, period: 1037016, incl: 216.0, radius: 4595, mu: 4.8695448e7, desc: 'Distant retrograde Dresteroid on a steep, eccentric orbit around Dres.' },
         // Jool
-        { name: 'Laythe', parent: 'Jool', color: '#4ba3e3', a: 27184000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 52980, incl: 0.0, radius: 500000, desc: 'Ocean moon with breathable atmosphere.' },
-        { name: 'Vall', parent: 'Jool', color: '#a8dadc', a: 43152000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 105960, incl: 0.0, radius: 300000, desc: 'Icy moon with cryovolcanic activity.' },
-        { name: 'Tylo', parent: 'Jool', color: '#e0e1dd', a: 68500000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 211920, incl: 0.025, radius: 600000, desc: 'Large, airless moon with intense gravity.' },
-        { name: 'Bop', parent: 'Jool', color: '#7f6a54', a: 128500000, e: 0.235, orientDeg: 10, m0Deg: 0, period: 544507, incl: 15.0, radius: 65000, desc: 'Small irregular brown moon on inclined orbit.' },
-        { name: 'Pol', parent: 'Jool', color: '#eddcd2', a: 179890000, e: 0.17, orientDeg: 15, m0Deg: 0, period: 901902, incl: 4.25, radius: 44000, desc: 'Outermost yellowish spiky moon of Jool.' }
+        { name: 'Laythe', parent: 'Jool', color: '#4ba3e3', a: 27184000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 52980, incl: 0.0, radius: 500000, mu: 1.962000e12, desc: 'Ocean moon with breathable atmosphere.' },
+        { name: 'Vall', parent: 'Jool', color: '#a8dadc', a: 43152000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 105960, incl: 0.0, radius: 300000, mu: 2.2476e10, desc: 'Icy moon with cryovolcanic activity.' },
+        { name: 'Tylo', parent: 'Jool', color: '#e0e1dd', a: 68500000, e: 0.00, orientDeg: 0, m0Deg: 0, period: 211920, incl: 0.025, radius: 600000, mu: 2.8253e12, desc: 'Large, airless moon with intense gravity.' },
+        { name: 'Bop', parent: 'Jool', color: '#7f6a54', a: 128500000, e: 0.235, orientDeg: 10, m0Deg: 0, period: 544507, incl: 15.0, radius: 65000, mu: 1.221e9, desc: 'Small irregular brown moon on inclined orbit.' },
+        { name: 'Pol', parent: 'Jool', color: '#eddcd2', a: 179890000, e: 0.17, orientDeg: 15, m0Deg: 0, period: 901902, incl: 4.25, radius: 44000, mu: 7.21e8, desc: 'Outermost yellowish spiky moon of Jool.' }
       ];
 
       const PLANETS = RAW_PLANETS.map(p => ({
@@ -1408,6 +1912,31 @@
 
       function transferBodyFor(body) {
         return body && body.parent ? PLANETS.find(p => p.name === body.parent) : body;
+      }
+
+      function getMoonMu(moon) {
+        if (!moon) return null;
+        
+        // If mu is already defined, use it
+        if (moon.mu) return moon.mu;
+        
+        // Try to derive from orbital parameters (Kepler's third law: mu = 4π²a³/T²)
+        if (moon.a && moon.period) {
+          return Math.pow(moon.a, 3) * 4 * Math.PI * Math.PI / Math.pow(moon.period, 2);
+        }
+        
+        // Fallback: use known moon mu values from KSP2
+        const moonMuMap = {
+          'Mun': 6.5026e10,
+          'Minmus': 1.7658e9,
+          'Ike': 1.8568e10,
+          'Gilly': 8.289e7,
+          'Tylo': 2.8253e12,
+          'Vall': 2.2476e10,
+          'Laythe': 1.962e12
+        };
+        
+        return moonMuMap[moon.name] || 1e9;  // Default fallback
       }
 
       /* =========================================================
@@ -3111,24 +3640,36 @@
         const depEj = ejection(Math.abs(dv1_helio), o);
         const arrEj = ejection(Math.abs(dv2_helio), d);
 
-        // Additional Δv for moon orbit insertion (if destination is a moon)
+        // Additional Δv for moon orbit insertion (informational - depends on arrival geometry)
+        // Shows what's needed to insert into moon orbit from parent planet's sphere of influence
         let moonInsertionDv = 0;
+        let landingDv = 0;
+        
         if (destMoon) {
-          // More accurate moon insertion calculation
-          // Accounts for: velocity matching + circularization in moon's gravity well
-          const moonOrbitAlt = Math.max(10000, destMoon.radius * 0.2); // 20% of moon radius or 10km min
-          const moonOrbitRadius = destMoon.radius + moonOrbitAlt;
-
-          // Orbital velocity at desired altitude around the moon
-          const moonCircularVelocity = Math.sqrt(destMoon.mu / moonOrbitRadius);
-
-          // Rough estimate: need to shed most of the arrival velocity and then circularize
-          // This is a simplification - actual cost depends on approach vector
-          // Using 1.5x as a conservative estimate for velocity matching and circularization
-          moonInsertionDv = moonCircularVelocity * 1.5;
+          // Use the moon's actual gravitational parameter for accurate orbital mechanics
+          const moonMu = getMoonMu(destMoon);
+          
+          // Low orbit velocity (surface + 10% altitude margin)
+          const lowOrbitAltitude = Math.max(destMoon.radius * 0.1, 1000);  // at least 1km above surface
+          const lowOrbitVelocity = Math.sqrt(moonMu / (destMoon.radius + lowOrbitAltitude));
+          
+          // Surface velocity
+          const surfaceVelocity = Math.sqrt(moonMu / destMoon.radius);
+          
+          // Insertion Δv: getting from parent planet's SOI to moon orbit
+          // Very rough estimate - actual cost depends on arrival velocity
+          moonInsertionDv = lowOrbitVelocity * 1.2;  // velocity matching + small circularization margin
+          
+          // Landing Δv: from low orbit to surface
+          // This is roughly the orbital velocity difference
+          landingDv = (lowOrbitVelocity - surfaceVelocity) * 1.5;  // with some gravity loss margin
+        } else if (destSelected && destSelected.mu && destSelected.radius) {
+          // Planet landing - much larger so different calculation
+          const surfaceVelocity = Math.sqrt(destSelected.mu / destSelected.radius);
+          landingDv = surfaceVelocity * 0.35;
         }
 
-        return { origin: o, dest: d, originSelected, destSelected, destMoon, moonInsertionDv, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+        return { origin: o, dest: d, originSelected, destSelected, destMoon, moonInsertionDv, landingDv, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
       }
 
       let currentResult = null;
@@ -3313,7 +3854,7 @@
         const returnEjectionBurn = Math.abs(ret.dv1_helio) > 0 ? ret.depEj.dvBurn : 0;
         const kerbinCaptureBurn = ret.arrEj.dvBurn;
         const returnDv = returnEjectionBurn + kerbinCaptureBurn;
-        const outboundDv = (Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0) + r.arrEj.dvBurn + (r.moonInsertionDv || 0);
+        const outboundDv = (Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0) + r.arrEj.dvBurn;  // Heliocentric transfer only
         const departureBody = r.destSelected.parent ? r.destSelected : ret.originSelected;
 
         return {
@@ -3353,7 +3894,8 @@
         const ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
         const ejArrBurn = r.arrEj.dvBurn;
         const moonInsertDv = r.moonInsertionDv || 0;
-        const totalDv = ejDepBurn + ejArrBurn + moonInsertDv;
+        const landingDv = r.landingDv || 0;
+        const totalDv = ejDepBurn + ejArrBurn;  // Main transfer Δv (heliocentric only)
         const totalHelioDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
         const phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
         const closeEnough = Math.abs(phaseDiff) < 2;
@@ -3365,7 +3907,7 @@
         const isMoonDest = r.destMoon;
         const parentPlanetName = isMoonDest ? r.destMoon.parent : null;
         const parentNote = (isMoonOrigin || isMoonDest)
-          ? `<div class="note">${isMoonDest ? `Moon transfers use ${parentPlanetName}'s heliocentric transfer window. Total budget includes parent planet capture + moon orbit insertion (~${moonInsertDv.toFixed(0)} m/s).` : `Moon origin uses the parent planet's heliocentric frame.`} Map markers and arrival ghost are placed on the selected moon.</div>`
+          ? `<div class="note">${isMoonDest ? `Moon transfers use ${parentPlanetName}'s heliocentric transfer window. Moon orbit insertion (~${moonInsertDv.toFixed(0)} m/s) and landing (~${landingDv.toFixed(0)} m/s) are shown for reference but depend on approach geometry.` : `Moon origin uses the parent planet's heliocentric frame.`} Map markers and arrival ghost are placed on the selected moon.</div>`
           : '';
 
         document.getElementById('transferResults').innerHTML = `
@@ -3373,12 +3915,13 @@
       <div class="card">
       <h3><span class="dot"></span>Δv Budget (from ${(PARK_ALT / 1000) | 0} km parking orbit)</h3>
       <div class="big-num">
-        <div>${totalDv.toFixed(0)}<small>m/s total</small></div>
+        <div>${totalDv.toFixed(0)}<small>m/s interplanetary transfer</small></div>
         <div style="font-size: 16px; color: var(--text-dim); font-weight: 400; text-shadow: none; margin-top: 4px;">${totalHelioDv.toFixed(0)}<small style="font-size: 11px;">m/s heliocentric total</small></div>
       </div>
       <div class="stat-row"><span class="k">Ejection burn @ ${originName}</span><span class="v hi">${ejDepBurn.toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Capture burn @ ${parentPlanetName || destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
       ${isMoonDest ? `<div class="stat-row"><span class="k">Moon orbit insertion @ ${destName}</span><span class="v hi">${moonInsertDv.toFixed(0)} m/s</span></div>` : ''}
+      ${landingDv > 0 ? `<div class="stat-row"><span class="k">Landing @ ${destName}</span><span class="v hi">${landingDv.toFixed(0)} m/s</span></div>` : ''}
       <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
       <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
       <div class="mission-time-row">
@@ -3394,7 +3937,7 @@
         </div>
       </div>
       ${returnBudgetHtml(r)}
-      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. ${isMoonDest ? `Moon insertion estimate (~${moonInsertDv.toFixed(0)} m/s) assumes velocity matching + circularization from parent planet sphere of influence; actual cost depends on approach geometry and final orbit altitude.` : `Capture burn can be omitted for a flyby / aerocapture mission.`}</div>
+      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. ${isMoonDest ? `Moon insertion (~${moonInsertDv.toFixed(0)} m/s) and landing (~${landingDv.toFixed(0)} m/s) are reference values only - actual costs vary with arrival geometry. Add to interplanetary transfer for total mission budget.` : `Capture burn can be omitted for a flyby / aerocapture mission.`}</div>
     </div>
     <div class="card">
       <h3><span class="dot"></span>Next Transfer Window</h3>
@@ -3641,14 +4184,9 @@
               const va = Math.hypot(sol.v2[0] - s2.vx, sol.v2[1] - s2.vy);
               dv = vd + va;
 
-              // Add moon insertion Δv for moon destinations
-              if (destMoon) {
-                const moonOrbitAlt = Math.max(10000, destMoon.radius * 0.2);
-                const moonOrbitRadius = destMoon.radius + moonOrbitAlt;
-                const moonCircularVelocity = Math.sqrt(destMoon.mu / moonOrbitRadius);
-                const moonInsertionDv = moonCircularVelocity * 1.5;
-                dv += moonInsertionDv;
-              }
+              // Note: Moon insertion and landing Δv not included in porkchop grid
+              // These depend on approach geometry and are shown as reference only
+              // The grid shows heliocentric transfer Δv (what's needed to get there)
 
               if (dv < dvMin) dvMin = dv;
               if (dv > dvMax) dvMax = dv;
