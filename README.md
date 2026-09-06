@@ -1,4 +1,5 @@
 # Kerbalist - KSP2 Interplanetary Transfer Planner
+(Redux for Beta 7+ / Snapshot 26w32a+)
 
 **Live sync-capable transfer calculator with optional gravity assist optimization.**
 
