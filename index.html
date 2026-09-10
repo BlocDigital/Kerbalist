@@ -9,6 +9,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
     rel="stylesheet">
+  <!-- Google AdSense Global Script -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5297704957311927"
+    crossorigin="anonymous"></script>
   <style>
     :root {
       --bg: #060a11;
@@ -521,46 +524,6 @@
       border-color: var(--border-bright);
     }
 
-    /* Context Menu (Right-Click) */
-    .context-menu {
-      position: fixed;
-      display: none;
-      background: rgba(11, 18, 32, .95);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
-      z-index: 1000;
-      min-width: 180px;
-      padding: 4px 0;
-    }
-
-    .context-menu.visible {
-      display: block;
-    }
-
-    .context-menu-item {
-      padding: 10px 16px;
-      cursor: pointer;
-      color: var(--text-dim);
-      font-size: 13px;
-      white-space: nowrap;
-      user-select: none;
-      transition: all 0.2s ease;
-    }
-
-    .context-menu-item:hover {
-      background: rgba(100, 200, 255, 0.15);
-      color: var(--cyan);
-      border-left: 3px solid var(--cyan);
-      padding-left: 13px;
-    }
-
-    .context-menu-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 4px 0;
-    }
-
     /* Version — 60% bigger (16px), clickable badge */
     .map-version {
       position: absolute;
@@ -810,35 +773,17 @@
       height: 100%;
       pointer-events: none;
       overflow: hidden;
-      z-index: 100;
+      z-index: 8;
     }
 
     .planet-label-3d {
       position: absolute;
       font-family: var(--font-mono);
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 9.5px;
       color: var(--text-dim);
       white-space: nowrap;
-      transform: translate(12px, -12px);
+      transform: translate(9px, -9px);
       text-shadow: 0 1px 4px rgba(0, 0, 0, .9), 0 0 8px rgba(0, 0, 0, .7);
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: color 0.15s ease, background 0.15s ease, text-shadow 0.15s ease;
-      user-select: none;
-      pointer-events: auto;
-      z-index: 100;
-    }
-
-    .planet-label-3d:hover {
-      color: var(--cyan);
-      background: rgba(100, 200, 255, 0.15);
-      text-shadow: 0 0 12px rgba(100, 200, 255, 0.5), 0 1px 4px rgba(0, 0, 0, .9);
-    }
-
-    .planet-label-3d:active {
-      transform: translate(12px, -12px) scale(0.95);
     }
 
     .ghost-label-3d {
@@ -1472,7 +1417,7 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
-        <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.5.0</div>
+        <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v2.7</div>
         <div class="legend">
           <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
           <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
@@ -1481,21 +1426,6 @@
               style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
             ghost</span>
           <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
-        </div>
-
-        <!-- Context Menu (Right-Click) -->
-        <div class="context-menu" id="contextMenu">
-          <div class="context-menu-item" data-action="zoom-in">Zoom in on planet</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="set-origin">Set as Origin</div>
-          <div class="context-menu-item" data-action="set-dest">Set as Destination</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="clear-origin">Clear Origin</div>
-          <div class="context-menu-item" data-action="clear-dest">Clear Destination</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="reset-zoom">Reset Zoom</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="show-info">Show Body Info</div>
         </div>
       </div>
 
@@ -1628,101 +1558,6 @@
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
         <p>All notable changes to Kerbalist will be documented in this file.</p>
-
-        <h2>[3.5.0] - 2026-09-06</h2>
-        <h3>Added</h3>
-        <ul>
-        <li><strong>Full Label Interactivity</strong>: Planet and moon names are now fully interactive and much larger (16px, bold). Click to set origin, double-click to lock camera, right-click for context menu. Works identically for planets and moons.</li>
-        <li><strong>Middle-Click Panning</strong>: Pan the map with middle-click + drag (equivalent to Shift+drag). Adds an alternative to shift-dragging for camera panning.</li>
-        </ul>
-
-        <h3>Fixed</h3>
-        <ul>
-        <li><strong>Body Selection System</strong>: Fixed broken setOrigin/setDestination functions. All body selection now works directly via the origin/destination select elements with proper change event firing.</li>
-        <li><strong>Label Positioning</strong>: Removed CSS transitions that caused labels to lag while panning. Labels now snap instantly to their correct positions, only animating color/glow on hover.</li>
-        <li><strong>Clickable Label Container</strong>: Fixed pointer-events blocking—label container is now pointer-events: none with individual labels at pointer-events: auto, so labels are clickable but canvas can still be panned.</li>
-        <li><strong>World-Space Orbit Lines &amp; Bodies</strong>: Restructured moon orbits and bodies to use true world-space positioning instead of being nested under planet meshes. Planets and moons now sit exactly on their orbit lines. Orbit lines properly track parent planet positions each frame.</li>
-        <li><strong>Camera Tracking</strong>: Camera now properly locks to and follows focused bodies as they orbit, keeping them in view even as the system evolves.</li>
-        </ul>
-
-        <h3>Technical Details</h3>
-        <ul>
-        <li>Moon orbits and bodies removed from planet mesh hierarchy; both now added to scene root with world-space positioning.</li>
-        <li>moonLocalPosition() now returns full world coordinates including parent planet's position.</li>
-        <li>updateMap() positions moon orbit lines at parent planet's world location each frame.</li>
-        <li>focusedPlanet mechanism updated to track camera target continuously.</li>
-        </ul>
-
-        <h2>[3.0 - 3.4 Consolidated] - 2026-09-06</h2>
-        <h3>Major Changes</h3>
-
-        <h4>Scaling &amp; Coordinate System (v3.0)</h4>
-        <ul>
-        <li><strong>Map Rewritten to Real KSP2 Proportions</strong>: Single unified physical scale (world units per meter) replaces all custom tuning. All distances—heliocentric and moon-relative—use the same linear scale. Deleted "inner system expansion" (32% Duna inflation) and per-planet moon-orbit tuning buckets.</li>
-        <li><strong>Raw System View</strong>: Moons appear tightly clustered at full-system zoom (correct—that's what the real proportions look like). Zoom in to resolve them at accurate scale.</li>
-        </ul>
-
-        <h4>Camera &amp; Zoom (v3.1 &amp; v3.4)</h4>
-        <ul>
-        <li><strong>Zoom-Based Scale Transition (LOD)</strong>: Map fades between exaggerated overview (far) and true-to-scale physical view (near), exactly like KSP2. Smooth blend as camera approaches a planet.</li>
-        <li><strong>Deeper Zoom Range</strong>: Camera min distance 30 → 0.02 units; near plane 0.5 → 0.0005. Logarithmic depth buffer for stable rendering across the huge range.</li>
-        <li><strong>Camera Lock to Focused Body</strong>: Zoom into a planet or use context menu to lock camera. Camera stays locked to body's center as it orbits. Reset zoom clears lock.</li>
-        </ul>
-
-        <h4>Interactivity (v3.2 - v3.4)</h4>
-        <ul>
-        <li><strong>Moon Label Visibility</strong>: Moon labels hidden at far zoom (they cluster on planet); fade in as you zoom close.</li>
-        <li><strong>Right-Click Context Menu</strong>: Right-click planet/moon for menu with zoom, set origin/destination, clear, reset, show info options.</li>
-        <li><strong>Click Helper Spheres</strong>: Invisible collision spheres (10× planet, 5× moon) make bodies much easier to select without zooming extremely close.</li>
-        </ul>
-
-        <h4>Orbital Data (v2.7 - v2.9)</h4>
-        <ul>
-        <li><strong>Orbital Epoch Synchronization</strong>: All planet m0Deg values synchronized to KSP2 game state at reference UT (T+6y,59d,04:16:57). Perfect in-game alignment.</li>
-        <li><strong>Corrected Orbital Mechanics (v2.8-v2.9)</strong>: Fixed time base (21600s/day, not 86400), proper phase-angle interpretation relative to Kerbin, and full Kepler inversion accounting for eccentricity and argument of periapsis. All planets reproduce observed in-game phase angles exactly.</li>
-        <li><strong>Jool Landing Removed</strong>: Jool is a gas giant; removed misleading landing Δv estimate.</li>
-        <li><strong>Moon Data</strong>: All moon gravitational parameters (μ) added for accurate moon insertion/landing calculations.</li>
-        </ul>
-
-        <h3>Technical Summary</h3>
-        <p>v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and interactivity model. Core architecture now separates exaggerated overview (for usability at full-system zoom) from true-scale near-view (for accurate planning when zoomed in). All interactive elements (labels, right-click, camera focus) now work reliably on both planets and moons. Orbital epoch synchronization ensures Kerbalist and KSP2 are in sync for mission planning.</p>
-
-        <h2>[2.9] - 2026-09-06</h2>
-        <h3>Fixed</h3>
-        <ul>
-        <li><strong>Orbital Epoch Sync Corrected Again (v2.8 fix still incomplete)</strong>: The v2.8 recalculation fixed the time base and phase-angle interpretation but still assumed mean anomaly equals true anomaly and ignored each planet&#x27;s argument of periapsis (orientDeg). This is only valid for near-circular orbits with zero orientation offset. Moho (e=0.2), Dres (e=0.145), and Eeloo (e=0.26) are all significantly eccentric, and every outer planet has a non-zero orientDeg, so the previous values were still wrong for these bodies.</li>
-        <li><strong>Full Kepler Inversion</strong>: m0Deg is now derived using the same math the app itself uses to render positions (<code>theta = trueAnomaly + orientDeg</code>, with true anomaly related to mean anomaly through the eccentric anomaly via Kepler&#x27;s equation). Verified numerically against the app&#x27;s own <code>stateAt()</code> function - all six planets reproduce their observed in-game phase angles exactly.</li>
-        <li><strong>Jool Landing Δv Removed</strong>: Jool is a gas giant with no solid surface - landing there is not a real maneuver. The reference &quot;Landing @ Jool&quot; line (previously an arbitrary, misleadingly small ~2,400 m/s estimate) has been removed rather than guessed at.</li>
-        </ul>
-        <h3>Technical Details</h3>
-        <p><strong>Corrected planetary m0Deg values (reference UT T+6y,59d,04:16:57):</strong></p>
-        <ul>
-        <li>Moho: 170.67° → 108.64°</li>
-        <li>Eve: 180.92° → 165.54°</li>
-        <li>Duna: 132.33° → 350.99°</li>
-        <li>Dres: 125.90° → 116.10°</li>
-        <li>Jool: 31.86° → 339.25°</li>
-        <li>Eeloo: 83.54° → 163.48°</li>
-        </ul>
-        <p><strong>Verification:</strong> All six planets, when run through the app&#x27;s own eccentric-orbit position formula, reproduce their observed KSP2 Target-panel phase angles to within 0.01°.</p>
-        <h2>[2.8] - 2026-09-06</h2>
-        <h3>Fixed</h3>
-        <ul>
-        <li><strong>Orbital Epoch Sync Corrected (v2.7 fix was wrong)</strong>: The v2.7 synchronization used two incorrect assumptions: it converted UT using 24-hour days instead of KSP2&#x27;s actual 6-hour Kerbin day, and it treated observed &quot;Phase angle&quot; readings (which are relative to Kerbin) as if they were each planet&#x27;s absolute heliocentric angle. Both errors have been corrected.</li>
-        <li><strong>Recalculated m0Deg Values</strong>: All six planets recalculated using the correct 21,600s/day time base and proper phase-angle-relative-to-Kerbin interpretation, then verified against the in-game Target panel (Eeloo phase angle now matches -16.90° exactly at the reference UT).</li>
-        <li><strong>Negative Landing Δv Bug</strong>: Fixed moon landing Δv reference estimate occasionally returning a negative value for small airless moons (e.g. Gilly), where low-orbit and surface velocities are nearly identical. Landing estimate now scales from low-orbit velocity directly instead of a velocity difference.</li>
-        </ul>
-        <h3>Technical Details</h3>
-        <p><strong>Corrected planetary m0Deg values (reference UT T+6y,59d,04:16:57):</strong></p>
-        <ul>
-        <li>Moho: 215.09° → 170.67°</li>
-        <li>Eve: 327.07° → 180.92°</li>
-        <li>Duna: 329.68° → 132.33°</li>
-        <li>Dres: 111.81° → 125.90°</li>
-        <li>Jool: 294.43° → 31.86°</li>
-        <li>Eeloo: 3.04° → 83.54°</li>
-        </ul>
-        <p><strong>Verification:</strong> Computed phase angle (Eeloo relative to Kerbin) at the reference UT now equals -16.90°, matching the KSP2 Target panel reading exactly.</p>
         <h2>[2.7] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
@@ -1959,7 +1794,7 @@
         <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v3.5.0 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v2.7 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -1980,7 +1815,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.5.0';
+    const VERSION = 'v2.7';
 
     (function (THREE) {
       "use strict";
@@ -1993,11 +1828,11 @@
 
       const RAW_PLANETS = [
         {
-          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 108.64, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
+          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 215.09, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
           desc: 'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.'
         },
         {
-          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 165.54, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
+          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 327.07, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
           desc: 'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.'
         },
         {
@@ -2005,19 +1840,19 @@
           desc: 'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.'
         },
         {
-          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 350.99, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
+          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 329.68, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
           desc: 'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.'
         },
         {
-          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 116.10, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
+          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 111.81, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
           desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Orbited by the Dresteroids Drast and Beyl.'
         },
         {
-          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 339.25, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
+          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 294.43, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
           desc: 'A gas giant with a swirling green atmosphere and an enormous sphere of influence hosting five moons: Laythe, Vall, Tylo, Bop and Pol. Dominates the outer Kerbol system.'
         },
         {
-          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 163.48, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
+          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 3.04, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
           desc: 'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.'
         }
       ];
@@ -2338,10 +2173,8 @@
       })();
 
       /* ---- Camera ---- */
-      const camera = new THREE.PerspectiveCamera(52, 1, 0.0005, 15000);
-      const CAM_MIN = 0.02, CAM_MAX = 2400;
+      const camera = new THREE.PerspectiveCamera(52, 1, 0.5, 15000);
       let camR = 620, camTheta = 0.15, camPhi = 0.30;
-      let focusedPlanet = null;  // Camera follows this planet if set
       const camTarget = new THREE.Vector3(0, 0, 0);
 
       /* ---- Camera Target Pivot Indicator ---- */
@@ -2375,7 +2208,7 @@
       updateCamera();
 
       /* ---- Renderer ---- */
-      const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, logarithmicDepthBuffer: true });
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
       function resizeRenderer() {
@@ -2388,10 +2221,10 @@
       new ResizeObserver(resizeRenderer).observe(mapWrap);
 
       /* ---- Scale ---- */
-      // Single universal scale: world units per meter. Everything uses this, no per-body tuning.
-      // Eeloo's orbit is ~90 billion meters; we scale it to fit in a ~500-unit viewport.
       const EELOO_A = PLANETS[PLANETS.length - 1].a;
-      const SCALE = 500 / EELOO_A;
+      const SCALE = 430 / EELOO_A;
+      const INNER_EXPAND_REF = PLANETS.find(p => p.name === 'Duna').a;
+      const INNER_EXPAND_TAPER_END = PLANETS.find(p => p.name === 'Jool').a;
 
       function smoothstep(t) {
         t = Math.max(0, Math.min(1, t));
@@ -2399,12 +2232,8 @@
       }
 
       function heliocentricDisplayScale(r) {
-        return 1; // Pure linear scale, no artificial expansion
-      }
-
-      // Real physical moon-orbit distance - single raw scale, no blending
-      function moonOrbitDisplayRadius(m) {
-        return m.a * SCALE;
+        if (r <= INNER_EXPAND_REF) return 1 + 0.32 * smoothstep(r / INNER_EXPAND_REF);
+        return 1 + 0.32 * (1 - smoothstep((r - INNER_EXPAND_REF) / (INNER_EXPAND_TAPER_END - INNER_EXPAND_REF)));
       }
 
       /**
@@ -2491,7 +2320,18 @@
       const ambientLight = new THREE.AmbientLight(0x1a2638, 0.4);
       scene.add(ambientLight);
 
-      /* ---- Dres Ring Texture ---- */
+      /* ---- Planet & Moon meshes ---- */
+      const planetMeshes = {};
+      const planetLabelEls = {};
+      const planetDisplayRadii = {};
+      const moonMeshes = {};
+      const moonLabelEls = {};
+
+      const maxMoonAByParent = MOONS.reduce((acc, m) => {
+        acc[m.parent] = Math.max(acc[m.parent] || 0, m.a);
+        return acc;
+      }, {});
+
       function createDresRingTexture() {
         const canvas = document.createElement('canvas');
         canvas.width = 256;
@@ -2518,24 +2358,42 @@
         return texture;
       }
 
+      function moonOrbitDisplayRadius(m) {
+        const parentRadius = planetDisplayRadii[m.parent] || 2;
+        const maxA = maxMoonAByParent[m.parent] || m.a;
+        const parentTuning = {
+          Eve: { base: 2.4, span: 6.8 },
+          Kerbin: { base: 2.6, span: 9.2 },
+          Duna: { base: 2.4, span: 6.5 },
+          Dres: { base: 2.5, span: 7.5 }
+        };
+
+        if (parentTuning[m.parent]) {
+          const t = parentTuning[m.parent];
+          const ratio = Math.sqrt(m.a / maxA);
+          return parentRadius + t.base + ratio * t.span;
+        }
+        const parent = PLANETS.find(p => p.name === m.parent);
+        const outerRef = PLANETS.find(p => p.name === 'Jool') || PLANETS[PLANETS.length - 1];
+        const innerRef = PLANETS.find(p => p.name === 'Eve') || PLANETS[0];
+        const parentT = parent
+          ? Math.max(0, Math.min(1, (parent.a - innerRef.a) / (outerRef.a - innerRef.a)))
+          : 0;
+        const systemSpan = 10 + 14 * Math.sqrt(parentT);
+        const ratio = Math.sqrt(m.a / maxA);
+        return parentRadius + 3 + ratio * systemSpan;
+      }
+
       function moonLocalPosition(m, t) {
         const st = stateAt(m, t);
         const orbitRad = moonOrbitDisplayRadius(m);
         const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(st.nu));
         const theta = st.nu + m.orient;
         const inclRad = m.incl * DEG;
-        // Local position relative to parent
-        const localX = r * Math.cos(theta);
-        const localY = r * Math.sin(theta) * Math.sin(inclRad);
-        const localZ = -r * Math.sin(theta) * Math.cos(inclRad);
-        // Add parent planet's world position
-        const parent = PLANETS.find(p => p.name === m.parent);
-        const parentSt = stateAt(parent, t);
-        const parentWorld = toWorld(parentSt.x, parentSt.y, parent.incl);
         return new THREE.Vector3(
-          parentWorld.x + localX,
-          parentWorld.y + localY,
-          parentWorld.z + localZ
+          r * Math.cos(theta),
+          r * Math.sin(theta) * Math.sin(inclRad),
+          -r * Math.sin(theta) * Math.cos(inclRad)
         );
       }
 
@@ -2550,22 +2408,16 @@
         return toWorld(st.x, st.y, body.incl);
       }
 
-      // Planet and Moon meshes
-      const planetMeshes = {};
-      const planetLabelEls = {};
-      const moonMeshes = {};
-      const moonLabelEls = {};
-      const moonOrbitLines = {};
-
       PLANETS.forEach(p => {
         const col = new THREE.Color(p.color);
 
-        // Raw physical size using the single global scale
-        const radius = p.radius * SCALE;
+        // Proportional size scaling based on physical radius (Kerbin r=600km -> ~1.8 units, Jool r=6000km -> ~4.2 units)
+        const baseRadius = Math.max(1.2, Math.min(4.8, Math.pow(p.radius / 600000, 0.45) * 1.8));
+        planetDisplayRadii[p.name] = baseRadius;
 
-        // Mesh with realistic lighting - created at actual size
+        // Photorealistic standard material with physical shading & subtle emissive glow
         const mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(radius, 32, 32),
+          new THREE.SphereGeometry(baseRadius, 32, 32),
           new THREE.MeshStandardMaterial({
             color: col,
             roughness: 0.65,
@@ -2578,20 +2430,21 @@
         scene.add(mesh);
         planetMeshes[p.name] = mesh;
 
-        // Thin atmospheric glow outline (1.25x body size)
+        // Thin, crisp atmospheric glow outline (only 1.25x body size instead of giant blob)
         mesh.add(new THREE.Mesh(
-          new THREE.SphereGeometry(radius * 1.25, 24, 24),
+          new THREE.SphereGeometry(baseRadius * 1.25, 24, 24),
           new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.18, depthWrite: false })
         ));
 
-        // Dres Asteroid Ring System
+        // Dres Asteroid Ring System (Embedded in and centered along Drast's orbit)
         if (p.name === 'Dres') {
           const drast = RAW_MOONS.find(m => m.name === 'Drast');
-          const drastOrbit = drast ? (drast.a * SCALE) : radius * 1.5;
-          const ringInner = Math.max(radius * 1.15, drastOrbit);
-          const ringOuter = ringInner * 1.25;
+          const drastOrbitRad = drast ? moonOrbitDisplayRadius(drast) : baseRadius * 3.5;
+          const ringWidth = 1.8; // ring width spanning across Drast's orbit
+          const innerR = Math.max(baseRadius * 1.25, drastOrbitRad - ringWidth / 2);
+          const outerR = drastOrbitRad + ringWidth / 2;
 
-          const ringGeo = new THREE.RingGeometry(ringInner, ringOuter, 128);
+          const ringGeo = new THREE.RingGeometry(innerR, outerR, 128);
           const ringMat = new THREE.MeshBasicMaterial({
             map: createDresRingTexture(),
             side: THREE.DoubleSide,
@@ -2608,57 +2461,18 @@
         const div = document.createElement('div');
         div.className = 'planet-label-3d';
         div.textContent = p.name;
-        div.style.cursor = 'pointer';
         labelCtr.appendChild(div);
         planetLabelEls[p.name] = div;
-
-        // Click on label to select origin
-        div.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const originSelect = document.getElementById('originSelect');
-          if (originSelect) {
-            originSelect.value = p.name;
-            originSelect.dispatchEvent(new Event('change'));
-          }
-        });
-
-        // Double-click on label to lock camera
-        div.addEventListener('dblclick', (e) => {
-          e.stopPropagation();
-          focusedPlanet = p.name;
-          camTarget.copy(planetMeshes[p.name].position);
-          camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
-          updateCamera();
-        });
-
-        // Right-click on label for context menu
-        div.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          contextMenuTarget = p.name;
-          contextMenu.style.left = e.clientX + 'px';
-          contextMenu.style.top = e.clientY + 'px';
-          contextMenu.classList.add('visible');
-        });
-
-        // Invisible click-helper sphere (10x visual radius) for easy selection
-        const clickHelper = new THREE.Mesh(
-          new THREE.SphereGeometry(radius * 10, 16, 16),
-          new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
-        );
-        clickHelper.userData.planetName = p.name;
-        scene.add(clickHelper);
-        planetMeshes[p.name + '_helper'] = clickHelper;
       });
 
-      // Render Moons - add to scene root, not parented to planets
+      // Render Moons attached to parent planets
       MOONS.forEach(m => {
+        const parentMesh = planetMeshes[m.parent];
+        if (!parentMesh) return;
+
         const col = new THREE.Color(m.color);
 
-        // Moon orbit ring in world space (centered at parent planet)
-        const parent = PLANETS.find(p => p.name === m.parent);
-        if (!parent) return;
-
+        // Moon orbit ring relative to parent planet
         const N = 120, pts = [];
         const orbitRad = moonOrbitDisplayRadius(m);
         for (let i = 0; i <= N; i++) {
@@ -2666,23 +2480,22 @@
           const r = orbitRad * (1 - m.e * m.e) / (1 + m.e * Math.cos(nu));
           const theta = nu + m.orient;
           const inclRad = m.incl * DEG;
-          // Local position relative to parent planet
-          const localX = r * Math.cos(theta);
-          const localY = r * Math.sin(theta) * Math.sin(inclRad);
-          const localZ = -r * Math.sin(theta) * Math.cos(inclRad);
-          // Will be offset to parent's world position in updateMap
-          pts.push(new THREE.Vector3(localX, localY, localZ));
+          pts.push(new THREE.Vector3(
+            r * Math.cos(theta),
+            r * Math.sin(theta) * Math.sin(inclRad),
+            -r * Math.sin(theta) * Math.cos(inclRad)
+          ));
         }
         const orbitLine = new THREE.Line(
           new THREE.BufferGeometry().setFromPoints(pts),
           new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.35 })
         );
-        // Position will be set to parent's world position each frame
-        scene.add(orbitLine);
-        moonOrbitLines[m.name] = orbitLine;
+        parentMesh.add(orbitLine);
 
-        // Moon Mesh at raw scale
-        const moonRadius = m.radius * SCALE;
+        // Proportional moon size (Mun r=200km -> ~0.7 units, Gilly r=13km -> ~0.4 units)
+        const moonRadius = Math.max(0.35, Math.min(1.2, Math.pow(m.radius / 200000, 0.4) * 0.7));
+
+        // Moon Mesh with realistic lighting
         const moonMesh = new THREE.Mesh(
           new THREE.SphereGeometry(moonRadius, 20, 20),
           new THREE.MeshStandardMaterial({
@@ -2695,62 +2508,23 @@
         );
         moonMesh.userData.planetName = m.name;
 
-        // Moon glow outline
+        // Subtle moon glow outline
         moonMesh.add(new THREE.Mesh(
           new THREE.SphereGeometry(moonRadius * 1.3, 16, 16),
           new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.2, depthWrite: false })
         ));
 
-        scene.add(moonMesh);
+        parentMesh.add(moonMesh);
         moonMeshes[m.name] = moonMesh;
 
-        // Invisible click-helper sphere (5x visual size) for better hit detection
-        const helperSphere = new THREE.Mesh(
-          new THREE.SphereGeometry(moonRadius * 5, 8, 8),
-          new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
-        );
-        helperSphere.userData.planetName = m.name;
-        scene.add(helperSphere);
-        moonMeshes[m.name + '_helper'] = helperSphere;
-
-        // HTML label
+        // HTML label for Moon
         const div = document.createElement('div');
         div.className = 'planet-label-3d';
         div.style.fontSize = '8.5px';
         div.style.color = '#a6b8d4';
         div.textContent = m.name;
-        div.style.cursor = 'pointer';
         labelCtr.appendChild(div);
         moonLabelEls[m.name] = div;
-
-        // Click on moon label to select origin
-        div.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const originSelect = document.getElementById('originSelect');
-          if (originSelect) {
-            originSelect.value = m.name;
-            originSelect.dispatchEvent(new Event('change'));
-          }
-        });
-
-        // Double-click on moon label to lock camera
-        div.addEventListener('dblclick', (e) => {
-          e.stopPropagation();
-          focusedPlanet = m.name;
-          camTarget.copy(moonMeshes[m.name].position);
-          camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
-          updateCamera();
-        });
-
-        // Right-click on moon label for context menu
-        div.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          contextMenuTarget = m.name;
-          contextMenu.style.left = e.clientX + 'px';
-          contextMenu.style.top = e.clientY + 'px';
-          contextMenu.classList.add('visible');
-        });
       });
 
       /* ---- Raycaster for planet clicks ---- */
@@ -3329,20 +3103,8 @@
 
         MOONS.forEach(m => {
           m._state = stateAt(m, UT);
-          // Position moon mesh at world position
           moonMeshes[m.name].position.copy(moonLocalPosition(m, UT));
-          // Position moon orbit line at parent planet's world position
-          const parent = PLANETS.find(p => p.name === m.parent);
-          if (parent) {
-            const parentWorld = toWorld(parent._state.x, parent._state.y, parent.incl);
-            moonOrbitLines[m.name].position.copy(parentWorld);
-          }
         });
-
-        // Camera follows focused planet
-        if (focusedPlanet && planetMeshes[focusedPlanet]) {
-          camTarget.copy(planetMeshes[focusedPlanet].position);
-        }
       }
 
       /* ---- Project world position to screen ---- */
@@ -3367,17 +3129,13 @@
         });
 
         MOONS.forEach(m => {
+          const parentMesh = planetMeshes[m.parent];
           const moonMesh = moonMeshes[m.name];
-          const el = moonLabelEls[m.name];
-          if (moonMesh) {
-            // Hide moon labels when zoomed out far (only show when close to camera)
-            if (camR > 150) {
-              el.style.display = 'none';
-              return;
-            }
+          if (parentMesh && moonMesh) {
             const worldPos = new THREE.Vector3();
             moonMesh.getWorldPosition(worldPos);
             const s = worldToScreen(worldPos);
+            const el = moonLabelEls[m.name];
             el.style.left = s.x + 'px';
             el.style.top = s.y + 'px';
             el.style.display = s.behind ? 'none' : '';
@@ -3437,12 +3195,11 @@
 
       canvas3d.addEventListener('mousedown', e => {
         dragging = true; dragMoved = false;
-        isPanning = e.shiftKey || e.button === 1;  // Shift+drag OR middle-click (button 1) pans
+        isPanning = e.shiftKey;
         dStart = { x: e.clientX, y: e.clientY };
         camAtDragStart = { theta: camTheta, phi: camPhi };
         targetAtDragStart.copy(camTarget);
         canvas3d.classList.add(isPanning ? 'panning' : 'grabbing');
-        if (e.button === 1) e.preventDefault();  // Prevent middle-click default behavior
       });
       window.addEventListener('mousemove', e => {
         if (!dragging) return;
@@ -3466,13 +3223,6 @@
       window.addEventListener('mouseup', () => {
         dragging = false;
         canvas3d.classList.remove('grabbing', 'panning');
-      });
-
-      // Prevent middle-click context menu on canvas
-      canvas3d.addEventListener('auxclick', e => {
-        if (e.button === 1) {
-          e.preventDefault();
-        }
       });
 
       // Planet & Moon click via raycasting
@@ -3507,7 +3257,6 @@
           let obj = hits[0].object;
           while (obj && !obj.userData.planetName) obj = obj.parent;
           if (obj && obj.userData.planetName) {
-            focusedPlanet = obj.userData.planetName;  // Lock camera to this body
             const worldPos = new THREE.Vector3();
             obj.getWorldPosition(worldPos);
             camTarget.copy(worldPos);
@@ -3516,120 +3265,17 @@
         }
       });
 
-      // Right-click context menu
-      let contextMenuTarget = null;
-      const contextMenu = document.getElementById('contextMenu');
-
-      canvas3d.addEventListener('contextmenu', e => {
-        e.preventDefault();
-        const rect = canvas3d.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((e.clientX - rect.left) / rect.width) * 2 - 1,
-          -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
-        raycaster.setFromCamera(mouse, camera);
-        const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
-        const hits = raycaster.intersectObjects(targets, true);
-        
-        contextMenuTarget = null;
-        if (hits.length > 0) {
-          let obj = hits[0].object;
-          while (obj && !obj.userData.planetName) obj = obj.parent;
-          if (obj && obj.userData.planetName) {
-            contextMenuTarget = obj.userData.planetName;
-          }
-        }
-
-        contextMenu.style.left = e.clientX + 'px';
-        contextMenu.style.top = e.clientY + 'px';
-        contextMenu.classList.add('visible');
-      });
-
-      // Close context menu when clicking elsewhere
-      document.addEventListener('click', (e) => {
-        if (!contextMenu.contains(e.target)) {
-          contextMenu.classList.remove('visible');
-        }
-      });
-
-      // Context menu item click handler
-      document.querySelectorAll('.context-menu-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-          const action = e.target.dataset.action;
-          if (!contextMenuTarget) {
-            contextMenu.classList.remove('visible');
-            return;
-          }
-
-          const body = contextMenuTarget;
-          
-          switch(action) {
-            case 'zoom-in':
-              focusedPlanet = body;  // Lock camera to this body
-              const bodyMesh = planetMeshes[body];
-              if (bodyMesh) {
-                camTarget.copy(bodyMesh.position);
-                camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
-                updateCamera();
-              }
-              break;
-            case 'set-origin':
-              const originSel = document.getElementById('originSelect');
-              if (originSel) {
-                originSel.value = body;
-                originSel.dispatchEvent(new Event('change'));
-              }
-              break;
-            case 'set-dest':
-              const destSel = document.getElementById('destSelect');
-              if (destSel) {
-                destSel.value = body;
-                destSel.dispatchEvent(new Event('change'));
-              }
-              break;
-            case 'clear-origin':
-              const originSel2 = document.getElementById('originSelect');
-              if (originSel2) {
-                originSel2.value = '';
-                originSel2.dispatchEvent(new Event('change'));
-              }
-              break;
-            case 'clear-dest':
-              const destSel2 = document.getElementById('destSelect');
-              if (destSel2) {
-                destSel2.value = '';
-                destSel2.dispatchEvent(new Event('change'));
-              }
-              break;
-            case 'reset-zoom':
-              focusedPlanet = null;  // Unlock camera
-              camR = 620;
-              camTheta = 0.15;
-              camPhi = 0.30;
-              camTarget.set(0, 0, 0);
-              updateCamera();
-              break;
-            case 'show-info':
-              showInfoFor(body);
-              switchTab('info');
-              break;
-          }
-
-          contextMenu.classList.remove('visible');
-        });
-      });
-
       // Scroll zoom (zoom toward cursor by shifting camTarget slightly)
       mapWrap.addEventListener('wheel', e => {
         e.preventDefault();
         const f = e.deltaY > 0 ? 1.12 : 1 / 1.12;
-        camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR * f));
+        camR = Math.max(30, Math.min(2400, camR * f));
         updateCamera();
       }, { passive: false });
 
       // Zoom buttons
-      document.getElementById('zoomIn').onclick = () => { camR = Math.max(CAM_MIN, camR / 1.35); updateCamera(); };
-      document.getElementById('zoomOut').onclick = () => { camR = Math.min(CAM_MAX, camR * 1.35); updateCamera(); };
+      document.getElementById('zoomIn').onclick = () => { camR = Math.max(30, camR / 1.35); updateCamera(); };
+      document.getElementById('zoomOut').onclick = () => { camR = Math.min(2400, camR * 1.35); updateCamera(); };
       document.getElementById('zoomReset').onclick = resetView;
 
       // Keyboard: R = reset view
@@ -3665,7 +3311,7 @@
           const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
           const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
           const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          camR = Math.max(CAM_MIN, Math.min(CAM_MAX, tState.r * (tState.d / d)));
+          camR = Math.max(30, Math.min(2400, tState.r * (tState.d / d)));
           // Two-finger pan
           const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
           const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
@@ -3992,24 +3638,22 @@
           // Use the moon's actual gravitational parameter for accurate orbital mechanics
           const moonMu = getMoonMu(destMoon);
           
-          // Low orbit velocity (surface + 10% altitude margin, minimum 1km)
-          const lowOrbitAltitude = Math.max(destMoon.radius * 0.1, 1000);
+          // Low orbit velocity (surface + 10% altitude margin)
+          const lowOrbitAltitude = Math.max(destMoon.radius * 0.1, 1000);  // at least 1km above surface
           const lowOrbitVelocity = Math.sqrt(moonMu / (destMoon.radius + lowOrbitAltitude));
           
-          // Surface (circular) velocity - used only as a reference scale, not subtracted directly
+          // Surface velocity
           const surfaceVelocity = Math.sqrt(moonMu / destMoon.radius);
           
-          // Insertion Δv: capturing into low orbit from an incoming hyperbolic approach.
-          // Reference estimate only - actual cost depends heavily on arrival v-infinity.
-          moonInsertionDv = lowOrbitVelocity * 1.2;
+          // Insertion Δv: getting from parent planet's SOI to moon orbit
+          // Very rough estimate - actual cost depends on arrival velocity
+          moonInsertionDv = lowOrbitVelocity * 1.2;  // velocity matching + small circularization margin
           
-          // Landing Δv: powered descent from low orbit to surface.
-          // Uses the low-orbit velocity itself (not a difference, which can go negative
-          // for airless bodies where orbital velocity barely changes with altitude).
-          landingDv = lowOrbitVelocity * 1.1;
-        } else if (destSelected && destSelected.mu && destSelected.radius && destSelected.name !== 'Jool') {
+          // Landing Δv: from low orbit to surface
+          // This is roughly the orbital velocity difference
+          landingDv = (lowOrbitVelocity - surfaceVelocity) * 1.5;  // with some gravity loss margin
+        } else if (destSelected && destSelected.mu && destSelected.radius) {
           // Planet landing - much larger so different calculation
-          // Jool is a gas giant with no solid surface; landing is not a real maneuver there
           const surfaceVelocity = Math.sqrt(destSelected.mu / destSelected.radius);
           landingDv = surfaceVelocity * 0.35;
         }
