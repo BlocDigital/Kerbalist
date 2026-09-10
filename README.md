@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./Kerbalist.png" alt="Kerbalist" width="400">
+</p>
+
 # Kerbalist - KSP2 Interplanetary Transfer Planner
 (Redux for Beta 7+ / Snapshot 26w32a+)
 
