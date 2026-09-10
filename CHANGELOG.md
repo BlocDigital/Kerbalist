@@ -2,56 +2,69 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
-## [2.7] - 2026-09-05
+## [3.5.0] - 2026-09-06
 
 ### Added
 
-- **Orbital Epoch Synchronization**: Synchronized all planet orbital mean anomalies (m0Deg) to match actual KSP2 game state at reference time T+006y 059d 04:16:43 (225,951,403 seconds). Enables precise transfer window planning that matches in-game opportunities.
-
-### Changed
-
-- **Planetary m0Deg Values**: Updated all planet mean anomalies based on observed orbital positions from KSP2 Redux system:
-  - Moho: 180° → 215.09°
-  - Eve: 180° → 327.07°
-  - Duna: 180° → 329.68°
-  - Dres: 180° → 111.81°
-  - Jool: 6° → 294.43°
-  - Eeloo: 180° → 3.04°
+- **Full Label Interactivity**: Planet and moon names are now fully interactive and much larger (16px, bold). Click to set origin, double-click to lock camera, right-click for context menu. Works identically for planets and moons.
+- **Middle-Click Panning**: Pan the map with middle-click + drag (equivalent to Shift+drag). Adds an alternative to shift-dragging for camera panning.
 
 ### Fixed
 
-- **Orbital Position Mismatch**: Fixed issue where Kerbalist orbital calculations didn't match KSP2 game state at the same UT. All planets now position correctly relative to KSP2.
-- **Transfer Window Accuracy**: Transfer window calculations now align with actual in-game opportunities due to corrected orbital epochs.
+- **Body Selection System**: Fixed broken setOrigin/setDestination functions. All body selection now works directly via the origin/destination select elements with proper change event firing.
+- **Label Positioning**: Removed CSS transitions that caused labels to lag while panning. Labels now snap instantly to their correct positions, only animating color/glow on hover.
+- **Clickable Label Container**: Fixed pointer-events blocking—label container is now pointer-events: none with individual labels at pointer-events: auto, so labels are clickable but canvas can still be panned.
+- **World-Space Orbit Lines & Bodies**: Restructured moon orbits and bodies to use true world-space positioning instead of being nested under planet meshes. Planets and moons now sit exactly on their orbit lines. Orbit lines properly track parent planet positions each frame.
+- **Camera Tracking**: Camera now properly locks to and follows focused bodies as they orbit, keeping them in view even as the system evolves.
 
 ### Technical Details
 
-**Synchronization Method:**
-- Calculated mean motion for each planet: `n = 2π / period`
-- Applied Kepler equation inverse: `m0 = θ_observed - (n × UT)`
-- All values calibrated to KSP2 Redux system orbital data
-- Reference UT: T+006y 059d 04:16:43 (from user observation)
+- Moon orbits and bodies removed from planet mesh hierarchy; both now added to scene root with world-space positioning.
+- moonLocalPosition() now returns full world coordinates including parent planet's position.
+- updateMap() positions moon orbit lines at parent planet's world location each frame.
+- focusedPlanet mechanism updated to track camera target continuously.
 
-**Result:**
-When Kerbalist is set to the reference UT, all planets appear at their actual in-game positions:
-- Moho: observed 120.30° ✓
-- Eve: observed -54.20° (327.07° normalized) ✓
-- Duna: observed -3.00° (329.68° normalized) ✓
-- Dres: observed -39.40° (111.81° corrected) ✓
-- Jool: observed -3.80° (294.43° normalized) ✓
-- Eeloo: observed -16.90° (3.04° normalized) ✓
+## [3.0 - 3.4 Consolidated] - 2026-09-06
 
-### Benefits
+### Major Changes
 
-✓ **Perfect KSP2 alignment**: Planet positions match game state at reference UT
-✓ **Accurate mission planning**: Transfer calculations correspond to real in-game windows
-✓ **Consistent tool-game experience**: Plan in Kerbalist, execute in KSP2, arrive as predicted
-✓ **Simplified workflow**: No more manual adjustment for orbital desynchronization
+#### Scaling & Coordinate System (v3.0)
 
-### User Impact
+- **Map Rewritten to Real KSP2 Proportions**: Single unified physical scale (world units per meter) replaces all custom tuning. All distances—heliocentric and moon-relative—use the same linear scale. Deleted "inner system expansion" (32% Duna inflation) and per-planet moon-orbit tuning buckets.
+- **Raw System View**: Moons appear tightly clustered at full-system zoom (correct—that's what the real proportions look like). Zoom in to resolve them at accurate scale.
 
-- **Existing missions**: May need adjustment if planned at different UT than v2.7 reference
-- **Future missions**: Can be precisely planned in Kerbalist and executed in KSP2
-- **Accuracy**: ±0.1° or better depending on orbital period
+#### Camera & Zoom (v3.1 & v3.4)
+
+- **Zoom-Based Scale Transition (LOD)**: Map fades between exaggerated overview (far) and true-to-scale physical view (near), exactly like KSP2. Smooth blend as camera approaches a planet.
+- **Deeper Zoom Range**: Camera min distance 30 → 0.02 units; near plane 0.5 → 0.0005. Logarithmic depth buffer for stable rendering across the huge range.
+- **Camera Lock to Focused Body**: Zoom into a planet or use context menu to lock camera. Camera stays locked to body's center as it orbits. Reset zoom clears lock.
+
+#### Interactivity (v3.2 - v3.4)
+
+- **Moon Label Visibility**: Moon labels hidden at far zoom (they cluster on planet); fade in as you zoom close.
+- **Right-Click Context Menu**: Right-click planet/moon for menu with zoom, set origin/destination, clear, reset, show info options.
+- **Click Helper Spheres**: Invisible collision spheres (10× planet, 5× moon) make bodies much easier to select without zooming extremely close.
+
+#### Orbital Data (v2.6)
+
+- **Jool Landing Removed**: Jool is a gas giant; removed misleading landing Δv estimate.
+- **Moon Data**: All moon gravitational parameters (μ) added for accurate moon insertion/landing calculations.
+
+### Technical Summary
+
+v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and interactivity model. Core architecture now separates exaggerated overview (for usability at full-system zoom) from true-scale near-view (for accurate planning when zoomed in). All interactive elements (labels, right-click, camera focus) now work reliably on both planets and moons.
+
+## [2.8] - 2026-09-06
+
+### Fixed
+
+- **Negative Landing Δv Bug**: Fixed moon landing Δv reference estimate returning a negative value for small airless moons (e.g. Gilly), where low-orbit and surface velocities are nearly identical, making a velocity-difference formula unstable. Landing estimate now scales directly from low-orbit velocity instead.
+
+### Technical Details
+
+**Moon landing Δv formula:**
+- Before: `(lowOrbitVelocity − surfaceVelocity) × 1.5` — could go negative for airless moons with near-flat velocity profiles
+- After: `lowOrbitVelocity × 1.1` — always positive, still a rough reference estimate
 
 ## [2.6] - 2026-09-05
 
