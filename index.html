@@ -2385,6 +2385,7 @@
       }
 
       function resetView() {
+        focusedPlanet = null;  // Clear focus lock so camera doesn't get pulled back
         camR = 620; camTheta = 0.15; camPhi = 0.30;
         camTarget.set(0, 0, 0);
         updateCamera();
@@ -3388,7 +3389,7 @@
           const el = moonLabelEls[m.name];
           if (moonMesh) {
             // Hide moon labels when zoomed out far (only show when close to camera)
-            if (camR > 150) {
+            if (camR > 75) {
               el.style.display = 'none';
               return;
             }
