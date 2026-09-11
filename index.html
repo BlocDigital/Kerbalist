@@ -1461,7 +1461,7 @@
         <div class="shortcuts-bubble">
           <div class="sb-title">Controls</div>
           <div class="shortcut-row"><span class="sk">Drag</span><span class="sv">Rotate orbit</span></div>
-          <div class="shortcut-row"><span class="sk">Shift+Drag</span><span class="sv">Pan view</span></div>
+          <div class="shortcut-row"><span class="sk">Shift+Drag / Mid-Click+Drag</span><span class="sv">Pan view</span></div>
           <div class="shortcut-row"><span class="sk">Scroll</span><span class="sv">Zoom in / out</span></div>
           <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
           <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
@@ -1653,6 +1653,11 @@
         <li>focusedPlanet mechanism updated to track camera target continuously.</li>
         </ul>
 
+        <h3>Known Issues</h3>
+        <ul>
+        <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.</li>
+        </ul>
+
         <h2>[3.0 - 3.4 Consolidated] - 2026-09-06</h2>
         <h3>Major Changes</h3>
 
@@ -1687,6 +1692,12 @@
         <h3>Technical Summary</h3>
         <p>v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and interactivity model. Core architecture now separates exaggerated overview (for usability at full-system zoom) from true-scale near-view (for accurate planning when zoomed in). All interactive elements (labels, right-click, camera focus) now work reliably on both planets and moons. Orbital epoch synchronization ensures Kerbalist and KSP2 are in sync for mission planning.</p>
 
+        <h3>Known Issues</h3>
+        <ul>
+        <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.</li>
+        <li><strong>Drast Inside Dres</strong>: Drast's semi-major axis (43,400 m) is smaller than Dres's own physical radius (138,000 m) in the current KSP2 Redux moon data, placing its orbit inside the planet itself—almost certainly a units slip (likely meant to be 43,400 km). Left unchanged since the moon data was intentionally kept as-is; the Dres ring rendering is clamped to stay visually outside Dres regardless.</li>
+        </ul>
+
         <h2>[2.9] - 2026-09-06</h2>
         <h3>Fixed</h3>
         <ul>
@@ -1705,6 +1716,12 @@
         <li>Eeloo: 83.54° → 163.48°</li>
         </ul>
         <p><strong>Verification:</strong> All six planets, when run through the app&#x27;s own eccentric-orbit position formula, reproduce their observed KSP2 Target-panel phase angles to within 0.01°.</p>
+
+        <h3>Known Issues</h3>
+        <ul>
+        <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.</li>
+        </ul>
+
         <h2>[2.8] - 2026-09-06</h2>
         <h3>Fixed</h3>
         <ul>
@@ -1944,7 +1961,7 @@
         <h3>Added</h3>
         <ul>
         <li>Full 3D WebGL Solar System Map: Replaced 2D SVG map with Three.js WebGL scene supporting accurate planetary orbital inclinations</li>
-        <li>Free-Look Orbital Camera: Left drag rotates, Shift+drag pans, scroll zooms, R key or reset button returns to default view</li>
+        <li>Free-Look Orbital Camera: Left drag rotates, Shift+drag or middle-click+drag pans, scroll zooms, R key or reset button returns to default view</li>
         <li>Destination Arrival Ghost: Translucent ghost planet shows exact projected destination position at arrival time</li>
         <li>3D Trajectory Inclination Matching: Transfer arc interpolates inclination angles from departure to destination (e.g., 0 Kerbin 5 Dres)</li>
         <li>UI &amp; Controls HUD: On-screen keyboard/mouse controls overlay card and expanded UT sync input fields supporting 4-digit years</li>
