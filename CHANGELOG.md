@@ -2,6 +2,39 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [3.5.5] - 2026-09-12
+
+### Added
+
+- **Splash screen**: Added a splash screen that appears when the application starts with our new logo!
+
+### Known Issues
+
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
+- **Departure transfer line is out of place when selecting moons**: When selecting a moon as origin or destination, the transfer line and moon ghost are not displayed at their correct positions.
+
+## [3.5.4] - 2026-09-12
+
+### Fixed
+
+- **Camera Focus Lock Persistence**: Double-clicking a body now locks the camera on it permanently until the user explicitly pans away (Shift+drag or middle-click+drag) or resets the view. Previously the focus was lost immediately after releasing the mouse button.
+- **Instant Camera Centering**: Camera now visually centers on a body immediately upon double-click without requiring mouse movement. Added continuous updateCamera() calls to the render loop to keep focused bodies centered as they move.
+- **Camera Reset Behavior**: Pressing R to reset view now properly clears the focused-planet lock, so the camera returns to full-system view and doesn't get pulled back to the last selected body.
+- **Moon Label Visibility Threshold**: Moon labels now appear 50% closer to the camera (threshold reduced from camR > 150 to camR > 75), making them visible at wider zoom ranges without requiring extreme zoom.
+- **Orbit Line Smoothness at Zoom**: Planet orbit lines increased from 220 to 1200 segments and moon orbit lines increased from 120 to 600 segments. Bodies now stay perfectly aligned with their orbits even at maximum zoom without visible polygon edges.
+- **Camera Lock Release on Pan**: When the user pans with Shift+drag or middle-click+drag, the camera focus lock is properly released after a brief grace period (200ms) to prevent accidental unlocking from double-click mouse settling.
+
+### Technical Details
+
+- Added lastDoubleClickTime tracking to prevent clearing focusedPlanet immediately after a double-click.
+- updateCamera() now called every frame in the render loop rather than only on mouse input, ensuring focused bodies stay centered.
+- Mousemove handler checks time since last double-click before clearing focus on pan detection, allowing ~200ms grace period.
+- Orbit line tessellation increased to maintain visual smoothness across the full zoom range (0.02 to 2400 world units).
+
+### Known Issues
+
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
+
 ## [3.5.0] - 2026-09-06
 
 ### Added
@@ -24,6 +57,10 @@ All notable changes to Kerbalist will be documented in this file.
 - updateMap() positions moon orbit lines at parent planet's world location each frame.
 - focusedPlanet mechanism updated to track camera target continuously.
 
+### Known Issues
+
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
+
 ## [3.0 - 3.4 Consolidated] - 2026-09-06
 
 ### Major Changes
@@ -45,26 +82,40 @@ All notable changes to Kerbalist will be documented in this file.
 - **Right-Click Context Menu**: Right-click planet/moon for menu with zoom, set origin/destination, clear, reset, show info options.
 - **Click Helper Spheres**: Invisible collision spheres (10× planet, 5× moon) make bodies much easier to select without zooming extremely close.
 
-#### Orbital Data (v2.6)
+#### Orbital Data (v2.7 - v2.9)
 
+- **Corrected Orbital Mechanics (v2.8-v2.9)**: Fixed time base (21600s/day, not 86400), proper phase-angle interpretation relative to Kerbin, and full Kepler inversion accounting for eccentricity and argument of periapsis. All planets reproduce observed in-game phase angles exactly.
 - **Jool Landing Removed**: Jool is a gas giant; removed misleading landing Δv estimate.
 - **Moon Data**: All moon gravitational parameters (μ) added for accurate moon insertion/landing calculations.
 
 ### Technical Summary
 
-v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and interactivity model. Core architecture now separates exaggerated overview (for usability at full-system zoom) from true-scale near-view (for accurate planning when zoomed in). All interactive elements (labels, right-click, camera focus) now work reliably on both planets and moons.
+v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and interactivity model. Core architecture now separates exaggerated overview (for usability at full-system zoom) from true-scale near-view (for accurate planning when zoomed in). All interactive elements (labels, right-click, camera focus) now work reliably on both planets and moons. Orbital epoch synchronization ensures Kerbalist and KSP2 are in sync for mission planning.
+
+### Known Issues
+
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.
+- **Drast Inside Dres**: Drast's semi-major axis (43,400 m) is smaller than Dres's own physical radius (138,000 m) in the current KSP2 Redux moon data, placing its orbit inside the planet itself—almost certainly a units slip (likely meant to be 43,400 km). Left unchanged since the moon data was intentionally kept as-is; the Dres ring rendering is clamped to stay visually outside Dres regardless.
+
+## [2.9] - 2026-09-06
+
+### Fixed
+
+- **Full Kepler Inversion**: m0Deg is now derived using the same math the app itself uses to render positions (`theta = trueAnomaly + orientDeg`, with true anomaly related to mean anomaly through the eccentric anomaly via Kepler's equation). Verified numerically against the app's own `stateAt()` function - all six planets reproduce their observed in-game phase angles exactly.
+- **Jool Landing Δv Removed**: Jool is a gas giant with no solid surface - landing there is not a real maneuver. The reference "Landing @ Jool" line (previously an arbitrary, misleadingly small ~2,400 m/s estimate) has been removed rather than guessed at.
+
+
+### Known Issues
+
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.
 
 ## [2.8] - 2026-09-06
 
 ### Fixed
 
+- **Orbital Epoch Sync Corrected (v2.7 fix was wrong)**: The v2.7 synchronization used two incorrect assumptions: it converted UT using 24-hour days instead of KSP2's actual 6-hour Kerbin day (21,600s), and it treated observed "Phase angle" readings from the KSP2 Target panel (which are relative to Kerbin, i.e. target minus origin) as if they were each planet's absolute heliocentric angle. Both errors compounded into incorrect m0Deg values.
+- **Recalculated m0Deg Values**: All six planets recalculated using the correct 21,600s/day time base and proper phase-angle-relative-to-Kerbin interpretation. Verified against the in-game Target panel: computed Eeloo phase angle now matches -16.90° exactly at the reference UT.
 - **Negative Landing Δv Bug**: Fixed moon landing Δv reference estimate returning a negative value for small airless moons (e.g. Gilly), where low-orbit and surface velocities are nearly identical, making a velocity-difference formula unstable. Landing estimate now scales directly from low-orbit velocity instead.
-
-### Technical Details
-
-**Moon landing Δv formula:**
-- Before: `(lowOrbitVelocity − surfaceVelocity) × 1.5` — could go negative for airless moons with near-flat velocity profiles
-- After: `lowOrbitVelocity × 1.1` — always positive, still a rough reference estimate
 
 ## [2.6] - 2026-09-05
 
