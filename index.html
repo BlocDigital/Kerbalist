@@ -215,17 +215,17 @@
     .cal-modal-content {
       background: var(--panel);
       border: 1px solid var(--border-bright);
-      border-radius: 12px;
-      width: 380px;
-      max-width: 95vw;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+      border-radius: 10px;
+      width: 280px;
+      max-width: 90vw;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .7);
       overflow: hidden;
     }
     .cal-modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      padding: 10px 12px;
       background: var(--panel2);
       border-bottom: 1px solid var(--border);
     }
@@ -252,14 +252,14 @@
       background: rgba(248, 81, 73, .12);
     }
     .cal-modal-body {
-      padding: 16px;
+      padding: 12px;
     }
     .cal-year-input {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     .cal-year-field {
       background: var(--panel3);
@@ -267,11 +267,11 @@
       border-radius: 6px;
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 28px;
+      font-size: 22px;
       font-weight: 700;
       text-align: center;
-      width: 100px;
-      padding: 8px 4px;
+      width: 80px;
+      padding: 6px 4px;
       outline: none;
     }
     .cal-year-field::-webkit-inner-spin-button,
@@ -294,8 +294,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     .cal-season-btn {
       background: var(--panel3);
@@ -318,39 +318,39 @@
     }
     .cal-season-display {
       font-family: var(--font-display);
-      font-size: 14px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--amber);
       letter-spacing: .06em;
       text-transform: uppercase;
       text-align: center;
-      min-width: 160px;
+      min-width: 130px;
     }
     .cal-month-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-bottom: 16px;
+      gap: 3px;
+      margin-bottom: 10px;
     }
     .cal-day-header {
       font-family: var(--font-display);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
       color: var(--text-dimmer);
       text-align: center;
       letter-spacing: .1em;
       text-transform: uppercase;
-      padding: 4px 0;
+      padding: 3px 0;
     }
     .cal-day {
       background: var(--panel3);
       border: 1px solid transparent;
-      border-radius: 6px;
+      border-radius: 5px;
       color: var(--text-dim);
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 11px;
       text-align: center;
-      padding: 8px 4px;
+      padding: 6px 3px;
       cursor: pointer;
       transition: .12s;
       user-select: none;
@@ -376,7 +376,7 @@
       display: flex;
       justify-content: space-between;
       gap: 4px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .cal-season-bar {
       flex: 1;
@@ -392,8 +392,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 6px;
+      margin-bottom: 12px;
     }
     .cal-time-field {
       background: var(--panel3);
@@ -401,10 +401,10 @@
       border-radius: 6px;
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 16px;
+      font-size: 14px;
       text-align: center;
-      width: 50px;
-      padding: 6px 4px;
+      width: 40px;
+      padding: 5px 3px;
       outline: none;
     }
     .cal-time-field::-webkit-inner-spin-button,
@@ -417,12 +417,12 @@
     }
     .cal-time-sep {
       font-family: var(--font-mono);
-      font-size: 16px;
+      font-size: 14px;
       color: var(--text-dimmer);
     }
     .cal-apply-row {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
     .cal-apply-btn {
       flex: 1;
@@ -431,11 +431,11 @@
       color: var(--cyan);
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: .06em;
       text-transform: uppercase;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 8px;
+      border-radius: 6px;
       cursor: pointer;
       transition: .12s;
     }
@@ -4731,7 +4731,7 @@
         year = Math.max(0, Math.min(999, year));
         
         let hour = parseInt(calHour.value) || 0;
-        hour = Math.max(0, Math.min(23, hour));
+        hour = Math.max(0, Math.min(6, hour));
         
         let min = parseInt(calMin.value) || 0;
         min = Math.max(0, Math.min(59, min));
@@ -4794,7 +4794,15 @@
         if (n > maxVal) field.value = maxVal.toString();
         else field.value = v;
       }
-      calHour.addEventListener('input', () => clampField(calHour, 23));
+      calHour.addEventListener('input', () => {
+        const before = calHour.value;
+        clampField(calHour, 6);
+        // When hour reaches 6, reset min and sec to 0
+        if (before !== '6' && calHour.value === '6') {
+          calMin.value = '00';
+          calSec.value = '00';
+        }
+      });
       calMin.addEventListener('input', () => clampField(calMin, 59));
       calSec.addEventListener('input', () => clampField(calSec, 59));
 
