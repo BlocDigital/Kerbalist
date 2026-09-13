@@ -2,15 +2,21 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
-## [3.5.5] - 2026-09-12
+## [3.6] - 2026-09-13
+
+### Added
+
+- **Full Mobile Responsive Design**: Kerbalist now works great on phones and tablets. On small screens, a Map / Controls toggle lets you view the 3D map or the sidebar controls — whichever you need. The map stays fully interactive with touch controls (1-finger rotate, 2-finger zoom & pan). Sidebar elements are touch-friendly with larger tap targets, compact layouts, and smooth scrolling.
+
+## [3.5.6] - 2026-09-13
 
 ### Fixed
 
-- **Moon Transfer Visualization Bug (Critical)**: Fixed a coordinate double-counting bug where any transfer involving a moon as origin or destination rendered the ghost arrival marker, dashed arrival line, transfer arc, and return trip lines in completely wrong positions—often roughly twice as far from the sun as they should be. Planet-to-planet transfers were unaffected.
-- **Moon Camera Lock**: Double-clicking a moon or using the right-click "Zoom in" context menu action would set the camera focus target but never actually track it. The per-frame camera-follow logic and the context-menu zoom handler only looked up the target in the planet mesh dictionary, not the moon mesh dictionary. Both now check both, so locking onto a moon works the same as locking onto a planet.
-- **Orbit Line Polygon Count Increased Further**: Planets and moons could still visibly drift off their orbit lines at extreme zoom even after the previous segment-count increase. Planet orbit lines raised from 1200 to 4000 segments and moon orbit lines from 600 to 2000 segments for a smooth curve across the full zoom range.
-- **Drast Rendering Fused With Dres**: Drast's real semi-major axis in the KSP2 Redux moon data (43,400 m) is smaller than Dres's own physical radius, so Drast's sphere and label were rendering fused inside Dres. Moon orbit display radius is now clamped to stay outside 1.3× its parent planet's physical radius, so Drast (or any similarly affected moon) always renders clearly outside its parent.
-- **Deeper Zoom Range**: Lowered the minimum camera distance from 0.02 to 0.012 world units, allowing roughly 4-5 additional scroll-wheel zoom-in steps beyond the previous limit.
+- **Moon Transfer Visualization Bug (Critical)**: Fixed a coordinate double-counting bug where transfers involving a moon rendered ghost arrival markers, dashed lines, transfer arcs, and return lines in incorrect positions—often roughly twice as far from the sun. Planet-to-planet transfers were unaffected.
+- **Moon Camera Lock**: Fixed moon tracking when double-clicking or using right-click "Zoom in". Camera-follow and context-menu logic now check both planet and moon meshes.
+- **Orbit Line Polygon Count Increased**: Planet orbit lines raised from 1200 to 4000 segments and moon lines from 600 to 2000, preventing visible drift at extreme zoom.
+- **Drast Rendering Fused With Dres**: Moon orbit display radius now clamps to 1.3× its parent planet's physical radius, keeping Drast and similar moons clearly outside their parent.
+- **Deeper Zoom Range**: Lowered minimum camera distance from 0.02 to 0.012 world units, adding roughly 4–5 zoom-in steps.
 
 ### Technical Details
 

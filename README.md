@@ -7,7 +7,7 @@
 
 **Live sync-capable* transfer calculator with optional gravity assist optimization.**
 
-Current version: **v3.5.5**
+Current version: **v3.6**
 
 *WIP
 
@@ -35,6 +35,10 @@ Current version: **v3.5.5**
 - **Drast and Beyl** - two Dres moons added from KSP2 reference data
 - **Narrow Dres ring** - rendered as a thin equatorial ring band matching the in-game look more closely
 - **Correct moon velocity display** - moon orbital speed uses the parent planet's gravitational parameter
+
+### Mobile
+- **Full responsive design** - works on phones and tablets with a Map / Controls toggle for small screens
+- **Touch-friendly controls** - 1-finger rotate, 2-finger zoom & pan on the 3D map; larger tap targets and compact layouts in the sidebar
 
 ## How to Use
 

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Kerbol Transfer Window Planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
@@ -50,12 +50,22 @@
       color: var(--text);
       font-family: var(--font-display);
       overflow: hidden;
+      touch-action: manipulation;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      padding-top: env(safe-area-inset-top, 0);
     }
 
     .app {
       display: flex;
       flex-direction: column;
       height: 100vh;
+    }
+
+    /* ---------- RESPONSIVE BREAKPOINTS ---------- */
+    :root {
+      --sidebar-width: 510px;
+      --breakpoint-sm: 600px;
+      --breakpoint-md: 1024px;
     }
 
     /* ---------- HEADER ---------- */
@@ -1093,6 +1103,7 @@
     .tab-panels {
       flex: 1 1 auto;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 18px;
       min-height: 0;
     }
@@ -1491,10 +1502,290 @@
       0% { opacity: 0; transform: scale(0.92); }
       100% { opacity: 1; transform: scale(1); }
     }
-    @media (max-width:880px) {
+    /* === MOBILE TOGGLE BAR === */
+    .mobile-toggle {
+      display: none;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
+      gap: 6px;
+    }
+
+    .mobile-toggle-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-dimmer);
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: .15s;
+    }
+
+    .mobile-toggle-btn.active {
+      color: var(--cyan);
+      background: #123339;
+      border-color: var(--cyan-dim);
+      box-shadow: 0 0 8px rgba(79, 224, 232, .15);
+    }
+
+    /* === TABLET: 601px - 1024px === */
+    @media (max-width: 1024px) and (min-width: 601px) {
       .sidebar {
-        width: 416px;
-        flex-basis: 416px;
+        width: 380px;
+        flex-basis: 380px;
+      }
+      .brand h1 {
+        font-size: 15px;
+      }
+      .brand .sub {
+        font-size: 9px;
+      }
+      .ut-clock .value {
+        font-size: 14px;
+      }
+      .shortcuts-bubble {
+        display: none;
+      }
+    }
+
+    /* === MOBILE: ≤ 600px === */
+    @media (max-width: 600px) {
+      .app {
+        flex-direction: column;
+      }
+
+      header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 10px;
+      }
+
+      .brand {
+        gap: 6px;
+      }
+
+      .brand h1 {
+        font-size: 14px;
+      }
+
+      .brand .sub {
+        display: none;
+      }
+
+      .ut-clock {
+        margin-left: 0;
+      }
+
+      .ut-clock .value {
+        font-size: 13px;
+      }
+
+      .ut-clock .label {
+        display: none;
+      }
+
+      .ut-sync {
+        display: none;
+      }
+
+      .warp-controls {
+        display: none;
+      }
+
+      .live-sync-wrap {
+        position: static;
+      }
+
+      .live-btn {
+        font-size: 10px;
+        padding: 6px 8px;
+      }
+
+      .live-panel {
+        top: auto !important;
+        bottom: 36px !important;
+        right: 8px !important;
+        left: 8px !important;
+        width: auto !important;
+        max-width: none !important;
+      }
+
+      /* Show mobile toggle */
+      .mobile-toggle {
+        display: flex !important;
+      }
+
+      /* Sidebar hidden by default on mobile */
+      .sidebar {
+        width: 100% !important;
+        flex-basis: 100% !important;
+        max-height: 0 !important;
+        overflow: hidden;
+        border-left: none !important;
+        border-top: 1px solid var(--border);
+        flex-shrink: 0;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+        padding: 0 !important;
+      }
+
+      .sidebar.mobile-visible {
+        max-height: 60vh !important;
+        overflow-y: auto;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+      }
+
+      .sidebar.mobile-visible .tabs {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--panel);
+      }
+
+      /* Hide map when controls are visible */
+      .main.mobile-show-sidebar .map-wrap {
+        display: none;
+      }
+
+      /* Hide shortcuts on mobile */
+      .shortcuts-bubble {
+        display: none;
+      }
+
+      .info-desc {
+        font-size: 14px;
+      }
+
+      /* Mission stepper: collapse */
+      .mission-stepper {
+        grid-template-columns: repeat(3, minmax(36px, 1fr)) minmax(60px, 1fr) repeat(3, minmax(36px, 1fr)) !important;
+        gap: 4px;
+      }
+
+      .mission-stepper button {
+        font-size: 11px !important;
+        min-height: 28px !important;
+        padding: 0 4px !important;
+      }
+
+      .mission-days-display {
+        font-size: 12px !important;
+        padding: 0 6px !important;
+      }
+
+      /* Select rows: stack */
+      .select-row {
+        flex-direction: column;
+        padding: 12px 10px;
+        gap: 6px;
+      }
+
+      .swap-btn {
+        align-self: center;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+      }
+
+      /* Transfer actions: stack */
+      .transfer-actions {
+        flex-direction: column;
+        margin: 3px 10px 10px;
+      }
+
+      .plan-btn,
+      .clear-transfer-btn {
+        font-size: 15px;
+        padding: 12px;
+      }
+
+      /* Tabs */
+      .tabs {
+        padding: 0 10px;
+      }
+
+      .tab {
+        padding: 10px 10px;
+        font-size: 12px;
+      }
+
+      /* Tab panels */
+      .tab-panels {
+        padding: 12px 10px;
+      }
+
+      /* Cards */
+      .card {
+        padding: 12px 12px;
+        margin-bottom: 10px;
+      }
+
+      /* Stat rows */
+      .stat-row {
+        font-size: 14px;
+        padding: 5px 0;
+      }
+
+      /* Big numbers */
+      .big-num {
+        font-size: 28px;
+      }
+
+      /* Countdown */
+      .countdown {
+        font-size: 22px;
+      }
+
+      /* Assist items */
+      .assist-item {
+        padding: 10px 10px;
+        gap: 8px;
+      }
+
+      .assist-item .label .name {
+        font-size: 14px;
+      }
+
+      /* Legend on mobile */
+      .legend {
+        font-size: 9px;
+        padding: 6px 8px;
+        gap: 8px;
+        bottom: 60px;
+      }
+
+      /* Map version */
+      .map-version {
+        font-size: 10px;
+      }
+
+      /* Bmc button */
+      .bmc-wrap {
+        transform: scale(0.85);
+        transform-origin: left center;
+      }
+
+      /* Body info */
+      .info-title {
+        font-size: 20px;
+      }
+
+      /* Zoom controls bigger for touch */
+      .zoom-controls {
+        bottom: 68px;
+      }
+
+      .zoom-controls button {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 18px !important;
       }
     }
   </style>
@@ -1554,6 +1845,12 @@
       </div>
     </header>
 
+    <!-- Mobile Toggle Bar (hidden on desktop) -->
+    <div class="mobile-toggle" id="mobileToggle">
+      <div class="mobile-toggle-btn active" data-view="map" id="mobileMapBtn">Map</div>
+      <div class="mobile-toggle-btn" data-view="controls" id="mobileControlsBtn">Controls</div>
+    </div>
+
     <div class="main">
       <div class="map-wrap" id="mapWrap">
         <canvas id="mapCanvas"></canvas>
@@ -1577,7 +1874,7 @@
           <button id="zoomReset">⤾</button>
         </div>
         <div class="bottom-left-bar">
-          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.5.5</div>
+          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6</div>
           <div class="bmc-wrap" id="bmcWrap">
             <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic" data-text="Buy me a beer" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#FFDD00"></script>
           </div>
@@ -1703,7 +2000,7 @@
             <div class="card">
               <h3><span class="dot"></span>Porkchop Plot</h3>
               <div class="pk-canvas-wrap">
-                <canvas id="pkCanvas" width="360" height="300"></canvas>
+                <canvas id="pkCanvas" width="360" height="300" style="width:100%;height:auto;"></canvas>
               </div>
               <div class="pk-legend-bar"></div>
               <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
@@ -2116,7 +2413,7 @@
         <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v3.5.5 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v3.6 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -2137,7 +2434,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.5.5';
+    const VERSION = 'v3.6';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -3895,6 +4192,66 @@
         }
       }, { passive: true });
       canvas3d.addEventListener('touchend', () => { tState = null; }, { passive: true });
+
+      /* =========================================================
+         5b. MOBILE TOGGLE
+         ========================================================= */
+      const mobileToggle = document.getElementById('mobileToggle');
+      const mobileMapBtn = document.getElementById('mobileMapBtn');
+      const mobileControlsBtn = document.getElementById('mobileControlsBtn');
+      const sidebarEl = document.querySelector('.sidebar');
+      const mainEl = document.querySelector('.main');
+      let mobileView = 'map'; // 'map' or 'controls'
+
+      function isMobile() {
+        return window.innerWidth <= 600;
+      }
+
+      function updateMobileView(forceView) {
+        if (!isMobile()) {
+          // On desktop, always show both
+          if (sidebarEl) sidebarEl.classList.remove('mobile-visible');
+          if (mainEl) mainEl.classList.remove('mobile-show-sidebar');
+          mobileMapBtn && mobileMapBtn.classList.remove('active');
+          mobileControlsBtn && mobileControlsBtn.classList.remove('active');
+          return;
+        }
+
+        const view = forceView || mobileView;
+
+        if (view === 'map') {
+          sidebarEl && sidebarEl.classList.remove('mobile-visible');
+          mainEl && mainEl.classList.remove('mobile-show-sidebar');
+          if (mobileMapBtn) mobileMapBtn.classList.add('active');
+          if (mobileControlsBtn) mobileControlsBtn.classList.remove('active');
+        } else {
+          sidebarEl && sidebarEl.classList.add('mobile-visible');
+          mainEl && mainEl.classList.add('mobile-show-sidebar');
+          if (mobileMapBtn) mobileMapBtn.classList.remove('active');
+          if (mobileControlsBtn) mobileControlsBtn.classList.add('active');
+        }
+      }
+
+      if (mobileMapBtn) {
+        mobileMapBtn.addEventListener('click', () => { mobileView = 'map'; updateMobileView('map'); });
+      }
+      if (mobileControlsBtn) {
+        mobileControlsBtn.addEventListener('click', () => { mobileView = 'controls'; updateMobileView('controls'); });
+      }
+
+      // Update on resize
+      window.addEventListener('resize', () => {
+        if (!isMobile()) {
+          if (mobileToggle) mobileToggle.style.display = 'none';
+          updateMobileView();
+        } else {
+          if (mobileToggle) mobileToggle.style.display = 'flex';
+          updateMobileView();
+        }
+      });
+
+      // Initial state
+      updateMobileView();
 
       /* =========================================================
          5. UI SETUP
