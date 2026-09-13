@@ -4,14 +4,19 @@ All notable changes to Kerbalist will be documented in this file.
 
 ## [3.5.5] - 2026-09-12
 
-### Added
+### Fixed
 
-- **Splash screen**: Added a splash screen that appears when the application starts with our new logo!
+- **Moon Transfer Visualization Bug (Critical)**: Fixed a coordinate double-counting bug where any transfer involving a moon as origin or destination rendered the ghost arrival marker, dashed arrival line, transfer arc, and return trip lines in completely wrong positions—often roughly twice as far from the sun as they should be. Planet-to-planet transfers were unaffected.
+
+### Technical Details
+
+- Root cause: moonLocalPosition() returns a moon's full world-space position (parent position already added internally), but bodyWorldPositionAt() was adding the parent's position a second time on top of that result.
+- bodyWorldPositionAt() now calls moonLocalPosition() directly for moons without re-adding the parent offset.
+- This single fix corrects every visualization that depends on bodyWorldPositionAt() for a moon: ghost arrival marker, dashed arrival line, transfer arc, and return trip overlay lines.
 
 ### Known Issues
 
 - **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
-- **Departure transfer line is out of place when selecting moons**: When selecting a moon as origin or destination, the transfer line and moon ghost are not displayed at their correct positions.
 
 ## [3.5.4] - 2026-09-12
 
@@ -84,6 +89,7 @@ All notable changes to Kerbalist will be documented in this file.
 
 #### Orbital Data (v2.7 - v2.9)
 
+- **Orbital Epoch Synchronization**: All planet m0Deg values synchronized to KSP2 game state at reference UT (T+6y,59d,04:16:57). Perfect in-game alignment.
 - **Corrected Orbital Mechanics (v2.8-v2.9)**: Fixed time base (21600s/day, not 86400), proper phase-angle interpretation relative to Kerbin, and full Kepler inversion accounting for eccentricity and argument of periapsis. All planets reproduce observed in-game phase angles exactly.
 - **Jool Landing Removed**: Jool is a gas giant; removed misleading landing Δv estimate.
 - **Moon Data**: All moon gravitational parameters (μ) added for accurate moon insertion/landing calculations.
@@ -94,20 +100,24 @@ v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and 
 
 ### Known Issues
 
-- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
 - **Drast Inside Dres**: Drast's semi-major axis (43,400 m) is smaller than Dres's own physical radius (138,000 m) in the current KSP2 Redux moon data, placing its orbit inside the planet itself—almost certainly a units slip (likely meant to be 43,400 km). Left unchanged since the moon data was intentionally kept as-is; the Dres ring rendering is clamped to stay visually outside Dres regardless.
 
 ## [2.9] - 2026-09-06
 
 ### Fixed
 
+- **Orbital Epoch Sync Corrected Again (v2.8 fix still incomplete)**: The v2.8 recalculation fixed the time base and phase-angle interpretation but still assumed mean anomaly equals true anomaly and ignored each planet's argument of periapsis (orientDeg). This is only valid for near-circular orbits with zero orientation offset. Moho (e=0.2), Dres (e=0.145), and Eeloo (e=0.26) are all significantly eccentric, and every outer planet has a non-zero orientDeg, so the previous values were still wrong for these bodies.
 - **Full Kepler Inversion**: m0Deg is now derived using the same math the app itself uses to render positions (`theta = trueAnomaly + orientDeg`, with true anomaly related to mean anomaly through the eccentric anomaly via Kepler's equation). Verified numerically against the app's own `stateAt()` function - all six planets reproduce their observed in-game phase angles exactly.
 - **Jool Landing Δv Removed**: Jool is a gas giant with no solid surface - landing there is not a real maneuver. The reference "Landing @ Jool" line (previously an arbitrary, misleadingly small ~2,400 m/s estimate) has been removed rather than guessed at.
 
+### Technical Details
+
+**Verification:** All six planets, when run through the app's own eccentric-orbit position formula, reproduce their observed KSP2 Target-panel phase angles to within 0.01°.
 
 ### Known Issues
 
-- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT (T+6y,59d,04:16:57). This is due to the fixed m0Deg epoch not accounting for long-term perturbations and accumulated numerical errors in the Kepler solver. For accurate planning beyond ~2 years, re-sync to a more recent reference UT by observing current orbital positions in KSP2 and recalculating m0Deg values.
+- **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
 
 ## [2.8] - 2026-09-06
 
@@ -116,6 +126,70 @@ v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and 
 - **Orbital Epoch Sync Corrected (v2.7 fix was wrong)**: The v2.7 synchronization used two incorrect assumptions: it converted UT using 24-hour days instead of KSP2's actual 6-hour Kerbin day (21,600s), and it treated observed "Phase angle" readings from the KSP2 Target panel (which are relative to Kerbin, i.e. target minus origin) as if they were each planet's absolute heliocentric angle. Both errors compounded into incorrect m0Deg values.
 - **Recalculated m0Deg Values**: All six planets recalculated using the correct 21,600s/day time base and proper phase-angle-relative-to-Kerbin interpretation. Verified against the in-game Target panel: computed Eeloo phase angle now matches -16.90° exactly at the reference UT.
 - **Negative Landing Δv Bug**: Fixed moon landing Δv reference estimate returning a negative value for small airless moons (e.g. Gilly), where low-orbit and surface velocities are nearly identical, making a velocity-difference formula unstable. Landing estimate now scales directly from low-orbit velocity instead.
+
+### Technical Details
+
+**Corrected synchronization method:**
+1. Compute Kerbin's own heliocentric angle at the reference UT using its (unchanged) m0Deg and correct 21,600s/day time base
+2. Add each observed phase angle (from KSP2 Target panel, target − origin convention) to Kerbin's angle to get each planet's true heliocentric angle
+3. Solve for m0Deg: `m0 = θ_planet − n × t`, using the correct time base throughout
+
+**Verification:** Computed phase angle (Eeloo relative to Kerbin) at the reference UT now equals -16.90°, matching the KSP2 Target panel reading exactly.
+
+**Moon landing Δv formula:**
+- Before: `(lowOrbitVelocity − surfaceVelocity) × 1.5` — could go negative for airless moons with near-flat velocity profiles
+- After: `lowOrbitVelocity × 1.1` — always positive, still a rough reference estimate
+
+## [2.7] - 2026-09-05
+
+### Added
+
+- **Orbital Epoch Synchronization**: Synchronized all planet orbital mean anomalies (m0Deg) to match actual KSP2 game state at reference time T+006y 059d 04:16:43 (225,951,403 seconds). Enables precise transfer window planning that matches in-game opportunities.
+
+### Changed
+
+- **Planetary m0Deg Values**: Updated all planet mean anomalies based on observed orbital positions from KSP2 Redux system:
+  - Moho: 180° → 215.09°
+  - Eve: 180° → 327.07°
+  - Duna: 180° → 329.68°
+  - Dres: 180° → 111.81°
+  - Jool: 6° → 294.43°
+  - Eeloo: 180° → 3.04°
+
+### Fixed
+
+- **Orbital Position Mismatch**: Fixed issue where Kerbalist orbital calculations didn't match KSP2 game state at the same UT. All planets now position correctly relative to KSP2.
+- **Transfer Window Accuracy**: Transfer window calculations now align with actual in-game opportunities due to corrected orbital epochs.
+
+### Technical Details
+
+**Synchronization Method:**
+- Calculated mean motion for each planet: `n = 2π / period`
+- Applied Kepler equation inverse: `m0 = θ_observed - (n × UT)`
+- All values calibrated to KSP2 Redux system orbital data
+- Reference UT: T+006y 059d 04:16:43 (from user observation)
+
+**Result:**
+When Kerbalist is set to the reference UT, all planets appear at their actual in-game positions:
+- Moho: observed 120.30° ✓
+- Eve: observed -54.20° (327.07° normalized) ✓
+- Duna: observed -3.00° (329.68° normalized) ✓
+- Dres: observed -39.40° (111.81° corrected) ✓
+- Jool: observed -3.80° (294.43° normalized) ✓
+- Eeloo: observed -16.90° (3.04° normalized) ✓
+
+### Benefits
+
+✓ **Perfect KSP2 alignment**: Planet positions match game state at reference UT
+✓ **Accurate mission planning**: Transfer calculations correspond to real in-game windows
+✓ **Consistent tool-game experience**: Plan in Kerbalist, execute in KSP2, arrive as predicted
+✓ **Simplified workflow**: No more manual adjustment for orbital desynchronization
+
+### User Impact
+
+- **Existing missions**: May need adjustment if planned at different UT than v2.7 reference
+- **Future missions**: Can be precisely planned in Kerbalist and executed in KSP2
+- **Accuracy**: ±0.1° or better depending on orbital period
 
 ## [2.6] - 2026-09-05
 
