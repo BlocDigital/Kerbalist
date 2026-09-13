@@ -1742,6 +1742,10 @@
         <h3>Fixed</h3>
         <ul>
         <li><strong>Moon Transfer Visualization Bug (Critical)</strong>: Fixed a coordinate double-counting bug where any transfer involving a moon as origin or destination rendered the ghost arrival marker, dashed arrival line, transfer arc, and return trip lines in completely wrong positions—often roughly twice as far from the sun as they should be. Planet-to-planet transfers were unaffected.</li>
+        <li><strong>Moon Camera Lock</strong>: Double-clicking a moon or using the right-click &quot;Zoom in&quot; context menu action would set the camera focus target but never actually track it. The per-frame camera-follow logic and the context-menu zoom handler only looked up the target in the planet mesh dictionary, not the moon mesh dictionary. Both now check both, so locking onto a moon works the same as locking onto a planet.</li>
+        <li><strong>Orbit Line Polygon Count Increased Further</strong>: Planets and moons could still visibly drift off their orbit lines at extreme zoom even after the previous segment-count increase. Planet orbit lines raised from 1200 to 4000 segments and moon orbit lines from 600 to 2000 segments for a smooth curve across the full zoom range.</li>
+        <li><strong>Drast Rendering Fused With Dres</strong>: Drast&#x27;s real semi-major axis in the KSP2 Redux moon data (43,400 m) is smaller than Dres&#x27;s own physical radius, so Drast&#x27;s sphere and label were rendering fused inside Dres. Moon orbit display radius is now clamped to stay outside 1.3× its parent planet&#x27;s physical radius, so Drast (or any similarly affected moon) always renders clearly outside its parent.</li>
+        <li><strong>Deeper Zoom Range</strong>: Lowered the minimum camera distance from 0.02 to 0.012 world units, allowing roughly 4-5 additional scroll-wheel zoom-in steps beyond the previous limit.</li>
         </ul>
 
         <h3>Technical Details</h3>
@@ -1749,6 +1753,8 @@
         <li>Root cause: moonLocalPosition() returns a moon's full world-space position (parent position already added internally), but bodyWorldPositionAt() was adding the parent's position a second time on top of that result.</li>
         <li>bodyWorldPositionAt() now calls moonLocalPosition() directly for moons without re-adding the parent offset.</li>
         <li>This single fix corrects every visualization that depends on bodyWorldPositionAt() for a moon: ghost arrival marker, dashed arrival line, transfer arc, and return trip overlay lines.</li>
+        <li>updateMap()'s per-frame camera-follow check and the context menu's zoom-in handler now resolve the focused body via <code>planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet]</code>.</li>
+        <li>moonOrbitDisplayRadius() now returns <code>Math.max(rawOrbitRadius, parentPhysicalRadius * 1.3)</code>, and the Dres ring&#x27;s inner-radius calculation now reuses this same clamped function instead of its own separate clamp.</li>
         </ul>
 
         <h3>Known Issues</h3>
@@ -2511,8 +2517,8 @@
       })();
 
       /* ---- Camera ---- */
-      const camera = new THREE.PerspectiveCamera(52, 1, 0.0005, 15000);
-      const CAM_MIN = 0.02, CAM_MAX = 2400;
+      const camera = new THREE.PerspectiveCamera(52, 1, 0.0001, 15000);
+      const CAM_MIN = 0.0036, CAM_MAX = 2400;
       let camR = 620, camTheta = 0.15, camPhi = 0.30;
       let focusedPlanet = null;  // Camera follows this planet if set
       let lastDoubleClickTime = 0;  // Prevent clearing focus immediately after double-click
@@ -2577,9 +2583,19 @@
         return 1; // Pure linear scale, no artificial expansion
       }
 
-      // Real physical moon-orbit distance - single raw scale, no blending
+      // Real physical moon-orbit distance - single raw scale, no blending.
+      // Clamped so a moon's raw orbit never renders inside its parent planet's
+      // own visual radius (e.g. Drast's real KSP2 Redux semi-major axis is
+      // smaller than Dres's physical radius - a data units slip - which would
+      // otherwise place Drast's sphere fused inside Dres).
       function moonOrbitDisplayRadius(m) {
-        return m.a * SCALE;
+        const raw = m.a * SCALE;
+        const parent = PLANETS.find(p => p.name === m.parent);
+        if (parent) {
+          const parentRadius = parent.radius * SCALE;
+          return Math.max(raw, parentRadius * 1.3);
+        }
+        return raw;
       }
 
       /**
@@ -2647,7 +2663,7 @@
 
       /* ---- Orbit paths ---- */
       function buildOrbitLine(planet) {
-        const N = 1200, pts = [];
+        const N = 4000, pts = [];
         for (let i = 0; i <= N; i++) {
           const nu = (i / N) * 2 * Math.PI;
           const r = planet.a * (1 - planet.e * planet.e) / (1 + planet.e * Math.cos(nu));
@@ -2761,7 +2777,7 @@
         // Dres Asteroid Ring System
         if (p.name === 'Dres') {
           const drast = RAW_MOONS.find(m => m.name === 'Drast');
-          const drastOrbit = drast ? (drast.a * SCALE) : radius * 1.5;
+          const drastOrbit = drast ? moonOrbitDisplayRadius(drast) : radius * 1.5;
           const ringInner = Math.max(radius * 1.15, drastOrbit);
           const ringOuter = ringInner * 1.25;
 
@@ -2834,7 +2850,7 @@
         const parent = PLANETS.find(p => p.name === m.parent);
         if (!parent) return;
 
-        const N = 600, pts = [];
+        const N = 2000, pts = [];
         const orbitRad = moonOrbitDisplayRadius(m);
         for (let i = 0; i <= N; i++) {
           const nu = (i / N) * 2 * Math.PI;
@@ -3524,9 +3540,12 @@
           }
         });
 
-        // Camera follows focused planet
-        if (focusedPlanet && planetMeshes[focusedPlanet]) {
-          camTarget.copy(planetMeshes[focusedPlanet].position);
+        // Camera follows focused planet or moon
+        if (focusedPlanet) {
+          const focusedMesh = planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet];
+          if (focusedMesh) {
+            camTarget.copy(focusedMesh.position);
+          }
         }
       }
 
@@ -3765,7 +3784,7 @@
             case 'zoom-in':
               focusedPlanet = body;  // Lock camera to this body
               lastDoubleClickTime = Date.now();  // Record when focus was set
-              const bodyMesh = planetMeshes[body];
+              const bodyMesh = planetMeshes[body] || moonMeshes[body];
               if (bodyMesh) {
                 camTarget.copy(bodyMesh.position);
                 camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));

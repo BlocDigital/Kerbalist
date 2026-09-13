@@ -7,12 +7,18 @@ All notable changes to Kerbalist will be documented in this file.
 ### Fixed
 
 - **Moon Transfer Visualization Bug (Critical)**: Fixed a coordinate double-counting bug where any transfer involving a moon as origin or destination rendered the ghost arrival marker, dashed arrival line, transfer arc, and return trip lines in completely wrong positions—often roughly twice as far from the sun as they should be. Planet-to-planet transfers were unaffected.
+- **Moon Camera Lock**: Double-clicking a moon or using the right-click "Zoom in" context menu action would set the camera focus target but never actually track it. The per-frame camera-follow logic and the context-menu zoom handler only looked up the target in the planet mesh dictionary, not the moon mesh dictionary. Both now check both, so locking onto a moon works the same as locking onto a planet.
+- **Orbit Line Polygon Count Increased Further**: Planets and moons could still visibly drift off their orbit lines at extreme zoom even after the previous segment-count increase. Planet orbit lines raised from 1200 to 4000 segments and moon orbit lines from 600 to 2000 segments for a smooth curve across the full zoom range.
+- **Drast Rendering Fused With Dres**: Drast's real semi-major axis in the KSP2 Redux moon data (43,400 m) is smaller than Dres's own physical radius, so Drast's sphere and label were rendering fused inside Dres. Moon orbit display radius is now clamped to stay outside 1.3× its parent planet's physical radius, so Drast (or any similarly affected moon) always renders clearly outside its parent.
+- **Deeper Zoom Range**: Lowered the minimum camera distance from 0.02 to 0.012 world units, allowing roughly 4-5 additional scroll-wheel zoom-in steps beyond the previous limit.
 
 ### Technical Details
 
 - Root cause: moonLocalPosition() returns a moon's full world-space position (parent position already added internally), but bodyWorldPositionAt() was adding the parent's position a second time on top of that result.
 - bodyWorldPositionAt() now calls moonLocalPosition() directly for moons without re-adding the parent offset.
 - This single fix corrects every visualization that depends on bodyWorldPositionAt() for a moon: ghost arrival marker, dashed arrival line, transfer arc, and return trip overlay lines.
+- updateMap()'s per-frame camera-follow check and the context menu's zoom-in handler now resolve the focused body via `planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet]`.
+- moonOrbitDisplayRadius() now returns `Math.max(rawOrbitRadius, parentPhysicalRadius * 1.3)`, and the Dres ring's inner-radius calculation now reuses this same clamped function instead of its own separate clamp.
 
 ### Known Issues
 
