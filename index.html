@@ -198,6 +198,268 @@
       background: #164048;
     }
 
+    /* === KERBOL CALENDAR MODAL === */
+    .cal-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(4, 7, 15, .85);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .cal-modal.open {
+      display: flex;
+    }
+    .cal-modal-content {
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      width: 380px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .7);
+      overflow: hidden;
+    }
+    .cal-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--panel2);
+      border-bottom: 1px solid var(--border);
+    }
+    .cal-modal-header h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .cal-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .cal-modal-close:hover {
+      color: var(--red);
+      background: rgba(248, 81, 73, .12);
+    }
+    .cal-modal-body {
+      padding: 16px;
+    }
+    .cal-year-input {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .cal-year-field {
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      width: 100px;
+      padding: 8px 4px;
+      outline: none;
+    }
+    .cal-year-field::-webkit-inner-spin-button,
+    .cal-year-field::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .cal-year-field {
+      -moz-appearance: textfield;
+    }
+    .cal-year-label {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .cal-season-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .cal-season-btn {
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 10px;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .12s;
+    }
+    .cal-season-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+      background: var(--panel2);
+    }
+    .cal-season-display {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--amber);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-align: center;
+      min-width: 160px;
+    }
+    .cal-month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+    .cal-day-header {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dimmer);
+      text-align: center;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 0;
+    }
+    .cal-day {
+      background: var(--panel3);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      text-align: center;
+      padding: 8px 4px;
+      cursor: pointer;
+      transition: .12s;
+      user-select: none;
+    }
+    .cal-day:hover {
+      color: var(--text);
+      border-color: var(--border-bright);
+      background: var(--panel2);
+    }
+    .cal-day.selected {
+      background: #123339;
+      border-color: var(--cyan-dim);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .cal-day.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+      color: transparent;
+    }
+    .cal-season-indicator {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .cal-season-bar {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+    }
+    .cal-season-bar.active {
+      background: var(--amber);
+      box-shadow: 0 0 6px var(--amber);
+    }
+    .cal-time-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .cal-time-field {
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      text-align: center;
+      width: 50px;
+      padding: 6px 4px;
+      outline: none;
+    }
+    .cal-time-field::-webkit-inner-spin-button,
+    .cal-time-field::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .cal-time-field {
+      -moz-appearance: textfield;
+    }
+    .cal-time-sep {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      color: var(--text-dimmer);
+    }
+    .cal-apply-row {
+      display: flex;
+      gap: 8px;
+    }
+    .cal-apply-btn {
+      flex: 1;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-dim);
+      color: var(--cyan);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: .12s;
+    }
+    .cal-apply-btn:hover {
+      background: #164048;
+    }
+    .cal-apply-btn.primary {
+      background: linear-gradient(180deg, #123339, #0c2226);
+      border-color: var(--cyan-dim);
+    }
+    .cal-apply-btn.primary:hover {
+      background: linear-gradient(180deg, #164048, #0f2a2f);
+      box-shadow: 0 0 12px rgba(79, 224, 232, .15);
+    }
+    .cal-apply-btn.secondary {
+      background: var(--panel2);
+      border-color: var(--border);
+      color: var(--text-dim);
+    }
+    .cal-apply-btn.secondary:hover {
+      color: var(--text);
+      border-color: var(--border-bright);
+    }
+
     .live-sync-wrap {
       position: relative;
     }
@@ -1809,17 +2071,7 @@
         <div><span class="label">UT</span><br><span class="value" id="utValue">T+0y,0d,00:00:00</span></div>
       </div>
       <div class="ut-sync">
-        <span class="label">Sync to save (T+)</span>
-        <input type="number" id="setYear" class="narrow" min="0" value="0" title="Years elapsed">
-        <span class="sep">y</span>
-        <input type="number" id="setDay" min="0" max="425" value="0" title="Days elapsed (0-425)">
-        <span class="sep">d</span>
-        <input type="number" id="setHour" class="narrow" min="0" max="23" value="0" title="Hour">
-        <span class="sep">:</span>
-        <input type="number" id="setMin" class="narrow" min="0" max="59" value="0" title="Minute">
-        <span class="sep">:</span>
-        <input type="number" id="setSec" class="narrow" min="0" max="59" value="0" title="Second">
-        <button id="setUtBtn">Set</button>
+        <button id="calOpenBtn" title="Set Kerbol time">☰ Set Time</button>
       </div>
       <div class="warp-controls" id="warpControls"></div>
       <div class="live-sync-wrap">
@@ -4203,13 +4455,30 @@
       const mainEl = document.querySelector('.main');
       let mobileView = 'map'; // 'map' or 'controls'
 
+      let isMobileView = false;
+
       function isMobile() {
         return window.innerWidth <= 600;
+      }
+
+      function resizeMobileMap() {
+        // Force Three.js to re-measure the canvas when it was previously hidden
+        if (typeof resizeObserverCleanup === 'function') resizeObserverCleanup();
+        const mapWrap = document.getElementById('mapWrap');
+        if (!mapWrap) return;
+        const canvas = document.getElementById('mapCanvas');
+        const w = mapWrap.clientWidth;
+        const h = mapWrap.clientHeight;
+        if (w <= 0 || h <= 0) return;
+        canvas.width = w;
+        canvas.height = h;
+        if (window.__kerbalistResize) window.__kerbalistResize();
       }
 
       function updateMobileView(forceView) {
         if (!isMobile()) {
           // On desktop, always show both
+          isMobileView = false;
           if (sidebarEl) sidebarEl.classList.remove('mobile-visible');
           if (mainEl) mainEl.classList.remove('mobile-show-sidebar');
           mobileMapBtn && mobileMapBtn.classList.remove('active');
@@ -4217,6 +4486,7 @@
           return;
         }
 
+        isMobileView = true;
         const view = forceView || mobileView;
 
         if (view === 'map') {
@@ -4224,6 +4494,10 @@
           mainEl && mainEl.classList.remove('mobile-show-sidebar');
           if (mobileMapBtn) mobileMapBtn.classList.add('active');
           if (mobileControlsBtn) mobileControlsBtn.classList.remove('active');
+          // Give the display:none removal time to apply, then resize
+          requestAnimationFrame(() => {
+            requestAnimationFrame(resizeMobileMap);
+          });
         } else {
           sidebarEl && sidebarEl.classList.add('mobile-visible');
           mainEl && mainEl.classList.add('mobile-show-sidebar');
@@ -4304,18 +4578,237 @@
       resetBtn.onclick = () => { UT = 0; };
       warpWrap.appendChild(resetBtn);
 
-      document.getElementById('setUtBtn').onclick = () => {
-        const y = Math.max(0, parseInt(document.getElementById('setYear').value) || 0);
-        const d = Math.max(0, Math.min(YEAR_DAYS - 1, parseInt(document.getElementById('setDay').value) || 0));
-        const h = Math.max(0, Math.min(23, parseInt(document.getElementById('setHour').value) || 0));
-        const mi = Math.max(0, Math.min(59, parseInt(document.getElementById('setMin').value) || 0));
-        const s = Math.max(0, Math.min(59, parseInt(document.getElementById('setSec').value) || 0));
-        UT = y * YEAR_DAYS * DAY_SEC + d * DAY_SEC + h * 3600 + mi * 60 + s;
+      /* =========================================================
+
+      /* =========================================================
+
+      /* =========================================================
+         UT SYNC — Kerbol Calendar Modal
+         UT does NOT auto-update — user must click Apply
+         ========================================================= */
+      const calModal = document.getElementById('calModal');
+      const calOpenBtn = document.getElementById('calOpenBtn');
+      const calCloseBtn = document.getElementById('calCloseBtn');
+      const calCancelBtn = document.getElementById('calCancelBtn');
+      const calApplyBtn = document.getElementById('calApplyBtn');
+      const calYearInput = document.getElementById('calYearInput');
+      const calSeasonDisplay = document.getElementById('calSeasonDisplay');
+      const calSeasonBar = document.getElementById('calSeasonBar');
+      const calMonthGrid = document.getElementById('calMonthGrid');
+      const calHour = document.getElementById('calHour');
+      const calMin = document.getElementById('calMin');
+      const calSec = document.getElementById('calSec');
+      const calSeasonPrev = document.getElementById('calSeasonPrev');
+      const calSeasonNext = document.getElementById('calSeasonNext');
+
+      const KERBOL_SEASONS = [
+        { name: 'Vernal Equinox', start: 0, color: '#7ee787' },
+        { name: 'Summer Solstice', start: 106, color: '#ffb454' },
+        { name: 'Autumnal Equinox', start: 213, color: '#ff6b6b' },
+        { name: 'Winter Solstice', start: 319, color: '#b78cff' }
+      ];
+
+      let calendarState = {
+        year: 0,
+        dayOfYear: 0,
+        hour: 0,
+        min: 0,
+        sec: 0
+      };
+
+      function getSeasonForDay(doy) {
+        let season = KERBOL_SEASONS[KERBOL_SEASONS.length - 1];
+        for (const s of KERBOL_SEASONS) {
+          if (doy >= s.start) season = s;
+        }
+        return season;
+      }
+
+      function getSeasonProgress(doy) {
+        const season = getSeasonForDay(doy);
+        const nextSeasonStart = KERBOL_SEASONS[KERBOL_SEASONS.indexOf(season) + 1]
+          ? KERBOL_SEASONS[KERBOL_SEASONS.indexOf(season) + 1].start
+          : YEAR_DAYS;
+        return (doy - season.start) / (nextSeasonStart - season.start);
+      }
+
+      function renderCalendarMonth() {
+        const { year, dayOfYear } = calendarState;
+
+        // Update season display
+        const season = getSeasonForDay(dayOfYear);
+        const seasonIdx = KERBOL_SEASONS.indexOf(season);
+        calSeasonDisplay.textContent = season.name;
+        calSeasonDisplay.style.color = season.color;
+
+        // Update season progress bar
+        const progress = getSeasonProgress(dayOfYear);
+        const bars = calSeasonBar.querySelectorAll('.cal-season-bar');
+        bars.forEach((bar, idx) => {
+          bar.classList.toggle('active', idx === seasonIdx);
+          if (idx === seasonIdx) {
+            bar.style.width = (progress * 100) + '%';
+          } else {
+            bar.style.width = '0%';
+          }
+        });
+
+        // Clear and rebuild grid
+        calMonthGrid.innerHTML = '';
+
+        // ONLY show current season's days (not all 425)
+        const seasonStart = season.start;
+        const seasonEnd = (seasonIdx < KERBOL_SEASONS.length - 1)
+          ? KERBOL_SEASONS[seasonIdx + 1].start
+          : YEAR_DAYS;
+        const seasonDays = seasonEnd - seasonStart; // ~106 days per season
+
+        // Headers (1-7)
+        for (let d = 1; d <= 7; d++) {
+          const hdr = document.createElement('div');
+          hdr.className = 'cal-day-header';
+          hdr.textContent = d;
+          calMonthGrid.appendChild(hdr);
+        }
+
+        // Show current season's days in grid (7 columns)
+        const totalCells = Math.ceil(seasonDays / 7) * 7;
+        for (let i = 0; i < totalCells; i++) {
+          const dayNum = i + 1;
+          const cell = document.createElement('div');
+          cell.className = 'cal-day';
+
+          if (dayNum <= seasonDays) {
+            const seasonDayIndex = dayNum - 1; // 0-based within season
+            const actualDayOfYear = seasonStart + seasonDayIndex;
+            const isSelected = actualDayOfYear === dayOfYear && year === calendarState.year;
+            
+            if (isSelected) cell.classList.add('selected');
+            cell.textContent = actualDayOfYear + 1;
+            cell.onclick = () => {
+              calendarState.dayOfYear = actualDayOfYear;
+              renderCalendarMonth();
+            };
+          } else {
+            cell.classList.add('empty');
+          }
+
+          calMonthGrid.appendChild(cell);
+        }
+      }
+
+
+      function openCalendar() {
+        // Capture year + day-of-year from current UT; reset time to midnight
+        const totalSecondsInYear = YEAR_DAYS * DAY_SEC;
+        calendarState.year = Math.floor(UT / totalSecondsInYear);
+        const remainingSeconds = UT % totalSecondsInYear;
+        calendarState.dayOfYear = Math.floor(remainingSeconds / DAY_SEC);
+        calendarState.hour = 0;
+        calendarState.min = 0;
+        calendarState.sec = 0;
+
+        // Populate fields
+        calYearInput.value = calendarState.year.toString();
+        calHour.value = '00';
+        calMin.value = '00';
+        calSec.value = '00';
+
+        // Render
+        renderCalendarMonth();
+  
+        // Show modal
+        calModal.classList.add('open');
+      }
+
+      function closeCalendar() {
+        calModal.classList.remove('open');
+      }
+
+      function applyCalendar() {
+        // Validate and apply
+        let year = parseInt(calYearInput.value) || 0;
+        year = Math.max(0, Math.min(999, year));
+        
+        let hour = parseInt(calHour.value) || 0;
+        hour = Math.max(0, Math.min(23, hour));
+        
+        let min = parseInt(calMin.value) || 0;
+        min = Math.max(0, Math.min(59, min));
+        
+        let sec = parseInt(calSec.value) || 0;
+        sec = Math.max(0, Math.min(59, sec));
+
+        // Calculate UT
+        const totalSecondsInYear = YEAR_DAYS * DAY_SEC;
+        UT = year * totalSecondsInYear + calendarState.dayOfYear * DAY_SEC + hour * 3600 + min * 60 + sec;
+
+        // Update UT display
+        document.getElementById('utValue').textContent = utToDateString(UT);
+
+        // Recalculate transfer if active
         if (currentResult) {
           currentResult = computeTransfer(currentResult.originSelected.name, currentResult.destSelected.name);
           renderTransferResults();
         }
+
+        closeCalendar();
+      }
+
+      // Event listeners
+      calOpenBtn.onclick = openCalendar;
+      calCloseBtn.onclick = closeCalendar;
+      calCancelBtn.onclick = closeCalendar;
+      calApplyBtn.onclick = applyCalendar;
+
+      // Season navigation
+      calSeasonPrev.onclick = () => {
+        calendarState.dayOfYear -= 106; // Move back by one season
+        if (calendarState.dayOfYear < 0) {
+          calendarState.dayOfYear = 0;
+        }
+        renderCalendarMonth();
       };
+
+      calSeasonNext.onclick = () => {
+        calendarState.dayOfYear += 106; // Move forward by one season
+        if (calendarState.dayOfYear >= YEAR_DAYS) {
+          calendarState.dayOfYear = YEAR_DAYS - 1;
+        }
+        renderCalendarMonth();
+      };
+
+      // Year field - only allow numbers, no spinners
+      calYearInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        if (e.target.value.length > 3) {
+          e.target.value = e.target.value.slice(0, 3);
+        }
+      });
+
+      // Time fields - digits only + per-field clamp
+      function clampField(field, maxVal) {
+        const v = field.value.replace(/[^0-9]/g, '');
+        if (v === '') { field.value = ''; return; }
+        const n = parseInt(v, 10);
+        if (n > maxVal) field.value = maxVal.toString();
+        else field.value = v;
+      }
+      calHour.addEventListener('input', () => clampField(calHour, 23));
+      calMin.addEventListener('input', () => clampField(calMin, 59));
+      calSec.addEventListener('input', () => clampField(calSec, 59));
+
+      // Close modal on overlay click
+      calModal.addEventListener('click', (e) => {
+        if (e.target === calModal) closeCalendar();
+      });
+
+      // Close modal on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && calModal.classList.contains('open')) {
+          closeCalendar();
+        }
+      });
 
       /* =========================================================
          LIVE SYNC — keep UT locked to a running KSP2 session
@@ -5242,6 +5735,64 @@
 
     })(THREE);
   </script>
+  <!-- Kerbol Calendar Modal -->
+  <div class="cal-modal" id="calModal">
+    <div class="cal-modal-content">
+      <div class="cal-modal-header">
+        <h3>Kerbol Calendar</h3>
+        <button class="cal-modal-close" id="calCloseBtn">×</button>
+      </div>
+      <div class="cal-modal-body">
+        <!-- Year input (3 digits, no spinners) -->
+        <div class="cal-year-input">
+          <input type="text" class="cal-year-field" id="calYearInput" maxlength="3" value="0" inputmode="numeric" pattern="[0-9]*" title="Kerbal Year">
+          <span class="cal-year-label">Year</span>
+        </div>
+
+        <!-- Season navigation -->
+        <div class="cal-season-nav">
+          <button class="cal-season-btn" id="calSeasonPrev">◀</button>
+          <div class="cal-season-display" id="calSeasonDisplay">Vernal Equinox</div>
+          <button class="cal-season-btn" id="calSeasonNext">▶</button>
+        </div>
+
+        <!-- Season progress bar -->
+        <div class="cal-season-indicator" id="calSeasonBar">
+          <div class="cal-season-bar active"></div>
+          <div class="cal-season-bar"></div>
+          <div class="cal-season-bar"></div>
+          <div class="cal-season-bar"></div>
+        </div>
+
+        <!-- Day-of-year grid (425 days, shown as 1-7 in 7-row months) -->
+        <div class="cal-month-grid" id="calMonthGrid">
+          <div class="cal-day-header">1</div>
+          <div class="cal-day-header">2</div>
+          <div class="cal-day-header">3</div>
+          <div class="cal-day-header">4</div>
+          <div class="cal-day-header">5</div>
+          <div class="cal-day-header">6</div>
+          <div class="cal-day-header">7</div>
+        </div>
+
+        <!-- Time input -->
+        <div class="cal-time-row">
+          <input type="text" class="cal-time-field" id="calHour" maxlength="2" value="00" inputmode="numeric" pattern="[0-9]*">
+          <span class="cal-time-sep">:</span>
+          <input type="text" class="cal-time-field" id="calMin" maxlength="2" value="00" inputmode="numeric" pattern="[0-9]*">
+          <span class="cal-time-sep">:</span>
+          <input type="text" class="cal-time-field" id="calSec" maxlength="2" value="00" inputmode="numeric" pattern="[0-9]*">
+        </div>
+
+        <!-- Apply/Cancel -->
+        <div class="cal-apply-row">
+          <button class="cal-apply-btn secondary" id="calCancelBtn">Cancel</button>
+          <button class="cal-apply-btn primary" id="calApplyBtn">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
