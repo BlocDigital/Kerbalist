@@ -7,7 +7,7 @@
 
 **Live sync-capable* transfer calculator with optional gravity assist optimization.**
 
-Current version: **v3.5.0**
+Current version: **v3.5.5**
 
 *WIP
 
@@ -86,6 +86,7 @@ Type into the **Sync to save** boxes and hit **Set**.
 | **Scroll wheel** | Zoom in/out |
 | **Click and drag** | Rotate orbit view |
 | **Shift + drag** | Pan view |
+| **Middle-click (MMB) + drag** | Pan view |
 | **+/- buttons** | Zoom controls |
 | **Reset button** | Reset to full view |
 | **Click planet or moon** | Open body info |

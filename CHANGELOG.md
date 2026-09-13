@@ -17,6 +17,7 @@ All notable changes to Kerbalist will be documented in this file.
 ### Known Issues
 
 - **Orbital Drift After 1-2 Years**: Planetary orbits begin to drift noticeably after approximately 1-2 in-game years from the reference UT.
+- **kRPC2 Dependency Mod Doesn't Work**: The kRPC2 dependency mod on the KSP2 side does not work yet — the Python bridge (`kerbalist_bridge.py`) cannot connect to KSP2 because the required server-side mod is not functional.
 
 ## [3.5.4] - 2026-09-12
 
