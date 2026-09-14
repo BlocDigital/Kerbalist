@@ -44,10 +44,11 @@ Current version: **v3.6.1**
 
 ### Basic Transfer
 1. Open **index.html** in your browser.
-2. Select **Origin** and **Destination** from the top dropdowns.
-3. Click **Plan Transfer** to compute the direct route.
-4. The map shows the transfer arc.
-5. Check the **Transfer** tab for delta-v, flight time, and window countdown.
+2. Set your ingame UT time.
+3. Select **Origin** and **Destination** from the top dropdowns.
+4. Click **Plan Transfer** to compute the direct route.
+5. The map shows the transfer arc.
+6. Check the **Transfer** tab for delta-v, flight time, and window countdown.
 
 ### Gravity Assists
 1. After planning a transfer, open the **Assist Options** tab.
@@ -59,7 +60,7 @@ Current version: **v3.6.1**
 2. Generate a departure-date vs. flight-time grid.
 3. Inspect lower-delta-v transfer options from the plotted solutions.
 
-### Sync to Your Save
+### Sync to Your Save **WORK IN PROGRESS**
 
 #### Option A: Save-File Watcher
 1. Click **Live Sync** in the header.
