@@ -508,6 +508,29 @@
       background: var(--red);
     }
 
+    .set-time-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: .05em;
+      padding: 7px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: .12s;
+    }
+
+    .set-time-btn:hover {
+      border-color: var(--border-bright);
+      color: var(--text);
+    }
+
     @keyframes pulse {
 
       0%,
@@ -1854,10 +1877,6 @@
         display: none;
       }
 
-      .ut-sync {
-        display: none;
-      }
-
       .warp-controls {
         display: none;
       }
@@ -1942,18 +1961,29 @@
         padding: 0 6px !important;
       }
 
-      /* Select rows: stack */
+      /* Select rows: dropdowns + swap side by side */
       .select-row {
-        flex-direction: column;
-        padding: 12px 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 10px 8px;
         gap: 6px;
       }
 
+      .select-row .field {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .select-row select {
+        font-size: 14px;
+        padding: 8px 8px;
+      }
+
       .swap-btn {
-        align-self: center;
         width: 36px;
         height: 36px;
-        font-size: 16px;
+        font-size: 18px;
+        margin-top: auto;
       }
 
       /* Transfer actions: stack */
@@ -2070,11 +2100,9 @@
       <div class="ut-clock">
         <div><span class="label">UT</span><br><span class="value" id="utValue">T+0y,0d,00:00:00</span></div>
       </div>
-      <div class="ut-sync">
-        <button id="calOpenBtn" title="Set Kerbol time">☰ Set Time</button>
-      </div>
       <div class="warp-controls" id="warpControls"></div>
       <div class="live-sync-wrap">
+        <button id="calOpenBtn" title="Set Kerbol time" class="set-time-btn">☰ Set Time</button>
         <button class="live-btn" id="liveBtn"><span class="pip"></span>Live Sync</button>
         <div class="live-panel" id="livePanel">
           <h4>Sync UT with a running KSP2</h4>
@@ -4463,16 +4491,19 @@
 
       function resizeMobileMap() {
         // Force Three.js to re-measure the canvas when it was previously hidden
-        if (typeof resizeObserverCleanup === 'function') resizeObserverCleanup();
+        if (typeof resizeRenderer === 'function') {
+          resizeRenderer();
+        }
         const mapWrap = document.getElementById('mapWrap');
-        if (!mapWrap) return;
         const canvas = document.getElementById('mapCanvas');
-        const w = mapWrap.clientWidth;
-        const h = mapWrap.clientHeight;
-        if (w <= 0 || h <= 0) return;
-        canvas.width = w;
-        canvas.height = h;
-        if (window.__kerbalistResize) window.__kerbalistResize();
+        if (mapWrap && canvas) {
+          const w = mapWrap.clientWidth || canvas.width;
+          const h = mapWrap.clientHeight || canvas.height;
+          if (w > 0 && h > 0) {
+            canvas.width = w;
+            canvas.height = h;
+          }
+        }
       }
 
       function updateMobileView(forceView) {
@@ -4526,6 +4557,29 @@
 
       // Initial state
       updateMobileView();
+
+      // MutationObserver: detect when mobile view switches back to map
+      // (i.e., when .mobile-show-sidebar is REMOVED from .main)
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'class' && mainEl) {
+            if (!mainEl.classList.contains('mobile-show-sidebar')) {
+              // Map is becoming visible — give CSS transition time, then resize
+              setTimeout(() => {
+                resizeMobileMap();
+              }, 100);
+            }
+          }
+        });
+      });
+      observer.observe(mainEl, { attributes: true, attributeFilter: ['class'] });
+
+      // Resize handler: re-render when the window itself is resized
+      window.addEventListener('resize', () => {
+        if (isMobile()) {
+          resizeMobileMap();
+        }
+      });
 
       /* =========================================================
          5. UI SETUP
