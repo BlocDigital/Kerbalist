@@ -2248,7 +2248,7 @@
           <button id="zoomReset">⤾</button>
         </div>
         <div class="bottom-left-bar">
-          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6
+          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6.1
           </div>
           <div class="bmc-wrap" id="bmcWrap">
             <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
@@ -2417,6 +2417,64 @@
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
         <p>All notable changes to Kerbalist will be documented in this file.</p>
+
+        <h2>[3.6.1] - 2026-09-14</h2>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Double-Click Body Info Sync</strong>: Double-clicking a planet or moon label on the map now updates
+            the Body Info panel to show the selected body's data and switches to the Body Info tab. Previously the
+            camera would zoom to the body but the info panel remained showing the previously selected body.</li>
+        </ul>
+
+        <h2>[3.6] - 2026-09-13</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Full Mobile Responsive Design</strong>: Kerbalist now works great on phones and tablets. On small
+            screens, a Map / Controls toggle lets you view the 3D map or the sidebar controls — whichever you need.
+            The map stays fully interactive with touch controls (1-finger rotate, 2-finger zoom &amp; pan). Sidebar
+            elements are touch-friendly with larger tap targets, compact layouts, and smooth scrolling.</li>
+        </ul>
+
+        <h2>[3.5.6] - 2026-09-13</h2>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Moon Transfer Visualization Bug (Critical)</strong>: Fixed a coordinate double-counting bug where
+            transfers involving a moon rendered ghost arrival markers, dashed lines, transfer arcs, and return lines
+            in incorrect positions—often roughly twice as far from the sun. Planet-to-planet transfers were unaffected.</li>
+          <li><strong>Moon Camera Lock</strong>: Fixed moon tracking when double-clicking or using right-click &quot;Zoom in&quot;
+            context menu action. Camera-follow and context-menu logic now check both planet and moon meshes.</li>
+          <li><strong>Orbit Line Polygon Count Increased</strong>: Planet orbit lines raised from 1200 to 4000 segments
+            and moon lines from 600 to 2000, preventing visible drift at extreme zoom.</li>
+          <li><strong>Drast Rendering Fused With Dres</strong>: Moon orbit display radius now clamps to 1.3× its parent
+            planet's physical radius, keeping Drast and similar moons clearly outside their parent.</li>
+          <li><strong>Deeper Zoom Range</strong>: Lowered minimum camera distance from 0.02 to 0.012 world units,
+            adding roughly 4–5 zoom-in steps.</li>
+        </ul>
+
+        <h3>Technical Details</h3>
+        <ul>
+          <li>Root cause: moonLocalPosition() returns a moon's full world-space position (parent position already added
+            internally), but bodyWorldPositionAt() was adding the parent's position a second time on top of that result.
+          </li>
+          <li>bodyWorldPositionAt() now calls moonLocalPosition() directly for moons without re-adding the parent
+            offset.</li>
+          <li>This single fix corrects every visualization that depends on bodyWorldPositionAt() for a moon: ghost
+            arrival marker, dashed arrival line, transfer arc, and return trip overlay lines.</li>
+          <li>updateMap()'s per-frame camera-follow check and the context menu's zoom-in handler now resolve the focused
+            body via <code>planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet]</code>.</li>
+          <li>moonOrbitDisplayRadius() now returns <code>Math.max(rawOrbitRadius, parentPhysicalRadius * 1.3)</code>,
+            and the Dres ring's inner-radius calculation now reuses this same clamped function instead of its own
+            separate clamp.</li>
+        </ul>
+
+        <h3>Known Issues</h3>
+        <ul>
+          <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after
+            approximately 1-2 in-game years from the reference UT.</li>
+          <li><strong>kRPC2 Dependency Mod Doesn't Work</strong>: The kRPC2 dependency mod on the KSP2 side does not
+            work yet — the Python bridge (<code>kerbalist_bridge.py</code>) cannot connect to KSP2 because the required
+            server-side mod is not functional.</li>
+        </ul>
 
         <h2>[3.5.5] - 2026-09-12</h2>
         <h3>Fixed</h3>
@@ -3704,7 +3762,7 @@
           }
         });
 
-        // Double-click on label to lock camera
+        // Double-click on label to lock camera and show body info
         div.addEventListener('dblclick', (e) => {
           e.stopPropagation();
           focusedPlanet = p.name;
@@ -3712,6 +3770,8 @@
           camTarget.copy(planetMeshes[p.name].position);
           camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
           updateCamera();
+          showInfoFor(p.name);
+          switchTab('info');
         });
 
         // Right-click on label for context menu
@@ -3816,7 +3876,7 @@
           }
         });
 
-        // Double-click on moon label to lock camera
+        // Double-click on moon label to lock camera and show body info
         div.addEventListener('dblclick', (e) => {
           e.stopPropagation();
           focusedPlanet = m.name;
@@ -3824,6 +3884,8 @@
           camTarget.copy(moonMeshes[m.name].position);
           camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
           updateCamera();
+          showInfoFor(m.name);
+          switchTab('info');
         });
 
         // Right-click on moon label for context menu

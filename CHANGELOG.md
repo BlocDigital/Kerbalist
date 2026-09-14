@@ -2,6 +2,12 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [3.6.1] - 2026-09-14
+
+### Fixed
+
+- **Double-Click Body Info Sync**: Double-clicking a planet or moon label on the map now updates the Body Info panel to show the selected body's data and switches to the Body Info tab. Previously the camera would zoom to the body but the info panel remained stale.
+
 ## [3.6] - 2026-09-13
 
 ### Added
