@@ -15,6 +15,10 @@ venv/
 .vscode/
 *.swp
 *.swo
+.hermes/
+
+# Docs
+docs/
 
 # OS
 .DS_Store
