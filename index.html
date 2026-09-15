@@ -729,6 +729,7 @@
       flex: 1 1 auto;
       display: flex;
       min-height: 0;
+      flex-direction: row;
     }
 
     .map-wrap {
@@ -2028,6 +2029,7 @@
         max-height: 60vh !important;
         overflow-y: auto;
         padding-bottom: env(safe-area-inset-bottom, 0);
+        padding: 12px 10px !important;
       }
 
       .sidebar.mobile-visible .tabs {
@@ -2040,6 +2042,11 @@
       /* Hide map when controls are visible */
       .main.mobile-show-sidebar .map-wrap {
         display: none;
+      }
+
+      /* Hide legend on mobile when controls tab is active */
+      .legend.mobile-hidden {
+        display: none !important;
       }
 
       /* Hide shortcuts on mobile */
@@ -2160,6 +2167,11 @@
         bottom: 60px;
       }
 
+      /* Legend hide/show on mobile */
+      .legend.mobile-hidden {
+        display: none !important;
+      }
+
       /* Map version */
       .map-version {
         font-size: 10px;
@@ -2255,7 +2267,8 @@
           <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
           <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
           <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
-          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest, zoom)</span></div>
+          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest,
+              zoom)</span></div>
         </div>
         <div class="zoom-controls">
           <button id="zoomIn">+</button>
@@ -2263,162 +2276,162 @@
           <button id="zoomReset">⤾</button>
         </div>
         <div class="bottom-left-bar">
-          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6.3</div>
-          </div>
-          <div class="bmc-wrap" id="bmcWrap">
-            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
-              data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic"
-              data-text="Buy me a beer" data-outline-color="#000000" data-font-color="#000000"
-              data-coffee-color="#FFDD00"></script>
+          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6.3
           </div>
         </div>
-        <div class="legend">
-          <span><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</span>
-          <span><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</span>
-          <span><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</span>
-          <span><span class="dot" style="background:var(--green)"></span>Departure ghost</span>
-          <span><span class="dot"
-              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
-            ghost</span>
-          <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
+        <div class="bmc-wrap" id="bmcWrap">
+          <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+            data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic"
+            data-text="Buy me a beer" data-outline-color="#000000" data-font-color="#000000"
+            data-coffee-color="#FFDD00"></script>
         </div>
+      </div>
+      <div class="legend">
+        <span><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</span>
+        <span><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</span>
+        <span><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</span>
+        <span><span class="dot" style="background:var(--green)"></span>Departure ghost</span>
+        <span><span class="dot"
+            style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
+          ghost</span>
+        <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
+      </div>
 
-        <!-- Context Menu (Right-Click) -->
-        <div class="context-menu" id="contextMenu">
-          <div class="context-menu-item" data-action="zoom-in">Zoom in on planet</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="set-origin">Set as Origin</div>
-          <div class="context-menu-item" data-action="set-dest">Set as Destination</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="clear-origin">Clear Origin</div>
-          <div class="context-menu-item" data-action="clear-dest">Clear Destination</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="reset-zoom">Reset Zoom</div>
-          <div class="context-menu-divider"></div>
-          <div class="context-menu-item" data-action="show-info">Show Body Info</div>
+      <!-- Context Menu (Right-Click) -->
+      <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" data-action="zoom-in">Zoom in on planet</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="set-origin">Set as Origin</div>
+        <div class="context-menu-item" data-action="set-dest">Set as Destination</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="clear-origin">Clear Origin</div>
+        <div class="context-menu-item" data-action="clear-dest">Clear Destination</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="reset-zoom">Reset Zoom</div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="show-info">Show Body Info</div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="select-row">
+        <div class="field">
+          <label>Origin</label>
+          <select id="originSelect"></select>
+        </div>
+        <button class="swap-btn" id="swapBtn" title="Swap origin/destination">⇄</button>
+        <div class="field">
+          <label>Destination</label>
+          <select id="destSelect"></select>
         </div>
       </div>
 
-      <div class="sidebar">
-        <div class="select-row">
-          <div class="field">
-            <label>Origin</label>
-            <select id="originSelect"></select>
+      <!-- Google AdSense Sponsor Card — hidden until AdSense is configured -->
+      <div class="card" style="margin: 0 14px 11px; text-align: center; display:none;">
+        <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Sponsor</h3>
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5297704957311927"
+          data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+        <div class="note">Note: Replace data-ad-slot="1234567890" with your actual display ad unit ID.</div>
+      </div>
+
+      <div class="transfer-actions">
+        <button class="plan-btn" id="planBtn">Plan Transfer</button>
+        <button class="clear-transfer-btn" id="clearTransferBtn" title="Clear transfer overlays">Clear</button>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="transfer">Transfer</div>
+        <div class="tab" data-tab="assists">Assists</div>
+        <div class="tab" data-tab="porkchop">Porkchop</div>
+        <div class="tab" data-tab="info">Body Info</div>
+      </div>
+
+      <div class="tab-panels">
+
+        <div class="tab-panel active" id="panel-transfer">
+          <div id="transferResults">
+            <div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a
+              Hohmann-style transfer window.</div>
           </div>
-          <button class="swap-btn" id="swapBtn" title="Swap origin/destination">⇄</button>
-          <div class="field">
-            <label>Destination</label>
-            <select id="destSelect"></select>
-          </div>
         </div>
 
-        <!-- Google AdSense Sponsor Card — hidden until AdSense is configured -->
-        <div class="card" style="margin: 0 14px 11px; text-align: center; display:none;">
-          <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Sponsor</h3>
-          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5297704957311927"
-            data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
-          <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-          </script>
-          <div class="note">Note: Replace data-ad-slot="1234567890" with your actual display ad unit ID.</div>
-        </div>
-
-        <div class="transfer-actions">
-          <button class="plan-btn" id="planBtn">Plan Transfer</button>
-          <button class="clear-transfer-btn" id="clearTransferBtn" title="Clear transfer overlays">Clear</button>
-        </div>
-
-        <div class="tabs">
-          <div class="tab active" data-tab="transfer">Transfer</div>
-          <div class="tab" data-tab="assists">Assists</div>
-          <div class="tab" data-tab="porkchop">Porkchop</div>
-          <div class="tab" data-tab="info">Body Info</div>
-        </div>
-
-        <div class="tab-panels">
-
-          <div class="tab-panel active" id="panel-transfer">
-            <div id="transferResults">
-              <div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a
-                Hohmann-style transfer window.</div>
+        <div class="tab-panel" id="panel-assists">
+          <div class="card">
+            <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity
+              Assist Routes</h3>
+            <div id="assistList">
+              <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a
+                flyby, it'll show up here as an optional route.</div>
             </div>
+            <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and
+              comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories
+              also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not
+              a flight plan.</div>
           </div>
+        </div>
 
-          <div class="tab-panel" id="panel-assists">
-            <div class="card">
-              <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity
-                Assist Routes</h3>
-              <div id="assistList">
-                <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a
-                  flyby, it'll show up here as an optional route.</div>
+        <div class="tab-panel" id="panel-porkchop">
+          <div class="card">
+            <h3><span class="dot"></span>How to Use the Porkchop Plot</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 12px; line-height: 1.6;">
+              <div>
+                <strong style="color: var(--accent);">What It Shows</strong><br>
+                A "porkchop" (or "launch window") plot displays transfer opportunities between two bodies. Each cell
+                represents a different launch date and flight time combination, color-coded by the Δv required.
               </div>
-              <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and
-                comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories
-                also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not
-                a flight plan.</div>
-            </div>
-          </div>
-
-          <div class="tab-panel" id="panel-porkchop">
-            <div class="card">
-              <h3><span class="dot"></span>How to Use the Porkchop Plot</h3>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 12px; line-height: 1.6;">
-                <div>
-                  <strong style="color: var(--accent);">What It Shows</strong><br>
-                  A "porkchop" (or "launch window") plot displays transfer opportunities between two bodies. Each cell
-                  represents a different launch date and flight time combination, color-coded by the Δv required.
-                </div>
-                <div>
-                  <strong style="color: var(--accent);">How to Read It</strong><br>
-                  <strong>X-axis:</strong> Departure date (left = earlier)<br>
-                  <strong>Y-axis:</strong> Time of flight (top = shorter journey)<br>
-                  <strong>Colors:</strong> Blue/Green = efficient, Red = expensive
-                </div>
-                <div>
-                  <strong style="color: var(--accent);">Finding Good Windows</strong><br>
-                  Look for "valleys" or blue/green areas—these represent efficient transfer windows. Avoid red regions
-                  (expensive). The bluest cell is the optimal transfer.
-                </div>
-                <div>
-                  <strong style="color: var(--accent);">How to Plan</strong><br>
-                  1. Generate the plot<br>
-                  2. Find a blue/green valley<br>
-                  3. Click a cell to see exact timing<br>
-                  4. Check "Next Transfer Window" in main panel
-                </div>
-                <div style="grid-column: 1 / -1;">
-                  <strong style="color: var(--accent);">Clicking Cells</strong><br>
-                  Click any cell to inspect its details: exact departure date, arrival date, and Δv required. Use this
-                  to fine-tune your launch plan and see if a particular window fits your schedule.
-                </div>
+              <div>
+                <strong style="color: var(--accent);">How to Read It</strong><br>
+                <strong>X-axis:</strong> Departure date (left = earlier)<br>
+                <strong>Y-axis:</strong> Time of flight (top = shorter journey)<br>
+                <strong>Colors:</strong> Blue/Green = efficient, Red = expensive
+              </div>
+              <div>
+                <strong style="color: var(--accent);">Finding Good Windows</strong><br>
+                Look for "valleys" or blue/green areas—these represent efficient transfer windows. Avoid red regions
+                (expensive). The bluest cell is the optimal transfer.
+              </div>
+              <div>
+                <strong style="color: var(--accent);">How to Plan</strong><br>
+                1. Generate the plot<br>
+                2. Find a blue/green valley<br>
+                3. Click a cell to see exact timing<br>
+                4. Check "Next Transfer Window" in main panel
+              </div>
+              <div style="grid-column: 1 / -1;">
+                <strong style="color: var(--accent);">Clicking Cells</strong><br>
+                Click any cell to inspect its details: exact departure date, arrival date, and Δv required. Use this
+                to fine-tune your launch plan and see if a particular window fits your schedule.
               </div>
             </div>
-
-            <div class="card">
-              <h3><span class="dot"></span>Porkchop Plot</h3>
-              <div class="pk-canvas-wrap">
-                <canvas id="pkCanvas" width="360" height="300" style="width:100%;height:auto;"></canvas>
-              </div>
-              <div class="pk-legend-bar"></div>
-              <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
-              <div class="pk-controls">
-                <button id="pkGenerate">Generate</button>
-              </div>
-              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = heliocentric transfer Δv
-                (Lambert-solved per cell). Moon insertion and landing Δv shown separately as reference - actual costs
-                depend on approach geometry. Click a cell to inspect it.</div>
-            </div>
-            <div class="card" id="pkSelected" style="display:none;">
-              <h3><span class="dot"></span>Selected Point</h3>
-              <div id="pkSelectedBody"></div>
-            </div>
           </div>
 
-          <div class="tab-panel" id="panel-info">
-            <div class="card" id="infoCard"></div>
+          <div class="card">
+            <h3><span class="dot"></span>Porkchop Plot</h3>
+            <div class="pk-canvas-wrap">
+              <canvas id="pkCanvas" width="360" height="300" style="width:100%;height:auto;"></canvas>
+            </div>
+            <div class="pk-legend-bar"></div>
+            <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
+            <div class="pk-controls">
+              <button id="pkGenerate">Generate</button>
+            </div>
+            <div class="note">X-axis: departure date. Y-axis: time of flight. Color = heliocentric transfer Δv
+              (Lambert-solved per cell). Moon insertion and landing Δv shown separately as reference - actual costs
+              depend on approach geometry. Click a cell to inspect it.</div>
           </div>
-
+          <div class="card" id="pkSelected" style="display:none;">
+            <h3><span class="dot"></span>Selected Point</h3>
+            <div id="pkSelectedBody"></div>
+          </div>
         </div>
+
+        <div class="tab-panel" id="panel-info">
+          <div class="card" id="infoCard"></div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2437,14 +2450,19 @@
         <h2>[3.6.3] - 2026-09-15</h2>
         <h3>Changed</h3>
         <ul>
-          <li><strong>Map Legend Visual Updates</strong>: Current phase and required phase indicators now use lines instead of dots to match their on-map representation. Required phase is a dashed line, transfer arc is a dashed green line, and the arrival ghost dot is joined by a green dot for the departure ghost.</li>
-          <li><strong>Controls Documentation</strong>: Added right-click context menu to the in-app controls bubble and README Map Controls table.</li>
+          <li><strong>Map Legend Visual Updates</strong>: Current phase and required phase indicators now use lines
+            instead of dots to match their on-map representation. Required phase is a dashed line, transfer arc is a
+            dashed green line, and the arrival ghost dot is joined by a green dot for the departure ghost.</li>
+          <li><strong>Controls Documentation</strong>: Added right-click context menu to the in-app controls bubble and
+            README Map Controls table.</li>
         </ul>
 
         <h2>[3.6.2] - 2026-09-15</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Right-Click Context Menu No Longer Appears on Drag</strong>: Right-clicking and immediately dragging the mouse no longer shows the context menu. The menu now only appears on a clean right-click release, matching standard OS behavior.</li>
+          <li><strong>Right-Click Context Menu No Longer Appears on Drag</strong>: Right-clicking and immediately
+            dragging the mouse no longer shows the context menu. The menu now only appears on a clean right-click
+            release, matching standard OS behavior.</li>
         </ul>
 
         <h2>[3.6.1] - 2026-09-14</h2>
@@ -4949,6 +4967,8 @@
         if (view === 'map') {
           sidebarEl && sidebarEl.classList.remove('mobile-visible');
           mainEl && mainEl.classList.remove('mobile-show-sidebar');
+          const legend = document.querySelector('.legend');
+          legend && legend.classList.remove('mobile-hidden');
           if (mobileMapBtn) mobileMapBtn.classList.add('active');
           if (mobileControlsBtn) mobileControlsBtn.classList.remove('active');
           // Give the display:none removal time to apply, then resize
@@ -4958,6 +4978,8 @@
         } else {
           sidebarEl && sidebarEl.classList.add('mobile-visible');
           mainEl && mainEl.classList.add('mobile-show-sidebar');
+          const legend = document.querySelector('.legend');
+          legend && legend.classList.add('mobile-hidden');
           if (mobileMapBtn) mobileMapBtn.classList.remove('active');
           if (mobileControlsBtn) mobileControlsBtn.classList.add('active');
         }
