@@ -2,6 +2,19 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [3.6.3] - 2026-09-15
+
+### Changed
+
+- **Map Legend Visual Updates**: Current phase and required phase indicators now use lines instead of dots to match their on-map representation. Required phase is a dashed line, transfer arc is a dashed green line, and the arrival ghost dot is joined by a green dot for the departure ghost.
+- **Controls Documentation**: Added right-click context menu to the in-app controls bubble and README Map Controls table.
+
+## [3.6.2] - 2026-09-15
+
+### Fixed
+
+- **Right-Click Context Menu No Longer Appears on Drag**: Right-clicking and immediately dragging the mouse no longer shows the context menu. The menu now only appears on a clean right-click release, matching standard OS behavior.
+
 ## [3.6.1] - 2026-09-14
 
 ### Fixed

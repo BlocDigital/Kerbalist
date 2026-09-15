@@ -1246,6 +1246,20 @@
       vertical-align: middle;
     }
 
+    .legend .swatch-line {
+      display: inline-block;
+      width: 16px;
+      height: 2px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+
+    .legend .swatch-line.dashed {
+      border-top: 2px dashed currentColor;
+      height: 0;
+      background: none;
+    }
+
     /* 3D labels */
     #labelContainer {
       position: absolute;
@@ -2241,6 +2255,7 @@
           <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
           <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
           <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
+          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest, zoom)</span></div>
         </div>
         <div class="zoom-controls">
           <button id="zoomIn">+</button>
@@ -2248,7 +2263,7 @@
           <button id="zoomReset">⤾</button>
         </div>
         <div class="bottom-left-bar">
-          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6.1
+          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6.2
           </div>
           <div class="bmc-wrap" id="bmcWrap">
             <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
@@ -2258,9 +2273,10 @@
           </div>
         </div>
         <div class="legend">
-          <span><span class="dot" style="background:var(--cyan)"></span>Current phase</span>
-          <span><span class="dot" style="background:var(--amber);opacity:.7"></span>Required phase</span>
-          <span><span class="dot" style="background:var(--green)"></span>Transfer arc</span>
+          <span><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</span>
+          <span><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</span>
+          <span><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</span>
+          <span><span class="dot" style="background:var(--green)"></span>Departure ghost</span>
           <span><span class="dot"
               style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
             ghost</span>
@@ -2356,17 +2372,17 @@
                   <strong style="color: var(--accent);">How to Read It</strong><br>
                   <strong>X-axis:</strong> Departure date (left = earlier)<br>
                   <strong>Y-axis:</strong> Time of flight (top = shorter journey)<br>
-                  <strong>Colors:</strong> Green = efficient, Red = expensive
+                  <strong>Colors:</strong> Blue/Green = efficient, Red = expensive
                 </div>
                 <div>
                   <strong style="color: var(--accent);">Finding Good Windows</strong><br>
-                  Look for "valleys" or green areas—these represent efficient transfer windows. Avoid red regions
-                  (expensive). The greenest cell is the optimal transfer.
+                  Look for "valleys" or blue/green areas—these represent efficient transfer windows. Avoid red regions
+                  (expensive). The bluest cell is the optimal transfer.
                 </div>
                 <div>
                   <strong style="color: var(--accent);">How to Plan</strong><br>
                   1. Generate the plot<br>
-                  2. Find a green valley<br>
+                  2. Find a blue/green valley<br>
                   3. Click a cell to see exact timing<br>
                   4. Check "Next Transfer Window" in main panel
                 </div>
@@ -2418,10 +2434,17 @@
         <h1>Changelog</h1>
         <p>All notable changes to Kerbalist will be documented in this file.</p>
 
+        <h2>[3.6.2] - 2026-09-15</h2>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Right-Click Context Menu No Longer Appears on Drag</strong>: Right-clicking and immediately dragging the mouse no longer shows the context menu. The menu now only appears on a clean right-click release, matching standard OS behavior.</li>
+        </ul>
+
         <h2>[3.6.1] - 2026-09-14</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Double-Click Body Info Sync</strong>: Double-clicking a planet or moon label on the map now updates
+          <li><strong>Double-Click Body Info Sync</strong>: Double-clicking a planet or moon label on the map now
+            updates
             the Body Info panel to show the selected body's data and switches to the Body Info tab. Previously the
             camera would zoom to the body but the info panel remained showing the previously selected body.</li>
         </ul>
@@ -2440,8 +2463,10 @@
         <ul>
           <li><strong>Moon Transfer Visualization Bug (Critical)</strong>: Fixed a coordinate double-counting bug where
             transfers involving a moon rendered ghost arrival markers, dashed lines, transfer arcs, and return lines
-            in incorrect positions—often roughly twice as far from the sun. Planet-to-planet transfers were unaffected.</li>
-          <li><strong>Moon Camera Lock</strong>: Fixed moon tracking when double-clicking or using right-click &quot;Zoom in&quot;
+            in incorrect positions—often roughly twice as far from the sun. Planet-to-planet transfers were unaffected.
+          </li>
+          <li><strong>Moon Camera Lock</strong>: Fixed moon tracking when double-clicking or using right-click
+            &quot;Zoom in&quot;
             context menu action. Camera-follow and context-menu logic now check both planet and moon meshes.</li>
           <li><strong>Orbit Line Polygon Count Increased</strong>: Planet orbit lines raised from 1200 to 4000 segments
             and moon lines from 600 to 2000, preventing visible drift at extreme zoom.</li>
@@ -3087,7 +3112,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.6';
+    const VERSION = 'v3.6.2';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -3778,10 +3803,15 @@
         div.addEventListener('contextmenu', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          contextMenuTarget = p.name;
-          contextMenu.style.left = e.clientX + 'px';
-          contextMenu.style.top = e.clientY + 'px';
-          contextMenu.classList.add('visible');
+          let deferred = true;
+          setTimeout(() => {
+            if (!deferred) return;
+            deferred = false;
+            contextMenuTarget = p.name;
+            contextMenu.style.left = e.clientX + 'px';
+            contextMenu.style.top = e.clientY + 'px';
+            contextMenu.classList.add('visible');
+          }, 60);
         });
 
         // Invisible click-helper sphere (10x visual radius) for easy selection
@@ -3892,10 +3922,15 @@
         div.addEventListener('contextmenu', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          contextMenuTarget = m.name;
-          contextMenu.style.left = e.clientX + 'px';
-          contextMenu.style.top = e.clientY + 'px';
-          contextMenu.classList.add('visible');
+          let deferred = true;
+          setTimeout(() => {
+            if (!deferred) return;
+            deferred = false;
+            contextMenuTarget = m.name;
+            contextMenu.style.left = e.clientX + 'px';
+            contextMenu.style.top = e.clientY + 'px';
+            contextMenu.classList.add('visible');
+          }, 60);
         });
       });
 
@@ -4693,27 +4728,34 @@
 
       canvas3d.addEventListener('contextmenu', e => {
         e.preventDefault();
-        const rect = canvas3d.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((e.clientX - rect.left) / rect.width) * 2 - 1,
-          -((e.clientY - rect.top) / rect.height) * 2 + 1
-        );
-        raycaster.setFromCamera(mouse, camera);
-        const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
-        const hits = raycaster.intersectObjects(targets, true);
+        let deferred = true;
+        const showMenu = () => {
+          if (!deferred) return;
+          deferred = false;
+          if (dragMoved) return;
+          const rect = canvas3d.getBoundingClientRect();
+          const mouse = new THREE.Vector2(
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
+          );
+          raycaster.setFromCamera(mouse, camera);
+          const targets = [...Object.values(planetMeshes), ...Object.values(moonMeshes)];
+          const hits = raycaster.intersectObjects(targets, true);
 
-        contextMenuTarget = null;
-        if (hits.length > 0) {
-          let obj = hits[0].object;
-          while (obj && !obj.userData.planetName) obj = obj.parent;
-          if (obj && obj.userData.planetName) {
-            contextMenuTarget = obj.userData.planetName;
+          contextMenuTarget = null;
+          if (hits.length > 0) {
+            let obj = hits[0].object;
+            while (obj && !obj.userData.planetName) obj = obj.parent;
+            if (obj && obj.userData.planetName) {
+              contextMenuTarget = obj.userData.planetName;
+            }
           }
-        }
 
-        contextMenu.style.left = e.clientX + 'px';
-        contextMenu.style.top = e.clientY + 'px';
-        contextMenu.classList.add('visible');
+          contextMenu.style.left = e.clientX + 'px';
+          contextMenu.style.top = e.clientY + 'px';
+          contextMenu.classList.add('visible');
+        };
+        setTimeout(showMenu, 60);
       });
 
       // Close context menu when clicking elsewhere
