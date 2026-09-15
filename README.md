@@ -44,10 +44,11 @@ Current version: **v3.6.2**
 
 ### Basic Transfer
 1. Open **index.html** in your browser.
-2. Select **Origin** and **Destination** from the top dropdowns.
-3. Click **Plan Transfer** to compute the direct route.
-4. The map shows the transfer arc.
-5. Check the **Transfer** tab for delta-v, flight time, and window countdown.
+2. Set your ingame UT time.
+3. Select **Origin** and **Destination** from the top dropdowns.
+4. Click **Plan Transfer** to compute the direct route.
+5. The map shows the transfer arc.
+6. Check the **Transfer** tab for delta-v, flight time, and window countdown.
 
 ### Gravity Assists
 1. After planning a transfer, open the **Assist Options** tab.
@@ -59,7 +60,7 @@ Current version: **v3.6.2**
 2. Generate a departure-date vs. flight-time grid.
 3. Inspect lower-delta-v transfer options from the plotted solutions.
 
-### Sync to Your Save
+### Sync to Your Save **|||WORK IN PROGRESS|||**
 
 #### Option A: Save-File Watcher
 1. Click **Live Sync** in the header.
@@ -71,8 +72,8 @@ Current version: **v3.6.2**
 4. Pick the `.json` file for your active save.
 5. Planner auto-syncs when the game autosaves.
 
-#### Option B: Python Bridge
-1. Install kRPC2 into your SpaceWarp BepInEx folder.
+#### Option B: Python Bridge **|||kRPC2 DOESN'T WORK AT THIS MOMENT|||**
+1. Install kRPC2 into your SpaceWarp BepInEx folder. 
 2. Install Python kRPC client: `pip install krpc`.
 3. Run the companion script:
    ```bash
@@ -118,12 +119,12 @@ Type into the **Sync to save** boxes and hit **Set**.
 - Try Kerbin -> Jool or Eve -> Jool for classic assist routes.
 - The detector depends on current orbital positions and selected departure time.
 
-**"Live Sync won't connect"**
+**"Live Sync won't connect"** **|||WORK IN PROGRESS|||**
 - Check that KSP2 is running and kRPC2 is installed if using bridge mode.
 - Verify `http://localhost:5005/ut` is reachable in your browser.
 - If the save schema changed, inspect or update `ATTR_PATHS` in `kerbalist_bridge.py`.
 
-**"Save file sync shows old time"**
+**"Save file sync shows old time"** **|||WORK IN PROGRESS|||**
 - Autosave intervals can be several minutes.
 - Force an autosave by quicksaving if you need an immediate refresh.
 
