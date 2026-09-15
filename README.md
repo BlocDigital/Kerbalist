@@ -7,7 +7,7 @@
 
 **Live sync-capable* transfer calculator with optional gravity assist optimization.**
 
-Current version: **v3.6.2**
+Current version: **v3.6.3**
 
 *WIP
 
