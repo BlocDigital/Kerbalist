@@ -7,7 +7,7 @@
 
 **Live sync-capable* transfer calculator with optional gravity assist optimization.**
 
-Current version: **v3.6.1**
+Current version: **v3.6.2**
 
 *WIP
 
@@ -95,6 +95,7 @@ Type into the **Sync to save** boxes and hit **Set**.
 | **Reset button** | Reset to full view |
 | **Click planet or moon** | Open body info |
 | **Double click planet or moon** | Center camera on that body |
+| **Right-click planet or moon** | Context menu (Set as Origin/Destination, Zoom in, Clear) |
 
 ## Notes
 
