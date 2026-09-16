@@ -2,6 +2,22 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [3.6.5] - 2026-09-16
+
+### Added
+
+- **Live Camera HUD**: Added a subtle, semi-transparent real-time info HUD displaying camera position (X, Y, Z), zoom radius, focused celestial body, and orbital time warp level.
+- **Orbital Ghost Planet Halos**: Added faint ghost spheres (sized matching departure ghost spheres, radius 6.5) of matching planet color that fade out when zooming in close (97% zoom, threshold `camR < 75`) or when focusing near a body.
+
+### Changed
+
+- **UI Button Scaling & Layout**:
+  - Reduced "Buy me a beer" and "Changelog" button sizes by 25%.
+  - Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.
+  - Relocated camera control buttons upward so they no longer overlap with the map legend.
+  - Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.
+  - Scaled map legend size by +15%.
+
 ## [3.6.4] - 2026-09-15
 
 ### Fixed

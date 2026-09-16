@@ -501,6 +501,10 @@
 
     .live-sync-wrap {
       position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
     }
 
     .live-btn {
@@ -771,12 +775,12 @@
 
     .map-hud .chip {
       font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-size: 13.1px;
       color: var(--text-dim);
       background: rgba(9, 15, 28, .82);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 5px 9px;
+      padding: 6.25px 11.25px;
       letter-spacing: .03em;
       backdrop-filter: blur(2px);
     }
@@ -789,17 +793,17 @@
       background: rgba(9, 15, 28, .86);
       border: 1px solid var(--border);
       border-radius: 9px;
-      padding: 10px 13px;
+      padding: 12.5px 16.25px;
       font-family: var(--font-mono);
       pointer-events: none;
       backdrop-filter: blur(4px);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
     }
 
     .shortcuts-bubble .sb-title {
-      font-size: 9px;
+      font-size: 11.25px;
       letter-spacing: .14em;
       text-transform: uppercase;
       color: var(--cyan);
@@ -810,30 +814,30 @@
     .shortcut-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .sk {
       background: var(--panel2);
       border: 1px solid var(--border-bright);
       border-radius: 4px;
-      padding: 1px 6px;
+      padding: 1.25px 7.5px;
       color: var(--text-dim);
-      font-size: 8.5px;
+      font-size: 10.6px;
       white-space: nowrap;
-      min-width: 72px;
+      min-width: 90px;
       text-align: center;
     }
 
     .sv {
       color: var(--text-dimmer);
-      font-size: 8.5px;
+      font-size: 10.6px;
     }
 
     .zoom-controls {
       position: absolute;
-      bottom: 14px;
-      left: 12px;
+      bottom: 90px;
+      right: 14px;
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -900,17 +904,17 @@
     .bottom-left-bar {
       position: absolute;
       bottom: 16px;
-      left: 52px;
+      left: 12px;
       z-index: 10;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    /* Version — 60% bigger (16px), clickable badge */
+    /* Version badge — same visual style as beer button */
     .map-version {
       font-family: var(--font-mono);
-      font-size: 16px;
+      font-size: 12.8px;
       font-weight: 600;
       color: var(--text-dim);
       letter-spacing: .08em;
@@ -918,7 +922,7 @@
       pointer-events: auto;
       cursor: pointer;
       opacity: .88;
-      padding: 3px 8px;
+      padding: 2.4px 6.4px;
       border-radius: 6px;
       background: rgba(9, 15, 28, .7);
       border: 1px solid var(--border);
@@ -926,7 +930,7 @@
       user-select: none;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .map-version:hover {
@@ -948,16 +952,15 @@
 
     .bmc-wrap a[href*="buymeacoffee.com"] {
       font-family: var(--font-mono) !important;
-      font-size: 16px !important;
+      font-size: 12.8px !important;
       font-weight: 600 !important;
       letter-spacing: .08em !important;
       text-transform: uppercase !important;
       color: var(--text-dim) !important;
-      letter-spacing: .08em !important;
       pointer-events: auto !important;
       cursor: pointer !important;
       opacity: .88;
-      padding: 3px 8px !important;
+      padding: 2.4px 6.4px !important;
       border-radius: 6px !important;
       background: rgba(9, 15, 28, .7) !important;
       border: 1px solid var(--border) !important;
@@ -965,7 +968,7 @@
       user-select: none;
       display: inline-flex !important;
       align-items: center !important;
-      gap: 5px !important;
+      gap: 4px !important;
       box-shadow: none !important;
       text-decoration: none !important;
       text-shadow: none !important;
@@ -985,7 +988,7 @@
     }
 
     .bmc-wrap a[href*="buymeacoffee.com"] img {
-      height: 16px !important;
+      height: 12.8px !important;
       width: auto !important;
       max-width: none !important;
       margin: 0 !important;
@@ -1005,6 +1008,51 @@
       background: none !important;
       padding: 0 !important;
       margin: 0 !important;
+    }
+
+    /* Camera / View HUD */
+    .cam-hud {
+      position: absolute;
+      top: 50%;
+      right: 52px;
+      transform: translateY(-50%);
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-end;
+    }
+
+    .cam-hud-row {
+      display: flex;
+      align-items: center;
+      gap: 7.5px;
+      background: rgba(9, 15, 28, .55);
+      border: 1px solid rgba(79, 224, 232, .08);
+      border-radius: 5px;
+      padding: 3.75px 8.75px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: .06em;
+      color: rgba(255,255,255,.32);
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+      transition: color .3s;
+    }
+
+    .cam-hud-row .hud-key {
+      text-transform: uppercase;
+      color: rgba(79, 224, 232, .35);
+    }
+
+    .cam-hud-row .hud-val {
+      color: rgba(255,255,255,.45);
+      font-weight: 600;
+    }
+
+    .cam-hud-row.hud-focus .hud-val {
+      color: rgba(79, 224, 232, .70);
     }
 
     /* Changelog Modal Popup */
@@ -1231,30 +1279,30 @@
       background: rgba(9, 15, 28, .78);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 10.5px;
+      padding: 9.2px 13.8px;
+      font-size: 12.075px;
       color: var(--text-dim);
       font-family: var(--font-mono);
       display: flex;
-      gap: 14px;
+      gap: 16.1px;
       align-items: center;
     }
 
     .legend .dot {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 9.2px;
+      height: 9.2px;
       border-radius: 50%;
-      margin-right: 5px;
+      margin-right: 5.75px;
       vertical-align: middle;
     }
 
     .legend .swatch-line {
       display: inline-block;
-      width: 16px;
+      width: 18.4px;
       height: 2px;
       vertical-align: middle;
-      margin-right: 5px;
+      margin-right: 5.75px;
     }
 
     .legend .swatch-line.dashed {
@@ -1993,6 +2041,10 @@
 
       .live-sync-wrap {
         position: static;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
       }
 
       .live-btn {
@@ -2192,7 +2244,14 @@
 
       /* Zoom controls bigger for touch */
       .zoom-controls {
-        bottom: 68px;
+        bottom: 120px;
+        right: 10px;
+        left: auto;
+      }
+
+      /* Camera HUD off on mobile (too cramped) */
+      .cam-hud {
+        display: none;
       }
 
       .zoom-controls button {
@@ -2277,10 +2336,26 @@
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
         </div>
+        <!-- Camera / View Info HUD -->
+        <div class="cam-hud" id="camHud">
+          <div class="cam-hud-row" id="hudZoom">
+            <span class="hud-key">Zoom</span><span class="hud-val" id="hudZoomVal">—</span>
+          </div>
+          <div class="cam-hud-row" id="hudWarp">
+            <span class="hud-key">Warp</span><span class="hud-val" id="hudWarpVal">—</span>
+          </div>
+          <div class="cam-hud-row" id="hudOrbit">
+            <span class="hud-key">Tilt</span><span class="hud-val" id="hudTiltVal">—</span>
+            <span class="hud-key" style="margin-left:4px">Rot</span><span class="hud-val" id="hudRotVal">—</span>
+          </div>
+          <div class="cam-hud-row hud-focus" id="hudFocus" style="display:none">
+            <span class="hud-key">⊙ Focus</span><span class="hud-val" id="hudFocusVal">—</span>
+          </div>
+        </div>
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
-            style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:14px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v3.6.4</div>
+            style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v3.6.5</div>
           <div class="bmc-wrap" id="bmcWrap">
             <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
               data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic"
@@ -2448,7 +2523,24 @@
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
-        <p>All notable changes to Kerbalist will be documented in this file.</p>
+        <h2>[3.6.5] - 2026-09-16</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Live Camera HUD</strong>: Added a subtle, semi-transparent real-time info HUD displaying camera position (X, Y, Z), zoom radius, focused celestial body, and orbital time warp level.</li>
+          <li><strong>Orbital Ghost Planet Halos</strong>: Added faint ghost spheres (sized matching departure ghost spheres, radius 6.5) of matching planet color that fade out when zooming in close (97% zoom, threshold <code>camR &lt; 75</code>) or when focusing near a body.</li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>UI Button Scaling &amp; Layout</strong>:
+            <ul>
+              <li>Reduced "Buy me a beer" and "Changelog" button sizes by 25%.</li>
+              <li>Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.</li>
+              <li>Relocated camera control buttons upward so they no longer overlap with the map legend.</li>
+              <li>Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.</li>
+              <li>Scaled map legend size by +15%.</li>
+            </ul>
+          </li>
+        </ul>
 
         <h2>[3.6.4] - 2026-09-15</h2>
         <h3>Fixed</h3>
@@ -3159,7 +3251,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v3.6.4 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v3.6.5 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -3180,7 +3272,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.6.4';
+    const VERSION = 'v3.6.5';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -3890,6 +3982,26 @@
         clickHelper.userData.planetName = p.name;
         scene.add(clickHelper);
         planetMeshes[p.name + '_helper'] = clickHelper;
+      });
+
+      /* ---- Orbital Ghost Planets ---- */
+      // Each planet gets a faint ghost showing its position 1/8th of an orbit ahead.
+      // They fade out when zoomed in close (camR < MOON_THRESH = 75) or when
+      // the camera is centred near that body.
+      const MOON_THRESH = 75;          // same camR threshold as moon label visibility
+      const ORB_GHOST_NEAR = 30;       // camR below this = ghost fully hidden (near threshold)
+      const ORB_GHOST_PROX_SQ = 50 * 50; // distance² from camTarget to hide the nearest ghost
+
+      const orbitalGhosts = PLANETS.map(p => {
+        const col = new THREE.Color(p.color);
+        const sphere = new THREE.Mesh(
+          new THREE.SphereGeometry(6.5, 18, 18),
+          new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0, depthWrite: false })
+        );
+        sphere.renderOrder = 1;
+        scene.add(sphere);
+
+        return { planet: p, sphere, targetOpacity: 0 };
       });
 
       // Render Moons - add to scene root, not parented to planets
@@ -4604,6 +4716,34 @@
             camTarget.copy(focusedMesh.position);
           }
         }
+
+        // Update orbital ghost positions + visibility
+        orbitalGhosts.forEach(og => {
+          const p = og.planet;
+          // Ghost sits exactly on the planet's current position
+          const actualPos = planetMeshes[p.name].position;
+          og.sphere.position.copy(actualPos);
+
+          // Determine target opacity
+          // 1) Fully hidden when zoomed in past the moon-label threshold
+          if (camR < MOON_THRESH) {
+            og.targetOpacity = 0;
+            return;
+          }
+          // 2) Fade in between MOON_THRESH and MOON_THRESH * 1.4
+          const fadeRange = MOON_THRESH * 0.4;
+          const zoomFade = Math.min(1, (camR - MOON_THRESH) / fadeRange);
+
+          // 3) Hide if the camTarget is centred near this planet
+          const dx = camTarget.x - actualPos.x;
+          const dy = camTarget.y - actualPos.y;
+          const dz = camTarget.z - actualPos.z;
+          const proxFade = Math.min(1, Math.max(0,
+            (dx*dx + dy*dy + dz*dz - ORB_GHOST_PROX_SQ * 0.3) / (ORB_GHOST_PROX_SQ * 0.7)
+          ));
+
+          og.targetOpacity = 0.45 * zoomFade * proxFade;
+        });
       }
 
       /* ---- Project world position to screen ---- */
@@ -6237,6 +6377,15 @@
 
         updateMap(); // move planet meshes each frame
 
+        // Lerp orbital ghost opacities toward their target (smooth fade)
+        orbitalGhosts.forEach(og => {
+          const lerpSpeed = 6 * Math.min(dt, 0.1); // ~6 per second, clamped
+          const cur = og.sphere.material.opacity;
+          const next = cur + (og.targetOpacity - cur) * lerpSpeed;
+          og.sphere.material.opacity = next;
+        });
+
+
         if (currentResult) {
           // Recompute phase angles each frame (cheap)
           const os = stateAt(currentResult.origin, UT);
@@ -6282,6 +6431,29 @@
 
         updateLabels(); // project labels to screen
         updateCamera(); // update camera position every frame (keeps focused bodies centered)
+
+        // Update camera HUD every frame
+        {
+          const rawPct = (1 - (camR - CAM_MIN) / (CAM_MAX - CAM_MIN)) * 100;
+          const zoomStr = rawPct > 98 ? rawPct.toFixed(4) : Math.round(rawPct).toString();
+          document.getElementById('hudZoomVal').textContent = zoomStr + '%';
+          const tiltDeg = Math.round((camPhi / Math.PI) * 180);
+          const rotDeg  = ((Math.round((camTheta / (2 * Math.PI)) * 360) % 360) + 360) % 360;
+          document.getElementById('hudTiltVal').textContent = tiltDeg + '°';
+          document.getElementById('hudRotVal').textContent  = rotDeg  + '°';
+          const warpLabel = liveMode ? 'LIVE' : (WARP_LEVELS[warpIndex] >= 1000
+            ? (WARP_LEVELS[warpIndex] / 1000).toFixed(WARP_LEVELS[warpIndex] % 1000 ? 1 : 0) + 'k×'
+            : WARP_LEVELS[warpIndex] + '×');
+          document.getElementById('hudWarpVal').textContent = warpLabel;
+          const focusRow = document.getElementById('hudFocus');
+          if (focusedPlanet) {
+            focusRow.style.display = '';
+            document.getElementById('hudFocusVal').textContent = focusedPlanet;
+          } else {
+            focusRow.style.display = 'none';
+          }
+        }
+
         renderer.render(scene, camera);
       }
       requestAnimationFrame(loop);

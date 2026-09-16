@@ -3,11 +3,11 @@
 </p>
 
 # Kerbalist - KSP2 Interplanetary Transfer Planner
-(Redux for Beta 7+ / Snapshot 26w32a+)
+(Redux, including Beta 7 / Snapshot 26w32a and above, with the 2 new moons of Dres)
 
 **Live sync-capable* transfer calculator with optional gravity assist optimization.**
 
-Current version: **v3.6.4**
+Current version: **v3.6.5**
 
 *WIP
 
