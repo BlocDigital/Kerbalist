@@ -2,6 +2,19 @@
 
 All notable changes to Kerbalist will be documented in this file.
 
+## [3.6.4] - 2026-09-15
+
+### Fixed
+
+- **Sidebar Rendering Below the Map on Desktop**: A stray extra closing `<div>` left over from an earlier edit (immediately after the version badge) was silently closing `.bottom-left-bar`, then cascading to prematurely close `.map-wrap` and `.main` one element too early. The net effect: the sidebar ended up as a sibling of `.main` instead of nested inside it, so it rendered full-width below the map instead of beside it on desktop widths. This was a pure HTML nesting bug, not a CSS/media-query issue — the responsive breakpoints themselves were never at fault.
+- **Orbital Drift Root Cause Fix Restored**: An orbital calibration fix from earlier work had gone missing from this branch and is restored here. The in-game calendar uses 425 days per year, not 426 as previously assumed — a one-day-per-year discrepancy that compounds with every year elapsed, which is why the long-standing "orbits drift after 1-2 years" issue was small at first and grew steadily worse over time. `YEAR_DAYS` corrected from 426 to 425, and `m0Deg` recalibrated for all six planets using direct in-game Mean Anomaly readings taken ~15 years apart, cross-validated to within 0.01° per planet. Orbital periods and orientDeg values were independently confirmed already correct (via Kepler's third law and self-consistent Argument-of-Periapsis/LAN readings) and did not need to change. New m0Deg values: Moho 124.90, Eve 314.44, Duna 348.60, Dres 110.74, Jool 334.08, Eeloo 158.80 (previously 108.64 / 165.54 / 350.99 / 116.10 / 339.25 / 163.48).
+
+### Known Issues
+
+- **LAN Not Modeled Separately**: The 3D orbit renderer combines Argument of Periapsis and Longitude of Ascending Node into a single `orientDeg` value and applies inclination as a simple tilt, which is exact only when LAN is 0. Real LAN values are nonzero for every planet, so there's a small residual (constant, not growing over time) out-of-plane position error, largest for higher-inclination bodies like Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°). A fully correct fix would track LAN separately with proper 3-axis rotation.
+- **kRPC2 Dependency Mod Doesn't Work**: The kRPC2 dependency mod on the KSP2 side does not work yet — the Python bridge (`kerbalist_bridge.py`) cannot connect to KSP2 because the required server-side mod is not functional.
+- **Map Does Not Render on Mobile**: The 3D map canvas fails to initialize or render on mobile browsers (both iOS Safari and Android Chrome). The sidebar controls and all non-map UI elements still work correctly.
+
 ## [3.6.3] - 2026-09-15
 
 ### Changed

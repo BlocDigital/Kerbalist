@@ -87,16 +87,18 @@
     }
 
     .brand .mark {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 32% 30%, #fff6d8, #ffd166 40%, #b8781a 100%);
-      box-shadow: 0 0 14px 2px rgba(255, 209, 102, .35);
+      max-width: 80px;
+      max-height: 80px;
+      width: auto;
+      height: auto;
+      border-radius: 8px;
+      object-fit: contain;
       flex: 0 0 auto;
+      filter: drop-shadow(0 0 8px rgba(79, 224, 232, .25));
     }
 
     .brand h1 {
-      font-size: 17px;
+      font-size: 22px;
       margin: 0;
       letter-spacing: .09em;
       font-weight: 700;
@@ -105,7 +107,7 @@
     }
 
     .brand .sub {
-      font-size: 10.5px;
+      font-size: 14px;
       color: var(--text-dim);
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -121,14 +123,14 @@
     }
 
     .ut-clock .label {
-      font-size: 10px;
+      font-size: 13px;
       color: var(--text-dimmer);
       text-transform: uppercase;
       letter-spacing: .12em;
     }
 
     .ut-clock .value {
-      font-size: 16px;
+      font-size: 21px;
       color: var(--cyan);
       text-shadow: 0 0 8px rgba(79, 224, 232, .4);
       letter-spacing: .02em;
@@ -145,7 +147,7 @@
     }
 
     .ut-sync .label {
-      font-size: 9.5px;
+      font-size: 12px;
       color: var(--text-dimmer);
       text-transform: uppercase;
       letter-spacing: .1em;
@@ -159,7 +161,7 @@
       border-radius: 4px;
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 12.5px;
+      font-size: 16px;
       padding: 6px 6px;
       text-align: center;
       outline: none;
@@ -175,7 +177,7 @@
 
     .ut-sync span.sep {
       color: var(--text-dimmer);
-      font-size: 11px;
+      font-size: 14px;
       margin: 0 -1px;
     }
 
@@ -185,7 +187,7 @@
       color: var(--cyan);
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 11px;
+      font-size: 14px;
       letter-spacing: .05em;
       padding: 5px 10px;
       border-radius: 5px;
@@ -510,7 +512,7 @@
       color: var(--text-dim);
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 11px;
+      font-size: 14px;
       letter-spacing: .05em;
       padding: 7px 11px;
       border-radius: 8px;
@@ -554,7 +556,7 @@
       color: var(--text-dim);
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 11px;
+      font-size: 14px;
       letter-spacing: .05em;
       padding: 7px 11px;
       border-radius: 8px;
@@ -700,7 +702,7 @@
       border: none;
       color: var(--text-dim);
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 14px;
       padding: 5px 9px;
       border-radius: 5px;
       cursor: pointer;
@@ -2210,7 +2212,7 @@
 
     <header>
       <div class="brand">
-        <div class="mark"></div>
+        <img class="mark" src="kerbalist.png" alt="Kerbalist">
         <div>
           <h1>Kerbalist</h1>
           <div class="sub">Interplanetary window &amp; ΔV calculator · KSP2 Redux Beta system</div>
@@ -2276,162 +2278,163 @@
           <button id="zoomReset">⤾</button>
         </div>
         <div class="bottom-left-bar">
-          <div class="map-version" id="mapVersion" title="Click to view full Changelog" onclick="showChangelog()">v3.6.3
+          <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
+            style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:14px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v3.6.4</div>
+          <div class="bmc-wrap" id="bmcWrap">
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+              data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic"
+              data-text="Buy me a beer" data-outline-color="#000000" data-font-color="#000000"
+              data-coffee-color="#FFDD00"></script>
           </div>
         </div>
-        <div class="bmc-wrap" id="bmcWrap">
-          <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
-            data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic"
-            data-text="Buy me a beer" data-outline-color="#000000" data-font-color="#000000"
-            data-coffee-color="#FFDD00"></script>
+        <div class="legend">
+          <span><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</span>
+          <span><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</span>
+          <span><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</span>
+          <span><span class="dot" style="background:var(--green)"></span>Departure ghost</span>
+          <span><span class="dot"
+              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
+            ghost</span>
+          <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
         </div>
-      </div>
-      <div class="legend">
-        <span><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</span>
-        <span><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</span>
-        <span><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</span>
-        <span><span class="dot" style="background:var(--green)"></span>Departure ghost</span>
-        <span><span class="dot"
-            style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
-          ghost</span>
-        <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
-      </div>
 
-      <!-- Context Menu (Right-Click) -->
-      <div class="context-menu" id="contextMenu">
-        <div class="context-menu-item" data-action="zoom-in">Zoom in on planet</div>
-        <div class="context-menu-divider"></div>
-        <div class="context-menu-item" data-action="set-origin">Set as Origin</div>
-        <div class="context-menu-item" data-action="set-dest">Set as Destination</div>
-        <div class="context-menu-divider"></div>
-        <div class="context-menu-item" data-action="clear-origin">Clear Origin</div>
-        <div class="context-menu-item" data-action="clear-dest">Clear Destination</div>
-        <div class="context-menu-divider"></div>
-        <div class="context-menu-item" data-action="reset-zoom">Reset Zoom</div>
-        <div class="context-menu-divider"></div>
-        <div class="context-menu-item" data-action="show-info">Show Body Info</div>
-      </div>
-    </div>
-
-    <div class="sidebar">
-      <div class="select-row">
-        <div class="field">
-          <label>Origin</label>
-          <select id="originSelect"></select>
-        </div>
-        <button class="swap-btn" id="swapBtn" title="Swap origin/destination">⇄</button>
-        <div class="field">
-          <label>Destination</label>
-          <select id="destSelect"></select>
+        <!-- Context Menu (Right-Click) -->
+        <div class="context-menu" id="contextMenu">
+          <div class="context-menu-item" data-action="zoom-in">Zoom in on planet</div>
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" data-action="set-origin">Set as Origin</div>
+          <div class="context-menu-item" data-action="set-dest">Set as Destination</div>
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" data-action="clear-origin">Clear Origin</div>
+          <div class="context-menu-item" data-action="clear-dest">Clear Destination</div>
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" data-action="reset-zoom">Reset Zoom</div>
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" data-action="show-info">Show Body Info</div>
         </div>
       </div>
 
-      <!-- Google AdSense Sponsor Card — hidden until AdSense is configured -->
-      <div class="card" style="margin: 0 14px 11px; text-align: center; display:none;">
-        <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Sponsor</h3>
-        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5297704957311927"
-          data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
-        <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-        <div class="note">Note: Replace data-ad-slot="1234567890" with your actual display ad unit ID.</div>
-      </div>
-
-      <div class="transfer-actions">
-        <button class="plan-btn" id="planBtn">Plan Transfer</button>
-        <button class="clear-transfer-btn" id="clearTransferBtn" title="Clear transfer overlays">Clear</button>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" data-tab="transfer">Transfer</div>
-        <div class="tab" data-tab="assists">Assists</div>
-        <div class="tab" data-tab="porkchop">Porkchop</div>
-        <div class="tab" data-tab="info">Body Info</div>
-      </div>
-
-      <div class="tab-panels">
-
-        <div class="tab-panel active" id="panel-transfer">
-          <div id="transferResults">
-            <div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a
-              Hohmann-style transfer window.</div>
+      <div class="sidebar">
+        <div class="select-row">
+          <div class="field">
+            <label>Origin</label>
+            <select id="originSelect"></select>
+          </div>
+          <button class="swap-btn" id="swapBtn" title="Swap origin/destination">⇄</button>
+          <div class="field">
+            <label>Destination</label>
+            <select id="destSelect"></select>
           </div>
         </div>
 
-        <div class="tab-panel" id="panel-assists">
-          <div class="card">
-            <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity
-              Assist Routes</h3>
-            <div id="assistList">
-              <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a
-                flyby, it'll show up here as an optional route.</div>
-            </div>
-            <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and
-              comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories
-              also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not
-              a flight plan.</div>
-          </div>
+        <!-- Google AdSense Sponsor Card — hidden until AdSense is configured -->
+        <div class="card" style="margin: 0 14px 11px; text-align: center; display:none;">
+          <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Sponsor</h3>
+          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5297704957311927"
+            data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
+          <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          </script>
+          <div class="note">Note: Replace data-ad-slot="1234567890" with your actual display ad unit ID.</div>
         </div>
 
-        <div class="tab-panel" id="panel-porkchop">
-          <div class="card">
-            <h3><span class="dot"></span>How to Use the Porkchop Plot</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 12px; line-height: 1.6;">
-              <div>
-                <strong style="color: var(--accent);">What It Shows</strong><br>
-                A "porkchop" (or "launch window") plot displays transfer opportunities between two bodies. Each cell
-                represents a different launch date and flight time combination, color-coded by the Δv required.
-              </div>
-              <div>
-                <strong style="color: var(--accent);">How to Read It</strong><br>
-                <strong>X-axis:</strong> Departure date (left = earlier)<br>
-                <strong>Y-axis:</strong> Time of flight (top = shorter journey)<br>
-                <strong>Colors:</strong> Blue/Green = efficient, Red = expensive
-              </div>
-              <div>
-                <strong style="color: var(--accent);">Finding Good Windows</strong><br>
-                Look for "valleys" or blue/green areas—these represent efficient transfer windows. Avoid red regions
-                (expensive). The bluest cell is the optimal transfer.
-              </div>
-              <div>
-                <strong style="color: var(--accent);">How to Plan</strong><br>
-                1. Generate the plot<br>
-                2. Find a blue/green valley<br>
-                3. Click a cell to see exact timing<br>
-                4. Check "Next Transfer Window" in main panel
-              </div>
-              <div style="grid-column: 1 / -1;">
-                <strong style="color: var(--accent);">Clicking Cells</strong><br>
-                Click any cell to inspect its details: exact departure date, arrival date, and Δv required. Use this
-                to fine-tune your launch plan and see if a particular window fits your schedule.
-              </div>
+        <div class="transfer-actions">
+          <button class="plan-btn" id="planBtn">Plan Transfer</button>
+          <button class="clear-transfer-btn" id="clearTransferBtn" title="Clear transfer overlays">Clear</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" data-tab="transfer">Transfer</div>
+          <div class="tab" data-tab="assists">Assists</div>
+          <div class="tab" data-tab="porkchop">Porkchop</div>
+          <div class="tab" data-tab="info">Body Info</div>
+        </div>
+
+        <div class="tab-panels">
+
+          <div class="tab-panel active" id="panel-transfer">
+            <div id="transferResults">
+              <div class="placeholder">Select an origin and destination, then click <b>Plan Transfer</b> to compute a
+                Hohmann-style transfer window.</div>
             </div>
           </div>
 
-          <div class="card">
-            <h3><span class="dot"></span>Porkchop Plot</h3>
-            <div class="pk-canvas-wrap">
-              <canvas id="pkCanvas" width="360" height="300" style="width:100%;height:auto;"></canvas>
+          <div class="tab-panel" id="panel-assists">
+            <div class="card">
+              <h3><span class="dot" style="background:var(--violet);box-shadow:0 0 6px var(--violet);"></span>Gravity
+                Assist Routes</h3>
+              <div id="assistList">
+                <div class="placeholder">Plan a transfer first — if an intermediate planet is well-positioned for a
+                  flyby, it'll show up here as an optional route.</div>
+              </div>
+              <div class="note">Estimated by solving two Lambert arcs (origin → assist planet → destination) and
+                comparing combined departure/arrival v∞ against the direct Hohmann transfer. Real assist trajectories
+                also depend on flyby altitude and approach geometry — treat the savings shown here as a rough guide, not
+                a flight plan.</div>
             </div>
-            <div class="pk-legend-bar"></div>
-            <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
-            <div class="pk-controls">
-              <button id="pkGenerate">Generate</button>
+          </div>
+
+          <div class="tab-panel" id="panel-porkchop">
+            <div class="card">
+              <h3><span class="dot"></span>How to Use the Porkchop Plot</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 12px; line-height: 1.6;">
+                <div>
+                  <strong style="color: var(--accent);">What It Shows</strong><br>
+                  A "porkchop" (or "launch window") plot displays transfer opportunities between two bodies. Each cell
+                  represents a different launch date and flight time combination, color-coded by the Δv required.
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">How to Read It</strong><br>
+                  <strong>X-axis:</strong> Departure date (left = earlier)<br>
+                  <strong>Y-axis:</strong> Time of flight (top = shorter journey)<br>
+                  <strong>Colors:</strong> Blue/Green = efficient, Red = expensive
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">Finding Good Windows</strong><br>
+                  Look for "valleys" or blue/green areas—these represent efficient transfer windows. Avoid red regions
+                  (expensive). The bluest cell is the optimal transfer.
+                </div>
+                <div>
+                  <strong style="color: var(--accent);">How to Plan</strong><br>
+                  1. Generate the plot<br>
+                  2. Find a blue/green valley<br>
+                  3. Click a cell to see exact timing<br>
+                  4. Check "Next Transfer Window" in main panel
+                </div>
+                <div style="grid-column: 1 / -1;">
+                  <strong style="color: var(--accent);">Clicking Cells</strong><br>
+                  Click any cell to inspect its details: exact departure date, arrival date, and Δv required. Use this
+                  to fine-tune your launch plan and see if a particular window fits your schedule.
+                </div>
+              </div>
             </div>
-            <div class="note">X-axis: departure date. Y-axis: time of flight. Color = heliocentric transfer Δv
-              (Lambert-solved per cell). Moon insertion and landing Δv shown separately as reference - actual costs
-              depend on approach geometry. Click a cell to inspect it.</div>
-          </div>
-          <div class="card" id="pkSelected" style="display:none;">
-            <h3><span class="dot"></span>Selected Point</h3>
-            <div id="pkSelectedBody"></div>
-          </div>
-        </div>
 
-        <div class="tab-panel" id="panel-info">
-          <div class="card" id="infoCard"></div>
-        </div>
+            <div class="card">
+              <h3><span class="dot"></span>Porkchop Plot</h3>
+              <div class="pk-canvas-wrap">
+                <canvas id="pkCanvas" width="360" height="300" style="width:100%;height:auto;"></canvas>
+              </div>
+              <div class="pk-legend-bar"></div>
+              <div class="pk-legend-labels"><span>low Δv</span><span>high Δv</span></div>
+              <div class="pk-controls">
+                <button id="pkGenerate">Generate</button>
+              </div>
+              <div class="note">X-axis: departure date. Y-axis: time of flight. Color = heliocentric transfer Δv
+                (Lambert-solved per cell). Moon insertion and landing Δv shown separately as reference - actual costs
+                depend on approach geometry. Click a cell to inspect it.</div>
+            </div>
+            <div class="card" id="pkSelected" style="display:none;">
+              <h3><span class="dot"></span>Selected Point</h3>
+              <div id="pkSelectedBody"></div>
+            </div>
+          </div>
 
+          <div class="tab-panel" id="panel-info">
+            <div class="card" id="infoCard"></div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -2446,6 +2449,44 @@
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
         <p>All notable changes to Kerbalist will be documented in this file.</p>
+
+        <h2>[3.6.4] - 2026-09-15</h2>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Sidebar Rendering Below the Map on Desktop</strong>: A stray extra closing
+            <code>&lt;div&gt;</code> left over from an earlier edit (immediately after the version badge) was silently
+            closing <code>.bottom-left-bar</code>, then cascading to prematurely close <code>.map-wrap</code> and
+            <code>.main</code> one element too early. The net effect: the sidebar ended up as a sibling of
+            <code>.main</code> instead of nested inside it, so it rendered full-width below the map instead of beside it
+            on desktop widths. This was a pure HTML nesting bug, not a CSS/media-query issue — the responsive
+            breakpoints themselves were never at fault.
+          </li>
+          <li><strong>Orbital Drift Root Cause Fix Restored</strong>: An orbital calibration fix from earlier work had
+            gone missing from this branch and is restored here. The in-game calendar uses 425 days per year, not 426 as
+            previously assumed — a one-day-per-year discrepancy that compounds with every year elapsed, which is why the
+            long-standing "orbits drift after 1-2 years" issue was small at first and grew steadily worse over time.
+            <code>YEAR_DAYS</code> corrected from 426 to 425, and <code>m0Deg</code> recalibrated for all six planets
+            using direct in-game Mean Anomaly readings taken ~15 years apart, cross-validated to within 0.01° per
+            planet. Orbital periods and orientDeg values were independently confirmed already correct (via Kepler's
+            third law and self-consistent Argument-of-Periapsis/LAN readings) and did not need to change. New m0Deg
+            values: Moho 124.90, Eve 314.44, Duna 348.60, Dres 110.74, Jool 334.08, Eeloo 158.80 (previously 108.64 /
+            165.54 / 350.99 / 116.10 / 339.25 / 163.48).
+          </li>
+        </ul>
+
+        <h3>Known Issues</h3>
+        <ul>
+          <li><strong>LAN Not Modeled Separately</strong>: The 3D orbit renderer combines Argument of Periapsis and
+            Longitude of Ascending Node into a single <code>orientDeg</code> value and applies inclination as a simple
+            tilt, which is exact only when LAN is 0. Real LAN values are nonzero for every planet, so there's a small
+            residual (constant, not growing over time) out-of-plane position error, largest for higher-inclination
+            bodies like Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°). A fully correct fix would track LAN
+            separately with proper 3-axis rotation.</li>
+          <li><strong>kRPC2 Dependency Mod Doesn't Work</strong>: The kRPC2 dependency mod on the KSP2 side does not
+            work yet — the Python bridge (<code>kerbalist_bridge.py</code>) cannot connect to KSP2 because the required
+            server-side mod is not functional.</li>
+          <li><strong>Map Does Not Render on Mobile</strong>: The 3D map canvas fails to initialize or render on mobile browsers (both iOS Safari and Android Chrome). The sidebar controls and all non-map UI elements still work correctly.</li>
+        </ul>
 
         <h2>[3.6.3] - 2026-09-15</h2>
         <h3>Changed</h3>
@@ -3116,7 +3157,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v3.6 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v3.6.4 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -3137,7 +3178,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.6.3';
+    const VERSION = 'v3.6.4';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -3172,11 +3213,11 @@
 
       const RAW_PLANETS = [
         {
-          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 108.64, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
+          name: 'Moho', color: '#b98a56', a: 5263138304, e: 0.200, orientDeg: 85, m0Deg: 124.90, period: 2215754.5, mu: 1.6860938e11, radius: 250000, incl: 7.00,
           desc: 'The innermost planet: a small, cratered, metallic world on a fast but steeply eccentric and inclined orbit. Its plane change and capture costs make it deceptively expensive to reach despite sitting closest to Kerbol.'
         },
         {
-          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 165.54, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
+          name: 'Eve', color: '#9c4fc4', a: 9832684544, e: 0.010, orientDeg: 15, m0Deg: 314.44, period: 5657995.7, mu: 8.1717302e12, radius: 700000, incl: 2.10,
           desc: 'A dense purple world wrapped in a thick atmosphere, with the deepest gravity well of any stock planet. Home to the moon Gilly. Reaching orbit from the surface is one of the hardest challenges in the game.'
         },
         {
@@ -3184,19 +3225,19 @@
           desc: 'Homeworld of the Kerbals and the default reference body for every transfer in this tool. Perfectly circular orbit. Orbited by the Mun and Minmus.'
         },
         {
-          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 350.99, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
+          name: 'Duna', color: '#c1531c', a: 20726155264, e: 0.051, orientDeg: 135.5, m0Deg: 348.60, period: 17315400.4, mu: 3.0136321e11, radius: 320000, incl: 0.06,
           desc: 'A rust-red desert world with a thin atmosphere — the classic first interplanetary destination. Its large moon Ike shares the same orbit around Kerbol.'
         },
         {
-          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 116.10, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
+          name: 'Dres', color: '#9a9a9a', a: 40839348203, e: 0.145, orientDeg: 370, m0Deg: 110.74, period: 47893063.1, mu: 2.1484489e10, radius: 138000, incl: 5.00,
           desc: 'A small, heavily-cratered rocky world on an eccentric, inclined orbit in the asteroid-belt region of the system. Orbited by the Dresteroids Drast and Beyl.'
         },
         {
-          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 339.25, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
+          name: 'Jool', color: '#4fae5b', a: 68773560320, e: 0.050, orientDeg: 52, m0Deg: 334.08, period: 104661432, mu: 2.82528e14, radius: 6000000, incl: 1.304,
           desc: 'A gas giant with a swirling green atmosphere and an enormous sphere of influence hosting five moons: Laythe, Vall, Tylo, Bop and Pol. Dominates the outer Kerbol system.'
         },
         {
-          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 163.48, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
+          name: 'Eeloo', color: '#dfe8ec', a: 90118820000, e: 0.260, orientDeg: 310, m0Deg: 158.80, period: 156991880, mu: 7.4410815e10, radius: 210000, incl: 6.15,
           desc: 'A distant icy dwarf planet on the most eccentric, steeply inclined orbit of the stock planets — the outermost destination, and a serious test of a mission plan.'
         }
       ];
@@ -3472,7 +3513,7 @@
       let warpIndex = 2;
       const WARP_LEVELS = [0, 1, 5, 50, 500, 5000, 50000, 500000];
       let lastFrameTime = performance.now();
-      const DAY_SEC = 21600, YEAR_DAYS = 426;
+      const DAY_SEC = 21600, YEAR_DAYS = 425;
 
       function utToDateString(ut) {
         const totalDays = Math.floor(ut / DAY_SEC);
