@@ -13,9 +13,9 @@
     :root {
       --bg: #060a11;
       --bg-grid: #0a1120;
-      --panel: #0b1220;
-      --panel2: #0f1830;
-      --panel3: #101c33;
+      --panel: rgba(11, 18, 32, 0.7);
+      --panel2: rgba(15, 24, 48, 0.7);
+      --panel3: rgba(16, 28, 51, 0.7);
       --border: #1d2c47;
       --border-bright: #2c4470;
       --text: #dbe7f5;
@@ -74,7 +74,8 @@
       align-items: center;
       gap: 22px;
       padding: 10px 18px;
-      background: linear-gradient(180deg, #0c1526, #081020);
+      background: linear-gradient(180deg, rgba(12, 21, 38, 0.7), rgba(8, 16, 32, 0.7));
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
       flex: 0 0 auto;
       z-index: 20;
@@ -736,12 +737,13 @@
       display: flex;
       min-height: 0;
       flex-direction: row;
+      position: relative;
     }
 
     .map-wrap {
-      flex: 1 1 auto;
-      position: relative;
-      min-width: 0;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
       background: var(--bg-grid);
       overflow: hidden;
     }
@@ -764,7 +766,7 @@
 
     .map-hud {
       position: absolute;
-      top: 12px;
+      top: 115px;
       left: 12px;
       display: flex;
       flex-direction: column;
@@ -787,19 +789,42 @@
 
     .shortcuts-bubble {
       position: absolute;
-      top: 12px;
-      right: 14px;
+      top: 115px;
+      right: 524px;
       z-index: 10;
       background: rgba(9, 15, 28, .86);
       border: 1px solid var(--border);
       border-radius: 9px;
       padding: 12.5px 16.25px;
       font-family: var(--font-mono);
-      pointer-events: none;
+      pointer-events: auto;
       backdrop-filter: blur(4px);
       display: flex;
       flex-direction: column;
       gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .shortcuts-bubble.collapsed {
+      padding: 6px 10px;
+      gap: 0;
+    }
+
+    .shortcuts-bubble.collapsed .shortcut-row,
+    .shortcuts-bubble.collapsed .sb-title {
+      display: none;
+    }
+
+    .sb-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 3px;
+    }
+
+    .shortcuts-bubble.collapsed .sb-header {
+      margin-bottom: 0;
     }
 
     .shortcuts-bubble .sb-title {
@@ -808,7 +833,38 @@
       text-transform: uppercase;
       color: var(--cyan);
       font-weight: 700;
-      margin-bottom: 3px;
+    }
+
+    .sb-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .sb-toggle-btn:hover {
+      background: var(--panel2);
+      color: var(--cyan);
+      border-color: var(--cyan-dim);
+    }
+
+    .shortcuts-bubble.collapsed .sb-min-label {
+      display: inline-block;
+      font-size: 11.25px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .shortcuts-bubble:not(.collapsed) .sb-min-label {
+      display: none;
     }
 
     .shortcut-row {
@@ -836,8 +892,8 @@
 
     .zoom-controls {
       position: absolute;
-      bottom: 90px;
-      right: 14px;
+      bottom: 65px;
+      right: 524px;
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -1014,7 +1070,7 @@
     .cam-hud {
       position: absolute;
       top: 50%;
-      right: 52px;
+      right: 562px;
       transform: translateY(-50%);
       z-index: 10;
       pointer-events: none;
@@ -1274,7 +1330,7 @@
     .legend {
       position: absolute;
       bottom: 14px;
-      right: 14px;
+      right: 524px;
       z-index: 10;
       background: rgba(9, 15, 28, .78);
       border: 1px solid var(--border);
@@ -1392,8 +1448,12 @@
     .sidebar {
       width: 510px;
       flex: 0 0 510px;
+      margin-left: auto;
+      position: relative;
+      z-index: 10;
       border-left: 1px solid var(--border);
-      background: linear-gradient(180deg, #0a0f1c, #080d18);
+      background: linear-gradient(180deg, rgba(10, 15, 28, 0.7), rgba(8, 13, 24, 0.7));
+      backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -2319,17 +2379,20 @@
           <div class="chip" id="hudOrigin">ORIGIN — Kerbin</div>
           <div class="chip" id="hudDest">DEST — Duna</div>
         </div>
-        <div class="shortcuts-bubble">
-          <div class="sb-title">Controls</div>
-          <div class="shortcut-row"><span class="sk">Drag</span><span class="sv">Rotate orbit</span></div>
-          <div class="shortcut-row"><span class="sk">Shift+Drag / Mid-Click+Drag</span><span class="sv">Pan view</span>
+        <div class="shortcuts-bubble" id="shortcutsBubble">
+          <div class="sb-header">
+            <div class="sb-title">Controls</div>
+            <span class="sb-min-label">Controls</span>
+            <button class="sb-toggle-btn" id="sbToggleBtn" onclick="toggleControlsBubble()" title="Minimize / Expand (K)">_</button>
           </div>
+          <div class="shortcut-row"><span class="sk">Drag</span><span class="sv">Rotate orbit</span></div>
+          <div class="shortcut-row"><span class="sk">Shift+Drag / Mid-Click+Drag</span><span class="sv">Pan view</span></div>
           <div class="shortcut-row"><span class="sk">Scroll</span><span class="sv">Zoom in / out</span></div>
           <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
           <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
+          <div class="shortcut-row"><span class="sk">K</span><span class="sv">Toggle controls</span></div>
           <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
-          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest,
-              zoom)</span></div>
+          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest, zoom)</span></div>
         </div>
         <div class="zoom-controls">
           <button id="zoomIn">+</button>
@@ -4662,7 +4725,9 @@
         if (!ghostSphere || !currentResult || !ghostDest) return;
         const r = currentResult;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
-        const ghostUT = UT + waitSec + r.tt;
+        const selectedAssist = (selectedAssistIdx !== null && currentAssists[selectedAssistIdx]) ? currentAssists[selectedAssistIdx] : null;
+        const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tt;
+        const ghostUT = UT + waitSec + totalFlightTime;
 
         const gPos = bodyWorldPositionAt(ghostDest, ghostUT);
         ghostSphere.position.copy(gPos);
@@ -5054,12 +5119,27 @@
       document.getElementById('zoomOut').onclick = () => { camR = Math.min(CAM_MAX, camR * 1.35); updateCamera(); };
       document.getElementById('zoomReset').onclick = resetView;
 
-      // Keyboard: R = reset view
+      // Minimize / Expand Controls Bubble
+      window.toggleControlsBubble = () => {
+        const bubble = document.getElementById('shortcutsBubble');
+        const btn = document.getElementById('sbToggleBtn');
+        if (!bubble) return;
+        const collapsed = bubble.classList.toggle('collapsed');
+        if (btn) {
+          btn.textContent = collapsed ? '+' : '_';
+          btn.title = collapsed ? 'Expand Controls (K)' : 'Minimize Controls (K)';
+        }
+      };
+
+      // Keyboard: R = reset view, K = toggle controls bubble
       window.addEventListener('keydown', e => {
-        if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey) {
-          // Don't steal R from text inputs
-          if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-          resetView();
+        if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          if (e.key === 'r' || e.key === 'R') {
+            resetView();
+          } else if (e.key === 'k' || e.key === 'K') {
+            toggleControlsBubble();
+          }
         }
       });
 
@@ -6006,7 +6086,9 @@
         const phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
         const closeEnough = Math.abs(phaseDiff) < 2;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
-        const ghostUT = UT + waitSec + r.tt;
+        const selectedAssist = (selectedAssistIdx !== null && currentAssists[selectedAssistIdx]) ? currentAssists[selectedAssistIdx] : null;
+        const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tt;
+        const ghostUT = UT + waitSec + totalFlightTime;
         const originName = r.originSelected.name;
         const destName = r.destSelected.name;
         const isMoonOrigin = r.originSelected.parent;
@@ -6072,10 +6154,10 @@
       <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
     </div>
     <div class="card" style="border-color:rgba(255,180,84,.22);">
-      <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival</h3>
+      <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival${selectedAssist ? ' (via assist)' : ''}</h3>
       <div class="stat-row"><span class="k">Arrival UT</span><span class="v warn">${utToDateString(ghostUT)}</span></div>
-      <div class="stat-row"><span class="k">Time until arrival</span><span class="v">${durationString(waitSec + r.tt)}</span></div>
-      <div class="note">The translucent ghost on the 3D map shows where ${destName} will be when your craft arrives. A dashed line connects its current position to the arrival position. The ghost updates live as UT advances.</div>
+      <div class="stat-row"><span class="k">Time until arrival</span><span class="v">${durationString(waitSec + totalFlightTime)}</span></div>
+      <div class="note">The translucent ghost on the 3D map shows where ${destName} will be when your craft arrives${selectedAssist ? ' via the selected gravity assist route' : ''}. A dashed line connects its current position to the arrival position. The ghost updates live as UT advances.</div>
     </div>`;
       }
 
@@ -6136,6 +6218,8 @@
           initAssistArcs();
           updateAssistArcs();
         }
+        updateGhostPosition();
+        renderTransferResults();
         renderAssistOptions();
       };
 
