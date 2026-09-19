@@ -12,7 +12,6 @@ All notable changes to Kerbalist will be documented in this file.
 ### Changed
 
 - **UI Button Scaling & Layout**:
-  - Reduced "Buy me a beer" and "Changelog" button sizes by 25%.
   - Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.
   - Relocated camera control buttons upward so they no longer overlap with the map legend.
   - Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.
