@@ -25,6 +25,7 @@
       --cyan-dim: #1f5d63;
       --amber: #ffb454;
       --amber-dim: #7a5222;
+      --orange: #ff8c3c;
       --green: #7ee787;
       --red: #ff6b6b;
       --violet: #b78cff;
@@ -741,8 +742,9 @@
     }
 
     .map-wrap {
-      position: fixed;
-      inset: 0;
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
       z-index: 0;
       background: var(--bg-grid);
       overflow: hidden;
@@ -789,8 +791,8 @@
 
     .shortcuts-bubble {
       position: absolute;
-      top: 115px;
-      right: 524px;
+      top: 16px;
+      right: 16px;
       z-index: 10;
       background: rgba(9, 15, 28, .86);
       border: 1px solid var(--border);
@@ -892,8 +894,8 @@
 
     .zoom-controls {
       position: absolute;
-      bottom: 65px;
-      right: 524px;
+      bottom: 70px;
+      right: 16px;
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -998,6 +1000,38 @@
       box-shadow: 0 0 10px rgba(79, 224, 232, .18);
     }
 
+    /* Bug Report button — matches version badge style */
+    .bug-report-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: capitalize;
+      pointer-events: auto;
+      cursor: pointer;
+      opacity: .85;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: rgba(9, 15, 28, .7);
+      border: 1px solid var(--border);
+      transition: all .15s ease;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .bug-report-btn:hover {
+      color: var(--orange);
+      border-color: var(--orange);
+      background: rgba(11, 18, 32, .95);
+      opacity: 1;
+      text-shadow: 0 0 8px rgba(255, 140, 60, .45);
+      box-shadow: 0 0 10px rgba(255, 140, 60, .18);
+    }
+
     /* Buy Me a Coffee support button — restyled to match the version badge */
     .bmc-wrap {
       display: inline-flex;
@@ -1070,7 +1104,7 @@
     .cam-hud {
       position: absolute;
       top: 50%;
-      right: 562px;
+      right: 16px;
       transform: translateY(-50%);
       z-index: 10;
       pointer-events: none;
@@ -1091,7 +1125,7 @@
       font-family: var(--font-mono);
       font-size: 12.5px;
       letter-spacing: .06em;
-      color: rgba(255,255,255,.32);
+      color: rgba(255, 255, 255, .32);
       white-space: nowrap;
       backdrop-filter: blur(4px);
       transition: color .3s;
@@ -1103,12 +1137,311 @@
     }
 
     .cam-hud-row .hud-val {
-      color: rgba(255,255,255,.45);
+      color: rgba(255, 255, 255, .45);
       font-weight: 600;
     }
 
     .cam-hud-row.hud-focus .hud-val {
       color: rgba(79, 224, 232, .70);
+    }
+
+    /* Bug Report Modal Popup */
+    .bug-report-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(4, 7, 15, .78);
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      padding: 20px;
+      animation: fadeInOverlay .15s ease-out;
+    }
+
+    .bug-report-overlay.open {
+      display: flex;
+    }
+
+    .bug-report-popup {
+      width: 600px;
+      max-width: 95vw;
+      background: var(--panel);
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, .75), 0 0 0 1px rgba(79, 224, 232, .08);
+      overflow: hidden;
+      animation: scaleInPopup .18s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .bug-report-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--panel2);
+      border-bottom: 1px solid var(--border);
+      flex: 0 0 auto;
+    }
+
+    .bug-report-header h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bug-report-header h3::before {
+      content: '🐛';
+      display: inline-block;
+      font-size: 16px;
+    }
+
+    .bug-report-close {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s ease;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .bug-report-close:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: rgba(248, 81, 73, .12);
+      box-shadow: 0 0 8px rgba(248, 81, 73, .3);
+    }
+
+    .bug-report-body {
+      overflow-y: auto;
+      padding: 20px 24px;
+      flex: 1 1 auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-bright) var(--panel2);
+    }
+
+    .bug-report-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .bug-report-body::-webkit-scrollbar-track {
+      background: var(--panel2);
+    }
+
+    .bug-report-body::-webkit-scrollbar-thumb {
+      background: var(--border-bright);
+      border-radius: 3px;
+    }
+
+    .bug-report-body::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan-dim);
+    }
+
+    .bug-report-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .bug-report-label {
+      font-size: 11px;
+      color: var(--text-dimmer);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 600;
+    }
+
+    .bug-report-input,
+    .bug-report-textarea {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 8px 10px;
+      outline: none;
+      transition: border-color .15s;
+      resize: vertical;
+    }
+
+    .bug-report-input:focus,
+    .bug-report-textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px rgba(79, 224, 232, .2);
+    }
+
+    .bug-report-textarea {
+      min-height: 100px;
+      max-height: 180px;
+      font-family: var(--font-mono);
+      line-height: 1.5;
+    }
+
+    .bug-report-helper {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    .bug-report-file-input-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bug-report-file-input {
+      display: none;
+    }
+
+    .bug-report-file-label {
+      background: var(--panel2);
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .15s ease;
+      user-select: none;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .bug-report-file-label:hover {
+      border-color: var(--cyan);
+      background: rgba(79, 224, 232, .06);
+      color: var(--text);
+    }
+
+    .bug-report-file-input:focus+.bug-report-file-label {
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px rgba(79, 224, 232, .2);
+    }
+
+    .bug-report-file-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .bug-report-file-clear {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: rgba(248, 81, 73, .12);
+      color: var(--red);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .bug-report-file-clear:hover {
+      background: rgba(248, 81, 73, .2);
+      border-color: var(--red);
+    }
+
+    .bug-report-file-info {
+      font-size: 10px;
+      color: var(--text-dimmer);
+      line-height: 1.4;
+    }
+
+    .bug-report-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .bug-report-info {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+      background: rgba(79, 224, 232, .08);
+      border: 1px solid rgba(79, 224, 232, .15);
+      border-radius: 5px;
+      padding: 8px 10px;
+      line-height: 1.5;
+    }
+
+    .bug-report-actions {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px;
+      background: var(--panel2);
+      border-top: 1px solid var(--border);
+      justify-content: flex-end;
+    }
+
+    .bug-report-btn-submit,
+    .bug-report-btn-cancel {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all .15s ease;
+      user-select: none;
+    }
+
+    .bug-report-btn-submit {
+      background: rgba(255, 140, 60, .15);
+      color: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .bug-report-btn-submit:hover {
+      background: rgba(255, 140, 60, .25);
+      box-shadow: 0 0 8px rgba(255, 140, 60, .3);
+    }
+
+    .bug-report-btn-cancel {
+      background: var(--panel);
+      color: var(--text-dim);
+    }
+
+    .bug-report-btn-cancel:hover {
+      color: var(--text);
+      border-color: var(--border-bright);
     }
 
     /* Changelog Modal Popup */
@@ -1327,10 +1660,80 @@
       flex: 0 0 auto;
     }
 
+    /* Origin/Destination HUD (Top-Left) */
+    .origin-dest-hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      background: rgba(9, 15, 28, .78);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      pointer-events: auto;
+      backdrop-filter: blur(4px);
+    }
+
+    .hud-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hud-field label {
+      font-size: 11px;
+      color: var(--text-dimmer);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 600;
+    }
+
+    .hud-select {
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 13px;
+      padding: 7px 8px;
+      outline: none;
+      cursor: pointer;
+      min-width: 100px;
+      transition: border-color 0.15s;
+    }
+
+    .hud-select:focus {
+      border-color: var(--cyan);
+    }
+
+    .hud-select:hover {
+      border-color: var(--border-bright);
+    }
+
+    .hud-swap-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+
+    .hud-swap-btn:hover {
+      color: var(--cyan);
+      border-color: var(--border-bright);
+    }
+
     .legend {
       position: absolute;
-      bottom: 14px;
-      right: 524px;
+      bottom: 16px;
+      right: 16px;
       z-index: 10;
       background: rgba(9, 15, 28, .78);
       border: 1px solid var(--border);
@@ -2383,16 +2786,19 @@
           <div class="sb-header">
             <div class="sb-title">Controls</div>
             <span class="sb-min-label">Controls</span>
-            <button class="sb-toggle-btn" id="sbToggleBtn" onclick="toggleControlsBubble()" title="Minimize / Expand (K)">_</button>
+            <button class="sb-toggle-btn" id="sbToggleBtn" onclick="toggleControlsBubble()"
+              title="Minimize / Expand (K)">_</button>
           </div>
           <div class="shortcut-row"><span class="sk">Drag</span><span class="sv">Rotate orbit</span></div>
-          <div class="shortcut-row"><span class="sk">Shift+Drag / Mid-Click+Drag</span><span class="sv">Pan view</span></div>
+          <div class="shortcut-row"><span class="sk">Shift+Drag / Mid-Click+Drag</span><span class="sv">Pan view</span>
+          </div>
           <div class="shortcut-row"><span class="sk">Scroll</span><span class="sv">Zoom in / out</span></div>
           <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
           <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
           <div class="shortcut-row"><span class="sk">K</span><span class="sv">Toggle controls</span></div>
           <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
-          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest, zoom)</span></div>
+          <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest,
+              zoom)</span></div>
         </div>
         <div class="zoom-controls">
           <button id="zoomIn">+</button>
@@ -2418,7 +2824,9 @@
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
             style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v3.6.5</div>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v3.7.0</div>
+          <div class="bug-report-btn" id="bugReportBtn" onclick="showBugReportModal()" title="Report a bug">Submit bug
+            report</div>
           <div class="bmc-wrap" id="bmcWrap">
             <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
               data-name="bmc-button" data-slug="blocdigital" data-color="#48a4ff" data-emoji="🍺" data-font="Comic"
@@ -2435,6 +2843,19 @@
               style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
             ghost</span>
           <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
+        </div>
+
+        <!-- Origin/Destination HUD (Top-Left) -->
+        <div class="origin-dest-hud">
+          <div class="hud-field">
+            <label>Origin</label>
+            <select id="hudOriginSelect" class="hud-select"></select>
+          </div>
+          <button class="hud-swap-btn" id="hudSwapBtn" title="Swap origin/destination">⇄</button>
+          <div class="hud-field">
+            <label>Destination</label>
+            <select id="hudDestSelect" class="hud-select"></select>
+          </div>
         </div>
 
         <!-- Context Menu (Right-Click) -->
@@ -2586,20 +3007,84 @@
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
+        <h2>[3.7.0] - 2026-09-25</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Bug Report Feature</strong>: New 'Submit Bug Report' button in the bottom-left corner (next to the
+            changelog
+            version badge) opens a modal form for submitting bug reports directly to GitHub. Users can describe the bug,
+            attach a screenshot (PNG/JPG/GIF, max 5MB), and the issue opens pre-filled on GitHub with all context
+            included. No backend required — entirely client-side.</li>
+          <li><strong>Screenshot Support in Bug Reports</strong>: File upload with both click-to-browse and
+            drag-and-drop support. Screenshots are converted to base64 and embedded in the GitHub issue body as inline
+            markdown images so developers see the bug context immediately.</li>
+          <li><strong>HUD Layout Reorganization</strong>: Repositioned all on-map HUD elements to eliminate overlap with
+            the sidebar and improve visual hierarchy:
+            <ul>
+              <li><strong>Top-left</strong>: Origin/Destination dropdowns (new HUD panel, fully synced with sidebar)
+              </li>
+              <li><strong>Top-right</strong>: Keyboard shortcuts and warp controls</li>
+              <li><strong>Middle-right</strong>: Camera HUD (zoom %, tilt, rotation, focus)</li>
+              <li><strong>Bottom-right</strong>: Zoom controls (+/− buttons, reset), Map legend</li>
+              <li>All elements properly spaced and no longer hidden behind the sidebar</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>Sidebar Origin/Dest Dropdowns</strong>: Now fully synced with new top-left HUD dropdowns. Changes
+            in either location update both in real time. Swap button (⇄) works identically in both places.</li>
+          <li><strong>HUD Styling</strong>: Added orange color variable (<code>--orange: #ff8c3c</code>) and applied
+            consistent styling across all new HUD elements to match existing design language.</li>
+        </ul>
+        <h3>Technical Details</h3>
+        <ul>
+          <li>Bug report form validates file type (must be image/*) and size (max 5MB) before upload</li>
+          <li>Screenshots converted to data URIs and embedded in GitHub issue markdown:
+            <code>![filename](data:image/png;base64,...)</code>
+          </li>
+          <li>HUD positioning changed from sidebar-width-offset calculations to flush-edge positioning
+            (<code>right: 16px</code>, <code>left: 16px</code>)</li>
+          <li>Origin/Dest HUD dropdowns synced via JavaScript event listeners</li>
+        </ul>
+
+        <h2>[3.6.6] - 2026-09-22</h2>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Map View Off-Center (Not a Camera Bug)</strong>: <code>.map-wrap</code> had
+            <code>position: fixed; inset: 0;</code> — almost certainly a leftover from the v3.6.5 UI relocation work —
+            which made it span the entire browser window instead of just the space left after the sidebar. The 3D
+            scene itself was rendering correctly centered on its own camera target; what was visible was only the left
+            portion of a full-window-wide canvas, with the sidebar painting over the rest, so the Sun and planets
+            appeared shifted well right of the actual center of the visible map area. Restored
+            <code>.map-wrap</code> to <code>position: relative; flex: 1 1 auto; min-width: 0;</code> so it's a normal
+            flex child of <code>.main</code> again, sized to the space actually available. All other map overlays
+            (<code>.zoom-controls</code>, <code>.legend</code>, <code>#labelContainer</code>, <code>.map-hud</code>)
+            already used <code>position: absolute</code> and re-anchor correctly now that their positioned ancestor
+            is sized properly again — no other changes were needed.
+          </li>
+        </ul>
+
         <h2>[3.6.5] - 2026-09-16</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Live Camera HUD</strong>: Added a subtle, semi-transparent real-time info HUD displaying camera position (X, Y, Z), zoom radius, focused celestial body, and orbital time warp level.</li>
-          <li><strong>Orbital Ghost Planet Halos</strong>: Added faint ghost spheres (sized matching departure ghost spheres, radius 6.5) of matching planet color that fade out when zooming in close (97% zoom, threshold <code>camR &lt; 75</code>) or when focusing near a body.</li>
+          <li><strong>Live Camera HUD</strong>: Added a subtle, semi-transparent real-time info HUD displaying camera
+            position (X, Y, Z), zoom radius, focused celestial body, and orbital time warp level.</li>
+          <li><strong>Orbital Ghost Planet Halos</strong>: Added faint ghost spheres (sized matching departure ghost
+            spheres, radius 6.5) of matching planet color that fade out when zooming in close (97% zoom, threshold
+            <code>camR &lt; 75</code>) or when focusing near a body.
+          </li>
         </ul>
         <h3>Changed</h3>
         <ul>
           <li><strong>UI Button Scaling &amp; Layout</strong>:
             <ul>
               <li>Reduced "Buy me a beer" and "Changelog" button sizes by 25%.</li>
-              <li>Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.</li>
+              <li>Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile
+                layouts.</li>
               <li>Relocated camera control buttons upward so they no longer overlap with the map legend.</li>
-              <li>Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.</li>
+              <li>Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.
+              </li>
               <li>Scaled map legend size by +15%.</li>
             </ul>
           </li>
@@ -3314,7 +3799,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v3.6.5 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v3.7.0 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -3327,15 +3812,173 @@
       const overlay = document.getElementById("changelogOverlay");
       if (overlay) overlay.classList.remove("open");
     }
+
+    function showBugReportModal() {
+      const overlay = document.getElementById("bugReportOverlay");
+      if (overlay) {
+        // Set browser info
+        document.getElementById("bugBrowserInfo").textContent = getBrowserInfo();
+        document.getElementById("bugTimestamp").textContent = new Date().toLocaleString();
+        // Clear previous input
+        document.getElementById("bugTitle").value = "";
+        document.getElementById("bugDescription").value = "";
+        clearScreenshot();
+        overlay.classList.add("open");
+      }
+    }
+
+    function handleScreenshotSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file (PNG, JPG, GIF, etc.)');
+        event.target.value = '';
+        return;
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('Image is too large. Max 5MB allowed.');
+        event.target.value = '';
+        return;
+      }
+
+      // Read and display image
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = e.target.result;
+        document.getElementById("bugScreenshotImg").src = img;
+        document.getElementById("bugScreenshotLabel").textContent = `✓ ${file.name}`;
+        document.getElementById("bugScreenshotPreview").style.display = 'flex';
+        // Store base64 on the input element for later retrieval
+        document.getElementById("bugScreenshot").dataset.base64 = img;
+        document.getElementById("bugScreenshot").dataset.filename = file.name;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearScreenshot() {
+      document.getElementById("bugScreenshot").value = '';
+      document.getElementById("bugScreenshot").dataset.base64 = '';
+      document.getElementById("bugScreenshot").dataset.filename = '';
+      document.getElementById("bugScreenshotLabel").textContent = '📎 Choose image or drag here';
+      document.getElementById("bugScreenshotPreview").style.display = 'none';
+    }
+
+    function hideBugReportModal() {
+      const overlay = document.getElementById("bugReportOverlay");
+      if (overlay) overlay.classList.remove("open");
+    }
+
+    function getBrowserInfo() {
+      const ua = navigator.userAgent;
+      if (ua.indexOf("Chrome") > -1 && ua.indexOf("Edge") === -1) return "Chrome";
+      if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) return "Safari";
+      if (ua.indexOf("Edge") > -1) return "Edge";
+      if (ua.indexOf("Firefox") > -1) return "Firefox";
+      return "Other";
+    }
+
+    // ── Bug Report ──────────────────────────────────────────────────────
+    // POSTs to a Cloudflare Worker which creates a GitHub issue via the
+    // GitHub API using a stored PAT.  The user never needs a GitHub
+    // account – they just fill in the form and click "Submit".
+    const BUG_REPORT_WORKER = "https://kerbalist-bug-report.blocdigital.workers.dev";
+
+    function submitBugReport() {
+      const title = document.getElementById("bugTitle").value.trim();
+      const description = document.getElementById("bugDescription").value.trim();
+      const screenshotBase64 = document.getElementById("bugScreenshot").dataset.base64 || '';
+      const screenshotFilename = document.getElementById("bugScreenshot").dataset.filename || '';
+
+      if (!title) {
+        alert("Please enter a bug title");
+        return;
+      }
+
+      const browserInfo = getBrowserInfo();
+      const timestamp = new Date().toISOString();
+      const version = "v3.7.0";
+
+      const btn = document.querySelector(".bug-report-btn-submit");
+      btn.disabled = true;
+      btn.textContent = "Submitting…";
+
+      fetch(BUG_REPORT_WORKER, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, browser: browserInfo, version, timestamp, screenshotFilename, screenshotBase64 }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success) {
+            window.open(data.url, "_blank");
+          } else {
+            alert("Failed to submit bug report: " + (data.error || "Unknown error"));
+          }
+        })
+        .catch((err) => {
+          console.error("Bug report submission failed:", err);
+          alert("Failed to submit bug report. Please check your connection and try again.");
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = "Submit Bug Report";
+          hideBugReportModal();
+        });
+    }
+
+    // Close modals on Escape key
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") hideChangelog();
+      if (e.key === "Escape") {
+        hideChangelog();
+        hideBugReportModal();
+      }
     });
+
+    // Drag-and-drop support for screenshot upload
+    (function () {
+      const fileInput = document.getElementById("bugScreenshot");
+      const fileLabel = document.querySelector(".bug-report-file-label");
+
+      if (!fileInput || !fileLabel) return;
+
+      fileLabel.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileLabel.style.borderColor = "var(--cyan)";
+        fileLabel.style.backgroundColor = "rgba(79, 224, 232, .12)";
+      });
+
+      fileLabel.addEventListener("dragleave", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileLabel.style.borderColor = "";
+        fileLabel.style.backgroundColor = "";
+      });
+
+      fileLabel.addEventListener("drop", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileLabel.style.borderColor = "";
+        fileLabel.style.backgroundColor = "";
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          fileInput.files = files;
+          handleScreenshotSelect({ target: fileInput });
+        }
+      });
+    })();
   </script>
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.6.5';
+    const VERSION = 'v3.7.0';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -4804,7 +5447,7 @@
           const dy = camTarget.y - actualPos.y;
           const dz = camTarget.z - actualPos.z;
           const proxFade = Math.min(1, Math.max(0,
-            (dx*dx + dy*dy + dz*dz - ORB_GHOST_PROX_SQ * 0.3) / (ORB_GHOST_PROX_SQ * 0.7)
+            (dx * dx + dy * dy + dz * dz - ORB_GHOST_PROX_SQ * 0.3) / (ORB_GHOST_PROX_SQ * 0.7)
           ));
 
           og.targetOpacity = 0.45 * zoomFade * proxFade;
@@ -5297,26 +5940,58 @@
          ========================================================= */
       const originSelect = document.getElementById('originSelect');
       const destSelect = document.getElementById('destSelect');
+      const hudOriginSelect = document.getElementById('hudOriginSelect');
+      const hudDestSelect = document.getElementById('hudDestSelect');
+
       BODY_OPTIONS.forEach(({ body, isMoon, label }) => {
         const o1 = document.createElement('option'); o1.value = body.name; o1.textContent = label;
         const o2 = document.createElement('option'); o2.value = body.name; o2.textContent = label;
+        const o3 = document.createElement('option'); o3.value = body.name; o3.textContent = label;
+        const o4 = document.createElement('option'); o4.value = body.name; o4.textContent = label;
         if (isMoon) {
           o1.dataset.parent = body.parent;
           o2.dataset.parent = body.parent;
+          o3.dataset.parent = body.parent;
+          o4.dataset.parent = body.parent;
         }
-        originSelect.appendChild(o1); destSelect.appendChild(o2);
+        originSelect.appendChild(o1);
+        destSelect.appendChild(o2);
+        hudOriginSelect.appendChild(o3);
+        hudDestSelect.appendChild(o4);
       });
-      originSelect.value = 'Kerbin'; destSelect.value = 'Duna';
+      originSelect.value = 'Kerbin';
+      destSelect.value = 'Duna';
+      hudOriginSelect.value = 'Kerbin';
+      hudDestSelect.value = 'Duna';
+
+      function syncSelectsFromSidebar() {
+        hudOriginSelect.value = originSelect.value;
+        hudDestSelect.value = destSelect.value;
+      }
+
+      function syncSelectsFromHud() {
+        originSelect.value = hudOriginSelect.value;
+        destSelect.value = hudDestSelect.value;
+      }
 
       function refreshHud() {
         document.getElementById('hudOrigin').textContent = 'ORIGIN — ' + originSelect.value;
         document.getElementById('hudDest').textContent = 'DEST — ' + destSelect.value;
+        syncSelectsFromSidebar();
       }
       refreshHud();
       originSelect.onchange = refreshHud;
       destSelect.onchange = refreshHud;
+      hudOriginSelect.onchange = syncSelectsFromHud;
+      hudDestSelect.onchange = syncSelectsFromHud;
+
       document.getElementById('swapBtn').onclick = () => {
         const a = originSelect.value; originSelect.value = destSelect.value; destSelect.value = a; refreshHud();
+      };
+
+      document.getElementById('hudSwapBtn').onclick = () => {
+        const a = hudOriginSelect.value; hudOriginSelect.value = hudDestSelect.value; hudDestSelect.value = a;
+        syncSelectsFromHud();
       };
 
       document.querySelectorAll('.tab').forEach(t => {
@@ -6522,9 +7197,9 @@
           const zoomStr = rawPct > 98 ? rawPct.toFixed(4) : Math.round(rawPct).toString();
           document.getElementById('hudZoomVal').textContent = zoomStr + '%';
           const tiltDeg = Math.round((camPhi / Math.PI) * 180);
-          const rotDeg  = ((Math.round((camTheta / (2 * Math.PI)) * 360) % 360) + 360) % 360;
+          const rotDeg = ((Math.round((camTheta / (2 * Math.PI)) * 360) % 360) + 360) % 360;
           document.getElementById('hudTiltVal').textContent = tiltDeg + '°';
-          document.getElementById('hudRotVal').textContent  = rotDeg  + '°';
+          document.getElementById('hudRotVal').textContent = rotDeg + '°';
           const warpLabel = liveMode ? 'LIVE' : (WARP_LEVELS[warpIndex] >= 1000
             ? (WARP_LEVELS[warpIndex] / 1000).toFixed(WARP_LEVELS[warpIndex] % 1000 ? 1 : 0) + 'k×'
             : WARP_LEVELS[warpIndex] + '×');
@@ -6602,6 +7277,61 @@
           <button class="cal-apply-btn secondary" id="calCancelBtn">Cancel</button>
           <button class="cal-apply-btn primary" id="calApplyBtn">Apply</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bug Report Modal -->
+  <div class="bug-report-overlay" id="bugReportOverlay" onclick="if(event.target===this)hideBugReportModal()">
+    <div class="bug-report-popup">
+      <div class="bug-report-header">
+        <h3>Report a Bug</h3>
+        <button class="bug-report-close" onclick="hideBugReportModal()" title="Close (Esc)">&times;</button>
+      </div>
+      <div class="bug-report-body">
+        <div class="bug-report-field">
+          <label class="bug-report-label">Bug Title (Required)</label>
+          <input type="text" class="bug-report-input" id="bugTitle"
+            placeholder="e.g., Transfer arc not rendering for Duna" maxlength="80">
+        </div>
+
+        <div class="bug-report-field">
+          <label class="bug-report-label">Description</label>
+          <div class="bug-report-helper">
+            1. What were you doing when the bug occurred?<br>
+            2. What did you expect to happen?<br>
+            3. What actually happened?
+          </div>
+          <textarea class="bug-report-textarea" id="bugDescription"></textarea>
+        </div>
+
+        <div class="bug-report-field">
+          <label class="bug-report-label">Screenshot (Optional)</label>
+          <div class="bug-report-file-input-wrapper">
+            <input type="file" class="bug-report-file-input" id="bugScreenshot" accept="image/*"
+              onchange="handleScreenshotSelect(event)">
+            <label for="bugScreenshot" class="bug-report-file-label">
+              <span id="bugScreenshotLabel">📎 Choose image or drag here</span>
+            </label>
+            <div class="bug-report-file-preview" id="bugScreenshotPreview" style="display: none;">
+              <img id="bugScreenshotImg"
+                style="max-width: 100%; max-height: 120px; border-radius: 4px; margin-bottom: 8px;">
+              <button type="button" class="bug-report-file-clear" onclick="clearScreenshot()">Clear</button>
+            </div>
+          </div>
+          <div class="bug-report-file-info">Max 5MB (PNG, JPG, GIF supported)</div>
+        </div>
+
+        <div class="bug-report-info">
+          <strong>📋 Auto-included:</strong><br>
+          • App Version: v3.7.0<br>
+          • Browser: <span id="bugBrowserInfo">Chrome</span><br>
+          • Timestamp: <span id="bugTimestamp">--</span>
+        </div>
+      </div>
+      <div class="bug-report-actions">
+        <button class="bug-report-btn-cancel" onclick="hideBugReportModal()">Cancel</button>
+        <button class="bug-report-btn-submit" onclick="submitBugReport()">Submit Bug Report</button>
       </div>
     </div>
   </div>

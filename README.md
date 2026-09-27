@@ -7,9 +7,31 @@
 
 **Live sync-capable* transfer calculator with optional gravity assist optimization.**
 
-Current version: **v3.6.5**
+Current version: **v3.7.0**
 
 *WIP
+
+## What's New in v3.7.0 (2026-09-25)
+
+### 🐛 Bug Reporting
+- **Submit bug report button** in bottom-left corner opens a modal for filing bugs directly to GitHub
+- **Screenshot support** — drag-drop or file-browse PNG/JPG/GIF images (max 5MB) that embed in the GitHub issue
+- Pre-filled issues include: bug description, screenshot, app version, browser, timestamp
+- No backend required — entirely client-side
+
+### 📍 HUD Reorganization  
+- **Top-left corner**: Origin/Destination dropdowns (new HUD panel, fully synced with sidebar)
+- **Top-right corner**: Keyboard shortcuts and warp controls
+- **Middle-right**: Camera HUD (zoom %, tilt, rotation, focus)
+- **Bottom-right**: Zoom controls (+/− buttons, reset button), Map legend
+- All HUD elements repositioned to avoid sidebar overlap
+
+### 🔄 Synchronized Dropdowns
+- Origin/Destination dropdowns now sync between sidebar and top-left HUD panel
+- Changes in either location update both in real-time
+- Swap button (⇄) works identically in both places
+
+---
 
 ## Features
 
@@ -36,16 +58,23 @@ Current version: **v3.6.5**
 - **Narrow Dres ring** - rendered as a thin equatorial ring band matching the in-game look more closely
 - **Correct moon velocity display** - moon orbital speed uses the parent planet's gravitational parameter
 
+### Bug Reporting (NEW in v3.7.0)
+- **🐛 Submit bug report button** in bottom-left corner
+- **Screenshot upload** with drag-drop and file browse support
+- **Pre-filled GitHub issues** with title, description, screenshot, version, browser, timestamp
+- Zero backend — uses GitHub's web form with pre-filled fields
+
 ### Mobile
-- **Full responsive design** - works on phones and tablets with a Map / Controls toggle for small screens
-- **Touch-friendly controls** - 1-finger rotate, 2-finger zoom & pan on the 3D map; larger tap targets and compact layouts in the sidebar
+- **Responsive layout** - Map / Controls toggle for small screens, larger tap targets and compact sidebar layouts
+- **Touch controls implemented** - 1-finger rotate, 2-finger zoom & pan gestures are wired up for the 3D map
+- ⚠️ **Known issue**: the 3D map canvas currently fails to initialize/render on mobile browsers (iOS Safari, Android Chrome) — sidebar/controls layout is unaffected. See Known Issues in CHANGELOG.md.
 
 ## How to Use
 
 ### Basic Transfer
 1. Open **index.html** in your browser.
 2. Set your ingame UT time.
-3. Select **Origin** and **Destination** from the top dropdowns.
+3. Select **Origin** and **Destination** from the dropdowns (top-left HUD or sidebar).
 4. Click **Plan Transfer** to compute the direct route.
 5. The map shows the transfer arc.
 6. Check the **Transfer** tab for delta-v, flight time, and window countdown.
@@ -59,6 +88,15 @@ Current version: **v3.6.5**
 1. Open the **Porkchop** tab.
 2. Generate a departure-date vs. flight-time grid.
 3. Inspect lower-delta-v transfer options from the plotted solutions.
+
+### Report a Bug
+1. Click the **Submit bug report 🐛** button in the bottom-left corner.
+2. Type a bug title (required) and description (optional).
+3. Optionally upload a screenshot (PNG/JPG/GIF, max 5MB) by:
+   - Clicking the upload area to browse files, OR
+   - Dragging an image directly onto the upload area
+4. Click **Open GitHub Issue** to generate a pre-filled issue.
+5. Review the issue form on GitHub and click **Create issue** to submit.
 
 ### Sync to Your Save **|||WORK IN PROGRESS|||**
 
@@ -100,24 +138,39 @@ Type into the **Sync to save** boxes and hit **Set**.
 
 ## Notes
 
-- **Coplanar approximation**: Inclination is shown in body info and visualized in the map, but transfer delta-v calculations remain simplified.
+- **Coplanar approximation**: Inclination is shown in body info and visualized in the map, but transfer delta-v calculations remain simplified. Longitude of Ascending Node (LAN) is also not modeled as a separate value from Argument of Periapsis, so the 3D tilt of higher-inclination orbits (Moho, Eeloo, Dres) has a small, constant positioning error — see Known Issues in CHANGELOG.md.
 - **Assists are rough estimates**: Gravity assist delta-v is simplified; real assists need detailed SOI entry/exit and relative velocity analysis.
 - **Moon transfers**: Moon selections use the parent planet's heliocentric transfer window.
-- **KSP2 UT**: The game uses a fixed 426-day year for calendar purposes, but UT is stored as physical seconds.
+- **KSP2 UT**: The game uses a fixed 425-day year for calendar purposes, but UT is stored as physical seconds.
 
 ## Files
 
-- **index.html** - The planner itself
+- **index.html** - The planner itself (self-contained, single file)
 - **kerbalist_bridge.py** - Companion bridge for live kRPC2 sync
 - **CHANGELOG.md** - Release history
-- **ARCHITECTURE_INDEX.md** - Architecture and maintenance notes
+- **README.md** - This file
+
+## Bug Reporting
+
+Found a bug? Click the **Submit bug report 🐛** button in the bottom-left corner. The modal lets you:
+- Describe the bug (title + detailed description)
+- Upload a screenshot to show the exact issue
+- Auto-fill app version, browser, and timestamp
+- Submit directly to GitHub (pre-filled issue form opens in a new tab)
+
+No GitHub account needed to report — your issue helps us improve!
 
 ## Troubleshooting
 
 **"No gravity assists detected"**
 - Not all routes have good flyby opportunities.
-- Try Kerbin -> Jool or Eve -> Jool for classic assist routes.
+- Try Kerbin → Jool or Eve → Jool for classic assist routes.
 - The detector depends on current orbital positions and selected departure time.
+
+**"Map doesn't appear on mobile"** **|||WORK IN PROGRESS|||**
+- The 3D map canvas currently fails to initialize on some mobile browsers (iOS Safari, Android Chrome).
+- Desktop browsers are unaffected.
+- The sidebar/Controls view still works via the Map / Controls toggle; only the map itself is affected.
 
 **"Live Sync won't connect"** **|||WORK IN PROGRESS|||**
 - Check that KSP2 is running and kRPC2 is installed if using bridge mode.
@@ -128,7 +181,27 @@ Type into the **Sync to save** boxes and hit **Set**.
 - Autosave intervals can be several minutes.
 - Force an autosave by quicksaving if you need an immediate refresh.
 
+**"Screenshot upload rejected"**
+- Ensure file is a valid image (PNG, JPG, GIF, WebP, etc.)
+- Check file size is under 5MB
+- Browser must support FileReader API (all modern browsers do)
+
+## Version History
+
+See **CHANGELOG.md** for complete version history. Latest:
+
+- **v3.7.0** (2026-09-25) - Bug reporting, screenshot support, HUD reorganization
+- **v3.6.6** (2026-09-22) - Map centering fix
+- **v3.6.5** (2026-09-16) - Live camera HUD, orbital ghosts
+- ...and more in CHANGELOG.md
+
 ## Credits
 
 Built on stock Kerbol orbital data and classical orbital mechanics.
 Lambert solving uses a universal variable formulation.
+Bug reporting integrates directly with GitHub Issues API (client-side only).
+
+---
+
+**Kerbalist v3.7.0** — Your KSP2 interplanetary transfer planner  
+Single-file, offline-first, no backend required.
