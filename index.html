@@ -1166,6 +1166,7 @@
     .bug-report-popup {
       width: 600px;
       max-width: 95vw;
+      max-height: 92vh;   /* keep header + Submit button on screen; body scrolls */
       background: var(--panel);
       border: 1px solid var(--border-bright);
       border-radius: 12px;
@@ -1397,6 +1398,282 @@
       border-radius: 5px;
       padding: 8px 10px;
       line-height: 1.5;
+    }
+
+        /* Bug report screenshot options (auto viewport capture + custom upload) */
+    .bug-shot-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color .15s ease, box-shadow .15s ease, opacity .15s ease, background .15s ease;
+    }
+
+    .bug-shot-card + .bug-shot-card {
+      margin-top: 8px;
+    }
+
+    .bug-shot-card.active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(79, 224, 232, .14);
+    }
+
+    .bug-shot-card.inactive {
+      opacity: .55;
+    }
+
+    .bug-shot-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bug-shot-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid var(--cyan-dim);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+
+    .bug-shot-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      color: var(--text);
+    }
+
+    .bug-shot-body {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bug-shot-thumb {
+      position: relative;
+      flex: 0 0 auto;
+      width: 150px;
+      height: 84px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bug-shot-thumb img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .bug-shot-thumb.has-img img {
+      display: block;
+    }
+
+    .bug-shot-thumb.loading::after {
+      content: '';
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--cyan-dim);
+      border-top-color: var(--cyan);
+      animation: bugShotSpin .8s linear infinite;
+    }
+
+    @keyframes bugShotSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .bug-shot-side {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bug-shot-status {
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--text-dimmer);
+    }
+
+    .bug-shot-status.ok { color: var(--green); }
+    .bug-shot-status.warn { color: var(--amber); }
+    .bug-shot-status.err { color: var(--red); }
+
+    .bug-shot-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .bug-shot-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .bug-shot-btn:hover:not(:disabled) {
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .bug-shot-btn.danger:hover:not(:disabled) {
+      color: var(--red);
+      border-color: var(--red);
+    }
+
+    .bug-shot-btn:disabled {
+      opacity: .4;
+      cursor: default;
+    }
+
+    /* Whole-window drop feedback while a file is being dragged over the modal */
+    .bug-report-overlay.drag-active .bug-shot-drop {
+      border-color: var(--cyan);
+      background: rgba(79, 224, 232, .08);
+      box-shadow: 0 0 12px rgba(79, 224, 232, .25);
+      opacity: 1;
+    }
+
+    .bug-report-overlay.drag-active .bug-report-file-label {
+      border-color: var(--cyan);
+      color: var(--text);
+    }
+
+    .bug-report-file-info.error {
+      color: var(--red);
+    }
+
+/* Bug report captcha — "Verify Signal" */
+    .bug-captcha {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bug-captcha-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .bug-captcha-canvas-wrap {
+      position: relative;
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--panel2);
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .bug-captcha-canvas-wrap canvas {
+      display: block;
+      width: 200px;
+      height: 64px;
+    }
+
+    .bug-captcha-refresh {
+      flex: 0 0 auto;
+      width: 40px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      transition: all .15s ease;
+      padding: 0;
+    }
+
+    .bug-captcha-refresh:hover {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px rgba(79, 224, 232, .2);
+    }
+
+    .bug-captcha-refresh.spin {
+      animation: bugCaptchaSpin .4s ease;
+    }
+
+    @keyframes bugCaptchaSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .bug-captcha-input {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-transform: uppercase;
+      letter-spacing: .3em;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .bug-captcha-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dimmer);
+      min-height: 15px;
+      letter-spacing: .04em;
+    }
+
+    .bug-captcha.verified .bug-captcha-status {
+      color: var(--green);
+    }
+
+    .bug-captcha.verified .bug-captcha-canvas-wrap,
+    .bug-captcha.verified .bug-captcha-input {
+      border-color: var(--green);
+      box-shadow: 0 0 8px rgba(126, 231, 135, .25);
+    }
+
+    .bug-captcha.verified .bug-captcha-canvas-wrap canvas {
+      opacity: .45;
+    }
+
+    .bug-captcha.failed .bug-captcha-status {
+      color: var(--red);
+    }
+
+    .bug-captcha.failed .bug-captcha-canvas-wrap,
+    .bug-captcha.failed .bug-captcha-input {
+      border-color: var(--red);
+      animation: bugCaptchaShake .35s ease;
+    }
+
+    @keyframes bugCaptchaShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+    }
+
+    .bug-report-btn-submit:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .bug-report-actions {
@@ -3822,49 +4099,406 @@
         document.getElementById("bugTitle").value = "";
         document.getElementById("bugDescription").value = "";
         clearScreenshot();
+        startAutoShot(true);   // capture + copy before the form covers the app
+        refreshBugCaptcha();
         overlay.classList.add("open");
       }
     }
 
+    /* ---------- Bug report captcha ("Verify Signal") ---------- */
+    let bugCaptchaCode = '';
+    let bugCaptchaVerified = false;
+
+    function refreshBugCaptcha() {
+      // Ambiguous glyphs (0/O, 1/I/L) excluded
+      const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      const rnd = new Uint32Array(5);
+      crypto.getRandomValues(rnd);
+      bugCaptchaCode = Array.from(rnd, n => alphabet[n % alphabet.length]).join('');
+      bugCaptchaVerified = false;
+
+      const box = document.getElementById('bugCaptcha');
+      const input = document.getElementById('bugCaptchaInput');
+      const status = document.getElementById('bugCaptchaStatus');
+      const submit = document.getElementById('bugSubmitBtn');
+      const refresh = document.getElementById('bugCaptchaRefresh');
+      if (!box) return;
+
+      box.classList.remove('verified', 'failed');
+      input.value = '';
+      input.disabled = false;
+      status.textContent = 'Type the 5 characters shown above.';
+      if (submit) submit.disabled = true;
+      if (refresh) {
+        refresh.classList.remove('spin');
+        void refresh.offsetWidth; // restart animation
+        refresh.classList.add('spin');
+      }
+      drawBugCaptcha();
+    }
+
+    function drawBugCaptcha() {
+      const canvas = document.getElementById('bugCaptchaCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height; // 400x128 backing store, shown at 200x64
+      const css = getComputedStyle(document.documentElement);
+      const cyan = css.getPropertyValue('--cyan').trim() || '#4fe0e8';
+      const amber = css.getPropertyValue('--amber').trim() || '#ffb454';
+      const dim = css.getPropertyValue('--cyan-dim').trim() || '#1f5d63';
+      const mono = css.getPropertyValue('--font-mono').trim() || 'monospace';
+      const rand = (a, b) => a + Math.random() * (b - a);
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Starfield noise
+      for (let i = 0; i < 70; i++) {
+        ctx.globalAlpha = rand(0.15, 0.6);
+        ctx.fillStyle = Math.random() < 0.2 ? amber : cyan;
+        const s = rand(1, 2.6);
+        ctx.fillRect(rand(0, W), rand(0, H), s, s);
+      }
+
+      // Distractor orbit ellipses
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = dim;
+      for (let i = 0; i < 3; i++) {
+        ctx.globalAlpha = rand(0.5, 0.9);
+        ctx.beginPath();
+        ctx.ellipse(rand(60, W - 60), rand(30, H - 30), rand(50, 130), rand(14, 44),
+          rand(0, Math.PI), rand(0, Math.PI), rand(Math.PI * 1.2, Math.PI * 2));
+        ctx.stroke();
+      }
+
+      // Characters — jittered, rotated
+      ctx.globalAlpha = 1;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      const step = W / (bugCaptchaCode.length + 1);
+      for (let i = 0; i < bugCaptchaCode.length; i++) {
+        ctx.save();
+        ctx.translate(step * (i + 1) + rand(-6, 6), H / 2 + rand(-12, 12));
+        ctx.rotate(rand(-0.42, 0.42));
+        ctx.font = `700 ${Math.round(rand(50, 62))}px ${mono}`;
+        ctx.fillStyle = i % 2 ? cyan : amber;
+        ctx.shadowColor = i % 2 ? cyan : amber;
+        ctx.shadowBlur = 8;
+        ctx.fillText(bugCaptchaCode[i], 0, 0);
+        ctx.restore();
+      }
+
+      // Strike-through trajectory arcs over the text
+      ctx.shadowBlur = 0;
+      for (let i = 0; i < 2; i++) {
+        ctx.globalAlpha = 0.75;
+        ctx.strokeStyle = i ? amber : cyan;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(rand(0, 40), rand(20, H - 20));
+        ctx.bezierCurveTo(rand(80, 160), rand(0, H), rand(240, 320), rand(0, H), rand(360, W), rand(20, H - 20));
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function checkBugCaptcha() {
+      if (bugCaptchaVerified) return;
+      const box = document.getElementById('bugCaptcha');
+      const input = document.getElementById('bugCaptchaInput');
+      const status = document.getElementById('bugCaptchaStatus');
+      const submit = document.getElementById('bugSubmitBtn');
+      box.classList.remove('failed');
+
+      const val = input.value.trim().toUpperCase();
+      input.value = val;
+      if (val.length < bugCaptchaCode.length) {
+        status.textContent = 'Type the 5 characters shown above.';
+        return;
+      }
+
+      if (val === bugCaptchaCode) {
+        bugCaptchaVerified = true;
+        box.classList.add('verified');
+        input.disabled = true;
+        status.textContent = '✓ Signal verified';
+        if (submit) submit.disabled = false;
+      } else {
+        // Wrong code: flag it, then issue a fresh one
+        refreshBugCaptcha();
+        void box.offsetWidth;
+        box.classList.add('failed');
+        status.textContent = '✗ Code mismatch — new code generated.';
+      }
+    }
+
+    /* ---------- Bug report screenshots ----------
+       Option 1: full-viewport capture of the app (auto, copied to clipboard)
+       Option 2: user-supplied image (browse / drag & drop / paste)               */
+    const BUG_SHOT_MAX_BYTES = 5 * 1024 * 1024;
+    const BUG_SHOT_NOTE_DEFAULT = 'Option 2 replaces Option 1 · PNG, JPG, GIF, WebP · max 5MB';
+    let bugAutoShot = null;      // { blob, url }
+    let bugAutoState = 'idle';   // idle | capturing | ready | failed | removed
+    let bugAutoCopied = false;   // was Option 1 copied to the clipboard when the modal opened?
+    let bugAutoToken = 0;        // invalidates stale captures
+    let bugAutoDone = null;      // promise resolving when the current capture settles
+    let bugCustomShot = null;    // { blob, url, name }
+    let bugNoteTimer = null;
+
+    function canvasToPngBlob(canvas) {
+      return new Promise((resolve, reject) =>
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error('Canvas export failed')), 'image/png'));
+    }
+
+    function loadImageFromUrl(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Image decode failed'));
+        img.src = url;
+      });
+    }
+
+    // The async clipboard API only accepts image/png, so normalise JPG/GIF/WebP first.
+    async function blobToPngBlob(blob) {
+      if (blob.type === 'image/png') return blob;
+      const url = URL.createObjectURL(blob);
+      try {
+        const img = await loadImageFromUrl(url);
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth;
+        c.height = img.naturalHeight;
+        c.getContext('2d').drawImage(img, 0, 0);
+        return await canvasToPngBlob(c);
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    function withTimeout(promise, ms, label) {
+      return new Promise((resolve, reject) => {
+        const t = setTimeout(() => reject(new Error(label + ' timed out')), ms);
+        promise.then(v => { clearTimeout(t); resolve(v); }, e => { clearTimeout(t); reject(e); });
+      });
+    }
+
+    // html2canvas is only fetched when a bug report is opened, so the app stays fully offline-capable.
+    function loadHtml2Canvas() {
+      if (window.html2canvas) return Promise.resolve(window.html2canvas);
+      if (loadHtml2Canvas._p) return loadHtml2Canvas._p;
+      loadHtml2Canvas._p = new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        el.onload = () => window.html2canvas ? resolve(window.html2canvas) : reject(new Error('html2canvas missing'));
+        el.onerror = () => { loadHtml2Canvas._p = null; reject(new Error('html2canvas failed to load')); };
+        document.head.appendChild(el);
+      });
+      return loadHtml2Canvas._p;
+    }
+
+    async function captureAppViewport() {
+      // A WebGL canvas can only be read in the same tick as a render, so grab it BEFORE any await.
+      let webgl = null;
+      try {
+        if (typeof window.__kerbalistSnapshotWebGL === 'function') webgl = window.__kerbalistSnapshotWebGL();
+      } catch (e) { /* fall through without a map snapshot */ }
+
+      const vw = window.innerWidth, vh = window.innerHeight;
+      try {
+        const h2c = await loadHtml2Canvas();
+        const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#060a11';
+        const canvas = await h2c(document.documentElement, {
+          backgroundColor: bg,
+          x: window.scrollX, y: window.scrollY,
+          width: vw, height: vh, windowWidth: vw, windowHeight: vh,
+          scale: Math.min(window.devicePixelRatio || 1, 1.5),
+          useCORS: true,
+          logging: false,
+          ignoreElements: el => el.id === 'bugReportOverlay',   // never capture the report form itself
+          onclone: doc => {
+            // html2canvas can't clone a WebGL canvas, so swap in the snapshot taken above.
+            if (!webgl) return;
+            const live = doc.getElementById(webgl.id);
+            if (!live || !live.parentNode) return;
+            const img = doc.createElement('img');
+            img.id = live.id;
+            img.className = live.className;
+            img.setAttribute('style', live.getAttribute('style') || '');
+            img.style.objectFit = 'fill';
+            img.src = webgl.dataUrl;
+            live.parentNode.replaceChild(img, live);
+          }
+        });
+        return await canvasToPngBlob(canvas);
+      } catch (err) {
+        console.warn('[Kerbalist] Full-viewport capture failed, falling back to map only:', err);
+        if (!webgl) throw err;
+        const img = await loadImageFromUrl(webgl.dataUrl);
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth;
+        c.height = img.naturalHeight;
+        c.getContext('2d').drawImage(img, 0, 0);
+        return canvasToPngBlob(c);
+      }
+    }
+
+    async function copyImageToClipboard(blobOrPromise) {
+      try {
+        if (!navigator.clipboard || !window.ClipboardItem) return false;
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blobOrPromise })]);
+        return true;
+      } catch (e) {
+        console.warn('[Kerbalist] Clipboard write failed:', e);
+        return false;
+      }
+    }
+
+    function releaseAutoShot() {
+      if (bugAutoShot) URL.revokeObjectURL(bugAutoShot.url);
+      bugAutoShot = null;
+      bugAutoCopied = false;
+    }
+
+    function releaseCustomShot() {
+      if (bugCustomShot) URL.revokeObjectURL(bugCustomShot.url);
+      bugCustomShot = null;
+    }
+
+    // Must be called from a click handler so the clipboard write has user activation.
+    function startAutoShot(copyToClipboard) {
+      const token = ++bugAutoToken;
+      releaseAutoShot();
+      bugAutoState = 'capturing';
+      refreshShotUI();
+
+      const capture = withTimeout(captureAppViewport(), 20000, 'Capture');
+      // Passing the promise straight into ClipboardItem keeps the user gesture alive while we render.
+      const copied = copyToClipboard ? copyImageToClipboard(capture) : Promise.resolve(false);
+
+      bugAutoDone = Promise.all([capture.then(b => b, () => null), copied]).then(([blob, wasCopied]) => {
+        if (token !== bugAutoToken) return;   // superseded by a retake / remove / re-open
+        if (blob) {
+          bugAutoShot = { blob, url: URL.createObjectURL(blob) };
+          bugAutoCopied = wasCopied;
+          bugAutoState = 'ready';
+        } else {
+          bugAutoState = 'failed';
+        }
+        refreshShotUI();
+      });
+      return bugAutoDone;
+    }
+
+    function removeAutoShot() {
+      bugAutoToken++;
+      releaseAutoShot();
+      bugAutoState = 'removed';
+      refreshShotUI();
+    }
+
+    function getActiveBugShot() {
+      if (bugCustomShot) return bugCustomShot;
+      if (bugAutoState === 'ready' && bugAutoShot) return bugAutoShot;
+      return null;
+    }
+
+    function refreshShotUI() {
+      const autoCard = document.getElementById('bugShotAuto');
+      const customCard = document.getElementById('bugShotCustom');
+      if (!autoCard || !customCard) return;
+      const thumb = document.getElementById('bugShotAutoThumb');
+      const img = document.getElementById('bugShotAutoImg');
+      const status = document.getElementById('bugShotAutoStatus');
+      const retake = document.getElementById('bugShotRetakeBtn');
+      const remove = document.getElementById('bugShotRemoveBtn');
+      const usingCustom = !!bugCustomShot;
+      const ready = bugAutoState === 'ready' && !!bugAutoShot;
+
+      autoCard.classList.toggle('active', ready && !usingCustom);
+      autoCard.classList.toggle('inactive', usingCustom);
+      customCard.classList.toggle('active', usingCustom);
+
+      thumb.classList.toggle('loading', bugAutoState === 'capturing');
+      thumb.classList.toggle('has-img', ready);
+      if (ready) img.src = bugAutoShot.url; else img.removeAttribute('src');
+
+      let text = '', cls = '';
+      if (bugAutoState === 'capturing') {
+        text = 'Capturing full app view…';
+      } else if (ready) {
+        if (usingCustom) { text = 'Ready — not used, Option 2 is selected.'; }
+        else if (bugAutoCopied) { text = '✓ Ready — copied to clipboard'; cls = 'ok'; }
+        else { text = '✓ Ready — will be copied to clipboard when you open the issue'; cls = 'ok'; }
+      } else if (bugAutoState === 'failed') {
+        text = '⚠ Couldn’t capture the app view — use Option 2 instead.'; cls = 'err';
+      } else if (bugAutoState === 'removed') {
+        text = 'Removed — no app screenshot will be attached.';
+      }
+      status.textContent = text;
+      status.className = 'bug-shot-status' + (cls ? ' ' + cls : '');
+
+      retake.disabled = bugAutoState === 'capturing';
+      retake.textContent = (ready || bugAutoState === 'capturing') ? 'Retake' : (bugAutoState === 'removed' ? 'Capture' : 'Try again');
+      remove.disabled = !ready;
+
+      // Option 2 preview
+      const preview = document.getElementById('bugScreenshotPreview');
+      const label = document.getElementById('bugScreenshotLabel');
+      if (usingCustom) {
+        document.getElementById('bugScreenshotImg').src = bugCustomShot.url;
+        label.textContent = `✓ ${bugCustomShot.name}`;
+        preview.style.display = 'flex';
+      } else {
+        document.getElementById('bugScreenshotImg').removeAttribute('src');
+        label.textContent = '📎 Click, drag & drop, or paste an image';
+        preview.style.display = 'none';
+      }
+    }
+
+    function showShotNote(msg) {
+      const note = document.getElementById('bugShotNote');
+      if (!note) return;
+      clearTimeout(bugNoteTimer);
+      note.textContent = msg;
+      note.classList.add('error');
+      bugNoteTimer = setTimeout(() => {
+        note.textContent = BUG_SHOT_NOTE_DEFAULT;
+        note.classList.remove('error');
+      }, 5000);
+    }
+
+    // Shared by the file picker, drag & drop and paste.
+    function processScreenshotFile(file) {
+      if (!file) {
+        showShotNote('Couldn’t read that image — save it to your computer and upload it, or copy it and press Ctrl+V.');
+        return;
+      }
+      if (!file.type || !file.type.startsWith('image/')) {
+        showShotNote('That file isn’t an image (PNG, JPG, GIF or WebP).');
+        return;
+      }
+      if (file.size > BUG_SHOT_MAX_BYTES) {
+        showShotNote('Image is too large — max 5MB.');
+        return;
+      }
+      blobToPngBlob(file).then(png => {
+        releaseCustomShot();
+        bugCustomShot = { blob: png, url: URL.createObjectURL(png), name: file.name || 'pasted-image.png' };
+        refreshShotUI();
+      }).catch(() => showShotNote('Couldn’t decode that image — try a PNG or JPG.'));
+    }
+
     function handleScreenshotSelect(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file (PNG, JPG, GIF, etc.)');
-        event.target.value = '';
-        return;
-      }
-
-      // Validate file size (5MB max)
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        alert('Image is too large. Max 5MB allowed.');
-        event.target.value = '';
-        return;
-      }
-
-      // Read and display image
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = e.target.result;
-        document.getElementById("bugScreenshotImg").src = img;
-        document.getElementById("bugScreenshotLabel").textContent = `✓ ${file.name}`;
-        document.getElementById("bugScreenshotPreview").style.display = 'flex';
-        // Store base64 on the input element for later retrieval
-        document.getElementById("bugScreenshot").dataset.base64 = img;
-        document.getElementById("bugScreenshot").dataset.filename = file.name;
-      };
-      reader.readAsDataURL(file);
+      const input = event.target;
+      const file = input.files && input.files[0];
+      input.value = '';   // allow picking the same file again after Clear
+      if (file) processScreenshotFile(file);
     }
 
     function clearScreenshot() {
-      document.getElementById("bugScreenshot").value = '';
-      document.getElementById("bugScreenshot").dataset.base64 = '';
-      document.getElementById("bugScreenshot").dataset.filename = '';
-      document.getElementById("bugScreenshotLabel").textContent = '📎 Choose image or drag here';
-      document.getElementById("bugScreenshotPreview").style.display = 'none';
+      releaseCustomShot();
+      const input = document.getElementById('bugScreenshot');
+      if (input) input.value = '';
+      refreshShotUI();
     }
 
     function hideBugReportModal() {
@@ -3881,53 +4515,77 @@
       return "Other";
     }
 
-    // ── Bug Report ──────────────────────────────────────────────────────
-    // POSTs to a Cloudflare Worker which creates a GitHub issue via the
-    // GitHub API using a stored PAT.  The user never needs a GitHub
-    // account – they just fill in the form and click "Submit".
-    const BUG_REPORT_WORKER = "https://kerbalist-bug-report.blocdigital.workers.dev";
-
-    function submitBugReport() {
+    async function submitBugReport() {
       const title = document.getElementById("bugTitle").value.trim();
       const description = document.getElementById("bugDescription").value.trim();
-      const screenshotBase64 = document.getElementById("bugScreenshot").dataset.base64 || '';
-      const screenshotFilename = document.getElementById("bugScreenshot").dataset.filename || '';
 
       if (!title) {
         alert("Please enter a bug title");
         return;
       }
 
-      const browserInfo = getBrowserInfo();
-      const timestamp = new Date().toISOString();
-      const version = "v3.7.0";
+      if (!bugCaptchaVerified) {
+        document.getElementById('bugCaptchaInput').focus();
+        return;
+      }
 
-      const btn = document.querySelector(".bug-report-btn-submit");
-      btn.disabled = true;
-      btn.textContent = "Submitting…";
+      const submitBtn = document.getElementById('bugSubmitBtn');
+      if (submitBtn.dataset.busy) return;
+      submitBtn.dataset.busy = '1';
+      const submitLabel = submitBtn.textContent;
 
-      fetch(BUG_REPORT_WORKER, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, browser: browserInfo, version, timestamp, screenshotFilename, screenshotBase64 }),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success) {
-            window.open(data.url, "_blank");
-          } else {
-            alert("Failed to submit bug report: " + (data.error || "Unknown error"));
-          }
-        })
-        .catch((err) => {
-          console.error("Bug report submission failed:", err);
-          alert("Failed to submit bug report. Please check your connection and try again.");
-        })
-        .finally(() => {
-          btn.disabled = false;
-          btn.textContent = "Submit Bug Report";
+      try {
+        // If Option 1 is still rendering and no custom image was chosen, wait for it.
+        if (!bugCustomShot && bugAutoState === 'capturing' && bugAutoDone) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Preparing screenshot…';
+          await bugAutoDone;
+        }
+
+        // Re-copy right now so the clipboard holds the image we're actually attaching.
+        const shot = getActiveBugShot();
+        const copied = shot ? await copyImageToClipboard(shot.blob) : false;
+
+        // Build GitHub issue URL (images can't go in the URL — the clipboard carries them instead)
+        const gitHubRepo = "https://github.com/BlocDigital/Kerbalist";
+        const browserInfo = getBrowserInfo();
+        const timestamp = new Date().toISOString();
+
+        let issueBody = `## Description\n${description}\n\n`;
+
+        if (shot && copied) {
+          issueBody += `## Screenshot\n_Screenshot copied to your clipboard — click here and press Ctrl+V (Cmd+V on Mac) to attach it._\n\n`;
+        } else if (shot) {
+          issueBody += `## Screenshot\n_A screenshot was prepared but couldn't be copied automatically — please attach one manually._\n\n`;
+        }
+
+        issueBody += `## Environment\n`;
+        issueBody += `- **App Version:** v3.7.0\n`;
+        issueBody += `- **Browser:** ${browserInfo}\n`;
+        issueBody += `- **Reported:** ${timestamp}\n`;
+
+        const issueUrl = `${gitHubRepo}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(issueBody)}`;
+
+        const win = window.open(issueUrl, "_blank");
+        if (win) {
           hideBugReportModal();
-        });
+        } else {
+          // Popup blocked — give the user a link they can click themselves
+          const status = document.getElementById('bugCaptchaStatus');
+          status.textContent = '';
+          const a = document.createElement('a');
+          a.href = issueUrl;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = 'Popup blocked — click here to open the GitHub issue';
+          a.style.color = 'var(--cyan)';
+          status.appendChild(a);
+        }
+      } finally {
+        delete submitBtn.dataset.busy;
+        submitBtn.textContent = submitLabel;
+        submitBtn.disabled = !bugCaptchaVerified;
+      }
     }
 
     // Close modals on Escape key
@@ -3938,38 +4596,65 @@
       }
     });
 
-    // Drag-and-drop support for screenshot upload
-    (function () {
-      const fileInput = document.getElementById("bugScreenshot");
-      const fileLabel = document.querySelector(".bug-report-file-label");
+    // Drag & drop + paste for screenshots.
+    // Listeners live on the WINDOW (capture phase) while the modal is open. Previously only the small dashed
+    // label handled drops, so dropping anywhere else made the browser navigate to the image in a new tab.
+    (function initBugShotDropAndPaste() {
+      const overlayEl = () => document.getElementById('bugReportOverlay');
+      const isOpen = () => { const o = overlayEl(); return !!o && o.classList.contains('open'); };
+      const droppable = e => {
+        const types = e.dataTransfer && e.dataTransfer.types ? Array.from(e.dataTransfer.types) : [];
+        return types.indexOf('Files') !== -1 || types.indexOf('text/uri-list') !== -1;
+      };
+      const setActive = on => { const o = overlayEl(); if (o) o.classList.toggle('drag-active', on); };
+      let depth = 0;
 
-      if (!fileInput || !fileLabel) return;
-
-      fileLabel.addEventListener("dragover", (e) => {
+      window.addEventListener('dragenter', e => {
+        if (!isOpen() || !droppable(e)) return;
         e.preventDefault();
-        e.stopPropagation();
-        fileLabel.style.borderColor = "var(--cyan)";
-        fileLabel.style.backgroundColor = "rgba(79, 224, 232, .12)";
-      });
+        depth++;
+        setActive(true);
+      }, true);
 
-      fileLabel.addEventListener("dragleave", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        fileLabel.style.borderColor = "";
-        fileLabel.style.backgroundColor = "";
-      });
+      window.addEventListener('dragover', e => {
+        if (!isOpen() || !droppable(e)) return;
+        e.preventDefault();                       // required, otherwise the browser treats the page as a non-target
+        e.dataTransfer.dropEffect = 'copy';
+      }, true);
 
-      fileLabel.addEventListener("drop", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        fileLabel.style.borderColor = "";
-        fileLabel.style.backgroundColor = "";
+      window.addEventListener('dragleave', e => {
+        if (!isOpen() || !droppable(e)) return;
+        depth = Math.max(0, depth - 1);
+        if (!depth) setActive(false);
+      }, true);
 
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-          fileInput.files = files;
-          handleScreenshotSelect({ target: fileInput });
+      window.addEventListener('drop', e => {
+        if (!isOpen() || !droppable(e)) return;
+        e.preventDefault();                       // stops the browser opening the image in a new tab
+        e.stopPropagation();
+        depth = 0;
+        setActive(false);
+
+        const dt = e.dataTransfer;
+        let file = null;
+        if (dt.files && dt.files.length) {
+          file = Array.from(dt.files).find(f => f.type && f.type.startsWith('image/')) || dt.files[0];
+        } else if (dt.items) {
+          const it = Array.from(dt.items).find(i => i.kind === 'file' && i.type.startsWith('image/'));
+          file = it ? it.getAsFile() : null;
         }
+        processScreenshotFile(file);
+      }, true);
+
+      window.addEventListener('dragend', () => { depth = 0; setActive(false); }, true);
+
+      // Ctrl+V / Cmd+V of an image anywhere in the modal
+      document.addEventListener('paste', e => {
+        if (!isOpen() || !e.clipboardData) return;
+        const item = Array.from(e.clipboardData.items || []).find(i => i.kind === 'file' && i.type.startsWith('image/'));
+        if (!item) return;                        // plain text paste into the inputs keeps working
+        e.preventDefault();
+        processScreenshotFile(item.getAsFile());
       });
     })();
   </script>
@@ -6911,9 +7596,9 @@
         }
 
         // Prograde at 3 o'clock (svgDeg = 90)
-        // Outbound: burn is ejAngle° CCW from prograde → svgDeg = 90 - ejAngle
-        // Inbound:  burn is ejAngle° CW  from prograde → svgDeg = 90 + ejAngle
-        const burnSvgDeg = r.outbound ? (90 - ejAngle) : (90 + ejAngle);
+        // Outbound: burn is ejAngle° CCW from prograde → svgDeg = 90 + ejAngle (add in SVG Y-down)
+        // Inbound:  burn is ejAngle° CW  from prograde → svgDeg = 90 - ejAngle
+        const burnSvgDeg = r.outbound ? (90 + ejAngle) : (90 - ejAngle);
         const [pgX, pgY] = pt(90, OR);
         const [bX, bY] = pt(burnSvgDeg, OR);
 
@@ -6937,10 +7622,10 @@
         const arcR = OR + 12;
         const [a0x, a0y] = pt(90, arcR);
         const [a1x, a1y] = pt(burnSvgDeg, arcR);
-        const arcSweep = r.outbound ? 0 : 1; // CCW=0 (outbound ahead), CW=1 (inbound behind)
+        const arcSweep = r.outbound ? 1 : 0; // CW=1 (outbound ahead), CCW=0 (inbound behind)
 
         // Angle label at arc midpoint
-        const arcMidDeg = r.outbound ? (90 - ejAngle / 2) : (90 + ejAngle / 2);
+        const arcMidDeg = r.outbound ? (90 + ejAngle / 2) : (90 - ejAngle / 2);
         const [lblX, lblY] = pt(arcMidDeg, arcR + 14);
 
         return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;margin:6px auto 10px;">
@@ -7214,6 +7899,17 @@
 
         renderer.render(scene, camera);
       }
+      // Bug-report screenshot hook: render once and read the WebGL canvas in the same tick
+      // (the drawing buffer is cleared after compositing, so it can't be read later).
+      window.__kerbalistSnapshotWebGL = function () {
+        try {
+          renderer.render(scene, camera);
+          return { id: canvas3d.id, dataUrl: canvas3d.toDataURL('image/png') };
+        } catch (e) {
+          return null;
+        }
+      };
+
       requestAnimationFrame(loop);
 
     })(THREE);
@@ -7306,19 +8002,64 @@
 
         <div class="bug-report-field">
           <label class="bug-report-label">Screenshot (Optional)</label>
-          <div class="bug-report-file-input-wrapper">
-            <input type="file" class="bug-report-file-input" id="bugScreenshot" accept="image/*"
-              onchange="handleScreenshotSelect(event)">
-            <label for="bugScreenshot" class="bug-report-file-label">
-              <span id="bugScreenshotLabel">📎 Choose image or drag here</span>
-            </label>
-            <div class="bug-report-file-preview" id="bugScreenshotPreview" style="display: none;">
-              <img id="bugScreenshotImg"
-                style="max-width: 100%; max-height: 120px; border-radius: 4px; margin-bottom: 8px;">
-              <button type="button" class="bug-report-file-clear" onclick="clearScreenshot()">Clear</button>
+
+          <!-- Option 1: automatic full-viewport capture, copied to clipboard -->
+          <div class="bug-shot-card" id="bugShotAuto">
+            <div class="bug-shot-head">
+              <span class="bug-shot-badge">Option 1</span>
+              <span class="bug-shot-title">Full app screenshot</span>
+            </div>
+            <div class="bug-shot-body">
+              <div class="bug-shot-thumb" id="bugShotAutoThumb">
+                <img id="bugShotAutoImg" alt="Preview of the captured app view">
+              </div>
+              <div class="bug-shot-side">
+                <div class="bug-shot-status" id="bugShotAutoStatus">Capturing full app view…</div>
+                <div class="bug-shot-actions">
+                  <button type="button" class="bug-shot-btn" id="bugShotRetakeBtn" onclick="startAutoShot(true)">Retake</button>
+                  <button type="button" class="bug-shot-btn danger" id="bugShotRemoveBtn" onclick="removeAutoShot()">Remove</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="bug-report-file-info">Max 5MB (PNG, JPG, GIF supported)</div>
+
+          <!-- Option 2: user-supplied image (browse, drag &amp; drop anywhere on the modal, or paste) -->
+          <div class="bug-shot-card bug-shot-drop" id="bugShotCustom">
+            <div class="bug-shot-head">
+              <span class="bug-shot-badge">Option 2</span>
+              <span class="bug-shot-title">Use your own image</span>
+            </div>
+            <div class="bug-report-file-input-wrapper">
+              <input type="file" class="bug-report-file-input" id="bugScreenshot" accept="image/*"
+                onchange="handleScreenshotSelect(event)">
+              <label for="bugScreenshot" class="bug-report-file-label">
+                <span id="bugScreenshotLabel">📎 Click, drag &amp; drop, or paste an image</span>
+              </label>
+              <div class="bug-report-file-preview" id="bugScreenshotPreview" style="display: none;">
+                <img id="bugScreenshotImg"
+                  style="max-width: 100%; max-height: 120px; border-radius: 4px; margin-bottom: 8px;">
+                <button type="button" class="bug-report-file-clear" onclick="clearScreenshot()">Clear</button>
+              </div>
+            </div>
+          </div>
+          <div class="bug-report-file-info" id="bugShotNote">Option 2 replaces Option 1 · PNG, JPG, GIF, WebP · max 5MB</div>
+        </div>
+
+        <div class="bug-report-field">
+          <label class="bug-report-label">Verify Signal (Required)</label>
+          <div class="bug-captcha" id="bugCaptcha">
+            <div class="bug-captcha-row">
+              <div class="bug-captcha-canvas-wrap">
+                <canvas id="bugCaptchaCanvas" width="400" height="128" aria-label="Captcha code"></canvas>
+              </div>
+              <button type="button" class="bug-captcha-refresh" id="bugCaptchaRefresh" onclick="refreshBugCaptcha()"
+                title="New code">⟳</button>
+            </div>
+            <input type="text" class="bug-report-input bug-captcha-input" id="bugCaptchaInput" maxlength="5"
+              placeholder="ENTER CODE" autocomplete="off" autocapitalize="characters" spellcheck="false"
+              oninput="checkBugCaptcha()">
+            <div class="bug-captcha-status" id="bugCaptchaStatus">Type the 5 characters shown above.</div>
+          </div>
         </div>
 
         <div class="bug-report-info">
@@ -7330,7 +8071,7 @@
       </div>
       <div class="bug-report-actions">
         <button class="bug-report-btn-cancel" onclick="hideBugReportModal()">Cancel</button>
-        <button class="bug-report-btn-submit" onclick="submitBugReport()">Submit Bug Report</button>
+        <button class="bug-report-btn-submit" id="bugSubmitBtn" onclick="submitBugReport()" disabled>Open GitHub Issue</button>
       </div>
     </div>
   </div>
