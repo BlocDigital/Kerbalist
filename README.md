@@ -13,20 +13,20 @@ Current version: **v3.7.0**
 
 ## What's New in v3.7.0 (2026-09-25)
 
-### 🐛 Bug Reporting
+###  Bug Reporting
 - **Submit bug report button** in bottom-left corner opens a modal for filing bugs directly to GitHub
 - **Screenshot support** — drag-drop or file-browse PNG/JPG/GIF images (max 5MB) that embed in the GitHub issue
 - Pre-filled issues include: bug description, screenshot, app version, browser, timestamp
 - No backend required — entirely client-side
 
-### 📍 HUD Reorganization  
+###  HUD Reorganization  
 - **Top-left corner**: Origin/Destination dropdowns (new HUD panel, fully synced with sidebar)
 - **Top-right corner**: Keyboard shortcuts and warp controls
 - **Middle-right**: Camera HUD (zoom %, tilt, rotation, focus)
 - **Bottom-right**: Zoom controls (+/− buttons, reset button), Map legend
 - All HUD elements repositioned to avoid sidebar overlap
 
-### 🔄 Synchronized Dropdowns
+###  Synchronized Dropdowns
 - Origin/Destination dropdowns now sync between sidebar and top-left HUD panel
 - Changes in either location update both in real-time
 - Swap button (⇄) works identically in both places
@@ -67,7 +67,7 @@ Current version: **v3.7.0**
 ### Mobile
 - **Responsive layout** - Map / Controls toggle for small screens, larger tap targets and compact sidebar layouts
 - **Touch controls implemented** - 1-finger rotate, 2-finger zoom & pan gestures are wired up for the 3D map
-- ⚠️ **Known issue**: the 3D map canvas currently fails to initialize/render on mobile browsers (iOS Safari, Android Chrome) — sidebar/controls layout is unaffected. See Known Issues in CHANGELOG.md.
+- ⚠️**Known issue**: the 3D map canvas currently fails to initialize/render properly on mobile browsers (iOS Safari, Android Chrome). See Known Issues in CHANGELOG.md.
 
 ## How to Use
 
