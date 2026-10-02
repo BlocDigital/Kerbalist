@@ -894,7 +894,7 @@
 
     .zoom-controls {
       position: absolute;
-      bottom: 70px;
+      bottom: calc(16px + var(--legend-h, 38px) + 16px);
       right: 16px;
       display: flex;
       flex-direction: column;
@@ -2012,16 +2012,74 @@
       bottom: 16px;
       right: 16px;
       z-index: 10;
-      background: rgba(9, 15, 28, .78);
+      width: 184px;
+      box-sizing: border-box;
+      background: rgba(9, 15, 28, .86);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 9.2px 13.8px;
+      border-radius: 9px;
+      padding: 12.5px 16.25px;
       font-size: 12.075px;
       color: var(--text-dim);
       font-family: var(--font-mono);
+      pointer-events: auto;
+      backdrop-filter: blur(4px);
       display: flex;
-      gap: 16.1px;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    /* header + toggle: same look as the Controls bubble */
+    .legend .lg-header {
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 2px;
+    }
+
+    .legend .lg-title,
+    .legend .lg-min-label {
+      font-size: 11.25px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .legend .lg-min-label {
+      display: none;
+    }
+
+    .legend .lg-row {
+      display: flex;
+      align-items: center;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .legend.collapsed {
+      width: auto;
+      padding: 6px 10px;
+      gap: 0;
+    }
+
+    .legend.collapsed .lg-row,
+    .legend.collapsed .lg-title {
+      display: none;
+    }
+
+    .legend.collapsed .lg-header {
+      margin-bottom: 0;
+    }
+
+    .legend.collapsed .lg-min-label {
+      display: inline-block;
+    }
+
+    .legend .dot,
+    .legend .swatch-line {
+      flex: 0 0 auto;
     }
 
     .legend .dot {
@@ -2984,7 +3042,7 @@
 
       /* Zoom controls bigger for touch */
       .zoom-controls {
-        bottom: 120px;
+        bottom: calc(60px + var(--legend-h, 30px) + 12px);
         right: 10px;
         left: auto;
       }
@@ -3073,6 +3131,7 @@
           <div class="shortcut-row"><span class="sk">Double Click</span><span class="sv">Center view</span></div>
           <div class="shortcut-row"><span class="sk">R</span><span class="sv">Reset view</span></div>
           <div class="shortcut-row"><span class="sk">K</span><span class="sv">Toggle controls</span></div>
+          <div class="shortcut-row"><span class="sk">L</span><span class="sv">Toggle legend</span></div>
           <div class="shortcut-row"><span class="sk">Click planet</span><span class="sv">Body info</span></div>
           <div class="shortcut-row"><span class="sk">Right-click</span><span class="sv">Context menu (origin, dest,
               zoom)</span></div>
@@ -3111,15 +3170,20 @@
               data-coffee-color="#FFDD00"></script>
           </div>
         </div>
-        <div class="legend">
-          <span><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</span>
-          <span><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</span>
-          <span><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</span>
-          <span><span class="dot" style="background:var(--green)"></span>Departure ghost</span>
-          <span><span class="dot"
-              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival
-            ghost</span>
-          <span><span class="dot" style="background:var(--violet)"></span>Gravity assist</span>
+        <div class="legend" id="legend">
+          <div class="lg-header">
+            <div class="lg-title">Legend</div>
+            <span class="lg-min-label">Legend</span>
+            <button class="sb-toggle-btn" id="lgToggleBtn" onclick="toggleLegend()"
+              title="Minimize Legend (L)">_</button>
+          </div>
+          <div class="lg-row"><span class="swatch-line" style="background:var(--cyan)"></span>Current phase</div>
+          <div class="lg-row"><span class="swatch-line dashed" style="color:var(--amber)"></span>Required phase</div>
+          <div class="lg-row"><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</div>
+          <div class="lg-row"><span class="dot" style="background:var(--green)"></span>Departure ghost</div>
+          <div class="lg-row"><span class="dot"
+              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival ghost</div>
+          <div class="lg-row"><span class="dot" style="background:var(--violet)"></span>Gravity assist</div>
         </div>
 
         <!-- Origin/Destination HUD (Top-Left) -->
@@ -3356,6 +3420,7 @@
         <ul>
           <li><strong>UI Button Scaling &amp; Layout</strong>:
             <ul>
+              <li>Reduced "Buy me a beer" and "Changelog" button sizes by 25%.</li>
               <li>Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.</li>
               <li>Relocated camera control buttons upward so they no longer overlap with the map legend.</li>
               <li>Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.
@@ -4087,6 +4152,36 @@
       const overlay = document.getElementById("changelogOverlay");
       if (overlay) overlay.classList.remove("open");
     }
+
+    /* ---------- Map legend: collapsible like the Controls bubble ---------- */
+    function toggleLegend(force) {
+      const lg = document.getElementById('legend');
+      const btn = document.getElementById('lgToggleBtn');
+      if (!lg) return;
+      const collapsed = (typeof force === 'boolean') ? lg.classList.toggle('collapsed', force) : lg.classList.toggle('collapsed');
+      if (btn) {
+        btn.textContent = collapsed ? '+' : '_';
+        btn.title = collapsed ? 'Expand Legend (L)' : 'Minimize Legend (L)';
+      }
+    }
+
+    (function initLegend() {
+      const lg = document.getElementById('legend');
+      if (!lg) return;
+      // Small screens start collapsed so the legend never covers the map
+      if (window.matchMedia && window.matchMedia('(max-width: 600px)').matches) toggleLegend(true);
+      // The zoom buttons sit above the legend: publish its live height to CSS
+      const host = lg.parentElement;
+      const publish = () => host.style.setProperty('--legend-h', lg.offsetHeight + 'px');
+      publish();
+      if ('ResizeObserver' in window) new ResizeObserver(publish).observe(lg);
+      lg.addEventListener('transitionend', publish);   // final height once the collapse animation settles
+      window.addEventListener('keydown', e => {
+        if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === 'l' || e.key === 'L') toggleLegend();
+      });
+    })();
 
     function showBugReportModal() {
       const overlay = document.getElementById("bugReportOverlay");
@@ -5537,7 +5632,7 @@
         const r = currentResult;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
         const depUT = UT + waitSec;
-        const arrUT = depUT + r.tt;
+        const arrUT = depUT + r.tof;
 
         const osDep = stateAt(r.origin, depUT);
         const dsArr = stateAt(r.dest, arrUT);
@@ -5556,7 +5651,7 @@
         // see buildLambertArcPoints for why the old fixed-180-degree ellipse
         // construction could miss the arrival point). Falls back to the
         // idealized ellipse only if Lambert can't find a solution.
-        let lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, r.tt, KERBOL.mu, ARC_N);
+        let lambertPts = buildLambertArcPoints(osDep.x, osDep.y, dsArr.x, dsArr.y, r.tof, KERBOL.mu, ARC_N);
 
         const arr = arcGeo.attributes.position.array;
         if (lambertPts) {
@@ -6052,7 +6147,7 @@
         const r = currentResult;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
         const selectedAssist = (selectedAssistIdx !== null && currentAssists[selectedAssistIdx]) ? currentAssists[selectedAssistIdx] : null;
-        const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tt;
+        const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tof;
         const ghostUT = UT + waitSec + totalFlightTime;
 
         const gPos = bodyWorldPositionAt(ghostDest, ghostUT);
@@ -7137,7 +7232,143 @@
         return best + destPlanet.period * 0.002; // nudge off the exact-180 Lambert singularity
       }
 
-      function computeTransfer(originName, destName, tRef = UT) {
+      // Hyperbolic escape/capture from a circular parking orbit for a given v-infinity.
+      function ejectionBurn(vInf, planet) {
+        const rp = planet.radius + PARK_ALT, muP = planet.mu;
+        const eH = 1 + rp * vInf * vInf / muP;
+        const nuInf = Math.acos(Math.max(-1, Math.min(1, -1 / eH)));
+        const ejAngleFromPeri = 180 - nuInf * 180 / Math.PI;
+        const vPark = Math.sqrt(muP / rp), vBurnout = Math.sqrt(vInf * vInf + 2 * muP / rp);
+        return { ejAngleFromPeri, dvBurn: vBurnout - vPark, vInf, rp };
+      }
+
+      /* ---- Transfer window solver ------------------------------------------------------------
+         The classic "required phase angle" assumes circular orbits and a constant closing rate, so the old
+         countdown (phase difference / mean closing rate) drifted by days as the window approached and called
+         the window up to ~4 days early for eccentric targets (Duna e=0.05). It then flipped to the NEXT
+         window the instant the phase passed the circular-orbit value.
+         Instead, solve for the departure time directly from the real orbits: the moment the destination,
+         tt seconds later, sits exactly opposite the origin (where the transfer ellipse's far end is). */
+      const WINDOW_GRACE_DEG = 1.0;   // the window stays "open" until the phase error exceeds this
+
+      // Angle (deg, +-180) from the transfer's far point to the destination at arrival. Zero = perfect window.
+      function windowGapDeg(o, d, t, tt) {
+        const so = stateAt(o, t), sd = stateAt(d, t + tt);
+        return angNormPM180((sd.theta - so.theta) * 180 / Math.PI - 180);
+      }
+
+      function solveWindowUT(o, d, tRef, tt) {
+        const meanRateDeg = (d.n - o.n) * 180 / Math.PI;           // deg/s: mean slope of the gap
+        if (Math.abs(d.n - o.n) <= 1e-12) return null;             // same period: no synodic cycle
+        const synodicSec = 360 / Math.abs(meanRateDeg);
+        const graceSec = WINDOW_GRACE_DEG / Math.abs(meanRateDeg);
+        const polish = (t) => {                                    // Newton on the true gap; eccentric orbits only bend the slope slightly
+          for (let i = 0; i < 60; i++) {
+            const g = windowGapDeg(o, d, t, tt);
+            if (Math.abs(g) < 1e-7) break;
+            const h = 1800;
+            let slope = (windowGapDeg(o, d, t + h, tt) - windowGapDeg(o, d, t - h, tt)) / (2 * h);
+            if (!(Math.sign(slope) === Math.sign(meanRateDeg) && Math.abs(slope) > 0.25 * Math.abs(meanRateDeg) && Math.abs(slope) < 4 * Math.abs(meanRateDeg))) slope = meanRateDeg;
+            t -= g / slope;
+          }
+          return t;
+        };
+        let t = polish(tRef);                                      // nearest window, either side of tRef
+        if (t < tRef - graceSec) t = polish(t + synodicSec);       // already gone -> the next one
+        return { windowUT: t, synodicSec, graceSec };
+      }
+
+      // (Re)solve the window for a transfer result and refresh the fields that depend on it.
+      function applyWindow(res, tRef) {
+        const w = solveWindowUT(res.origin, res.dest, tRef, res.tt);
+        if (!w) return;
+        res.windowUT = w.windowUT;
+        res.synodicSec = w.synodicSec;
+        res.windowGraceSec = w.graceSec;
+        res.waitSec = w.windowUT - tRef;                           // slightly negative = window opened a moment ago, still good
+        const so = stateAt(res.origin, w.windowUT), sd = stateAt(res.dest, w.windowUT);
+        res.requiredPhase = angNormPM180((sd.theta - so.theta) * 180 / Math.PI);   // the real phase needed for THIS window
+        if (res.wantExact) applyExactTransfer(res);
+      }
+
+      /* ---- Exact transfer for the solved window --------------------------------------------
+         The sidebar used to quote the circular-orbit Hohmann numbers (flight time, v-inf, burn angle). With an
+         eccentric destination those are ~5% off in radius and put the arrival ~1 Gm from the planet, while the
+         arc drawn on the map was already a Lambert solution. Now the numbers come from that same Lambert
+         solution: depart at the solved window and pick the flight time with the cheapest ejection + capture.
+         Flight times within ~0.6 deg of a 180 deg transfer are skipped (Lambert is degenerate there). */
+      function solveExactTransfer(o, d, tDep, ttRef) {
+        const mu = KERBOL.mu, so = stateAt(o, tDep);
+        const th1 = Math.atan2(so.y, so.x), TWO_PI = 2 * Math.PI;
+        const evalAt = (tof) => {
+          const sd = stateAt(d, tDep + tof);
+          let dnu = Math.atan2(sd.y, sd.x) - th1; dnu = ((dnu % TWO_PI) + TWO_PI) % TWO_PI;
+          if (Math.abs(dnu - Math.PI) < 0.01) return null;
+          const sol = lambertSolve([so.x, so.y], [sd.x, sd.y], tof, mu);
+          if (!sol) return null;
+          const energy = (sol.v1[0] * sol.v1[0] + sol.v1[1] * sol.v1[1]) / 2 - mu / Math.hypot(so.x, so.y);
+          if (!(energy < 0)) return null;                                   // must be a bound orbit
+          const vi = [sol.v1[0] - so.vx, sol.v1[1] - so.vy], va = [sol.v2[0] - sd.vx, sol.v2[1] - sd.vy];
+          const vInfDep = Math.hypot(vi[0], vi[1]), vInfArr = Math.hypot(va[0], va[1]);
+          return { tof, vInfDep, vInfArr, vi, va, vd: [sd.vx, sd.vy], a: -mu / (2 * energy),
+                   cost: ejectionBurn(vInfDep, o).dvBurn + ejectionBurn(vInfArr, d).dvBurn };
+        };
+        const N = 130, lo = 0.7, hi = 1.35, step = (hi - lo) / N;
+        let best = null, bestK = -1; const grid = [];
+        for (let k = 0; k <= N; k++) {
+          const e = evalAt(ttRef * (lo + step * k));
+          grid.push(e);
+          if (e && (!best || e.cost < best.cost)) { best = e; bestK = k; }
+        }
+        if (!best) return null;
+        const l = grid[bestK - 1], r = grid[bestK + 1];                      // parabolic refine between grid points
+        if (l && r) {
+          const den = l.cost - 2 * best.cost + r.cost;
+          if (den > 1e-9) {
+            const off = Math.max(-1, Math.min(1, 0.5 * (l.cost - r.cost) / den));
+            const refined = evalAt(best.tof + off * step * ttRef);
+            if (refined && refined.cost <= best.cost) best = refined;
+          }
+        }
+        const dirCCW = Math.atan2(so.vx * best.vi[1] - so.vy * best.vi[0], so.vx * best.vi[0] + so.vy * best.vi[1]) * 180 / Math.PI;
+        const vdMag = Math.hypot(best.vd[0], best.vd[1]);
+        best.dirCCW = dirCCW;                                               // where v-inf points, CCW from the origin's prograde
+        best.depSign = Math.cos(dirCCW * Math.PI / 180) >= 0 ? 1 : -1;
+        best.arrSign = (best.va[0] * best.vd[0] + best.va[1] * best.vd[1]) / (vdMag || 1) > 0 ? -1 : 1;
+        return best;
+      }
+
+      // Swap the circular-Hohmann estimate for the exact numbers (or restore it if no solution exists).
+      function applyExactTransfer(res) {
+        const ex = res.windowUT != null ? solveExactTransfer(res.origin, res.dest, res.windowUT, res.tt) : null;
+        const src = ex ? {
+          tof: ex.tof, at: ex.a, dv1_helio: ex.depSign * ex.vInfDep, dv2_helio: ex.arrSign * ex.vInfArr,
+          depEj: ejectionBurn(ex.vInfDep, res.origin), arrEj: ejectionBurn(ex.vInfArr, res.dest), depDirCCW: ex.dirCCW
+        } : res.base;
+        res.exact = ex;
+        Object.assign(res, src);
+      }
+
+      /* ---- Where to burn on the parking orbit --------------------------------------------------
+         Positions are angles measured in the direction you orbit (counter-clockwise from above), 0 = the
+         planet's prograde direction. The escape asymptote sits nu_inf (= 180 - ejAngle) beyond periapsis, so
+         the burn point is nu_inf behind the direction the ship must leave in (depDirCCW). For a transfer that
+         leaves roughly WITH the planet that is "ahead of retrograde"; for one that leaves against it, "ahead of
+         prograde"; any tilt of the real departure direction is added on. (Verified by numerically integrating
+         the escape in test/pin.test.mjs.) */
+      function ejectionBurnPoint(r) {
+        const ej = r.depEj.ejAngleFromPeri;
+        const dir = r.depDirCCW;
+        const forward = Math.cos(dir * Math.PI / 180) >= 0;
+        const refCCW = forward ? 180 : 0;
+        const tilt = angNormPM180(dir - (forward ? 0 : 180));
+        const fromRef = ej + tilt;
+        const refName = forward ? 'retrograde' : 'prograde';
+        return { ejAngle: ej, tilt, refName, refCCW, fromRef, burnCCW: refCCW + fromRef,
+                 text: Math.abs(fromRef).toFixed(1) + '\u00B0 ' + (fromRef >= 0 ? 'ahead of ' : 'behind ') + refName };
+      }
+
+      function computeTransfer(originName, destName, tRef = UT, exact = true) {
         const originSelected = findBody(originName);
         const destSelected = findBody(destName);
         const destMoon = destSelected && destSelected.parent ? destSelected : null;  // Track if destination is a moon
@@ -7171,14 +7402,7 @@
             waitSec = diff / (-rate);
           }
         }
-        function ejection(vInf, planet) {
-          const rp = planet.radius + PARK_ALT, muP = planet.mu;
-          const eH = 1 + rp * vInf * vInf / muP;
-          const nuInf = Math.acos(Math.max(-1, Math.min(1, -1 / eH)));
-          const ejAngleFromPeri = 180 - nuInf * 180 / Math.PI;
-          const vPark = Math.sqrt(muP / rp), vBurnout = Math.sqrt(vInf * vInf + 2 * muP / rp);
-          return { ejAngleFromPeri, dvBurn: vBurnout - vPark, vInf, rp };
-        }
+        const ejection = ejectionBurn;
         const depEj = ejection(Math.abs(dv1_helio), o);
         const arrEj = ejection(Math.abs(dv2_helio), d);
 
@@ -7213,7 +7437,13 @@
           landingDv = surfaceVelocity * 0.35;
         }
 
-        return { origin: o, dest: d, originSelected, destSelected, destMoon, moonInsertionDv, landingDv, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+        const res = { origin: o, dest: d, originSelected, destSelected, destMoon, moonInsertionDv, landingDv, tRef, r1, r2, at, tt, v1c, v2c, vt1, vt2, dv1_helio, dv2_helio, requiredPhase, currentPhase, waitSec, depEj, arrEj, outbound: r2 > r1 };
+        res.tof = tt;                                          // flight time actually flown (= tt until the exact transfer replaces it)
+        res.depDirCCW = r2 > r1 ? 0 : 180;                     // Hohmann leaves exactly with / against the planet
+        res.base = { tof: tt, at, dv1_helio, dv2_helio, depEj, arrEj, depDirCCW: res.depDirCCW };
+        res.wantExact = !!exact;
+        if (waitSec !== null) applyWindow(res, tRef);   // replace the mean-motion estimate with the solved window (+ exact transfer)
+        return res;
       }
 
       let currentResult = null;
@@ -7302,7 +7532,7 @@
         const r = currentResult;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
         const tDep = UT + waitSec;
-        const rawCandidates = detectPotentialAssists(r.origin, r.dest, tDep, r.tt);
+        const rawCandidates = detectPotentialAssists(r.origin, r.dest, tDep, r.tof);
         const directDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
         currentAssists = rawCandidates.map(c => {
           const solved = computeAssistTransfer(r.origin, c.planet, r.dest, tDep);
@@ -7386,10 +7616,10 @@
         if (returnOriginName === 'Kerbin') return null;
 
         const outboundWaitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
-        const outboundArrivalUT = UT + outboundWaitSec + r.tt;
+        const outboundArrivalUT = UT + outboundWaitSec + r.tof;
         const missionStaySec = Math.max(0, missionTimeOnTargetDays) * DAY_SEC;
         const returnReadyUT = outboundArrivalUT + missionStaySec;
-        const ret = computeTransfer(returnOriginName, 'Kerbin', returnReadyUT);
+        const ret = computeTransfer(returnOriginName, 'Kerbin', returnReadyUT, false);   // quick Hohmann estimate, no exact solve
         if (!ret) return null;
 
         const returnWaitSec = ret.waitSec !== null ? Math.max(0, ret.waitSec) : 0;
@@ -7445,7 +7675,7 @@
         const closeEnough = Math.abs(phaseDiff) < 2;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
         const selectedAssist = (selectedAssistIdx !== null && currentAssists[selectedAssistIdx]) ? currentAssists[selectedAssistIdx] : null;
-        const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tt;
+        const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tof;
         const ghostUT = UT + waitSec + totalFlightTime;
         const originName = r.originSelected.name;
         const destName = r.destSelected.name;
@@ -7499,15 +7729,15 @@
       <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough ? 'good' : ''}">${phaseDiff.toFixed(1)}°</span></div>
     </div>
     <div class="card">
-      <h3><span class="dot"></span>Ejection Angle (from prograde marker)</h3>
+      <h3><span class="dot"></span>Ejection Angle (burn point)</h3>
       ${ejectionDiagramSvg(r)}
-      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${r.depEj.ejAngleFromPeri.toFixed(1)}° ${r.outbound ? 'ahead of' : 'behind'} prograde</span></div>
+      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(r).text}</span></div>
       <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
-      <div class="note">Angle between your parking-orbit periapsis (burn point) and the planet's prograde/retrograde velocity direction, derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
+      <div class="note">Burn when your ship is this far from the planet's ${ejectionBurnPoint(r).refName} point, measured in the direction you orbit. Derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
     </div>
     <div class="card">
       <h3><span class="dot"></span>Transfer Time</h3>
-      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tt)}</div>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tof)}</div>
       <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
       <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
     </div>
@@ -7550,7 +7780,7 @@
           return;
         }
         list.innerHTML = currentAssists.map((a, i) => {
-          const extra = a.solved.totalTime - currentResult.tt;
+          const extra = a.solved.totalTime - currentResult.tof;
           const savingsHtml = a.savings > 1
             ? `Save ${a.savings.toFixed(0)} m/s`
             : `<span style="color:var(--text-dimmer);">No savings</span>`;
@@ -7586,7 +7816,8 @@
         const OR = 62; // parking orbit radius in px
         const PR = 20; // planet display radius in px
         const oCol = r.originSelected.color || '#4b9eff';
-        const ejAngle = r.depEj.ejAngleFromPeri; // degrees from prograde
+        const bp = ejectionBurnPoint(r);
+        const ejAngle = bp.fromRef;                  // signed: + = ahead of the reference point, - = behind it
 
         // Convert SVG degrees-from-top (clockwise) to [x, y] on a circle of given radius
         function pt(svgDeg, radius) {
@@ -7594,53 +7825,41 @@
           return [cx + radius * Math.cos(rad), cy + radius * Math.sin(rad)];
         }
 
-        // Prograde at 3 o'clock (svgDeg = 90)
-        // Outbound: burn is ejAngle° CCW from prograde → svgDeg = 90 + ejAngle (add in SVG Y-down)
-        // Inbound:  burn is ejAngle° CW  from prograde → svgDeg = 90 - ejAngle
-        const burnSvgDeg = r.outbound ? (90 + ejAngle) : (90 - ejAngle);
+        // The planet's prograde direction is drawn at 3 o'clock; the ship orbits counter-clockwise on screen.
+        // A position angle phi (CCW from prograde) sits at svgDeg = 90 - phi.
+        const svgOf = (phiCCW) => 90 - phiCCW;
+        const refSvgDeg = svgOf(bp.refCCW);          // retrograde (outbound) or prograde (inbound)
+        const burnSvgDeg = svgOf(bp.burnCCW);        // ejAngle further along the orbit
         const [pgX, pgY] = pt(90, OR);
+        const [rfX, rfY] = pt(refSvgDeg, OR);
         const [bX, bY] = pt(burnSvgDeg, OR);
 
-        // Thrust vector: tangent to orbit (CCW direction) at burn point; flip sign for inbound (retro)
-        const burnRad = (burnSvgDeg - 90) * Math.PI / 180;
-        const sign = r.outbound ? 1 : -1;
-        const thrX = -Math.sin(burnRad) * sign;
-        const thrY = Math.cos(burnRad) * sign;
-        const perpX = thrY, perpY = -thrX; // perpendicular for flange spread
-
-        // Exhaust (opposite to thrust): main line + two flanges
-        const ex0X = (bX - thrX * 7).toFixed(1), ex0Y = (bY - thrY * 7).toFixed(1);
-        const ex1X = (bX - thrX * 17).toFixed(1), ex1Y = (bY - thrY * 17).toFixed(1);
-        const emX = (bX - thrX * 12).toFixed(1), emY = (bY - thrY * 12).toFixed(1);
-        const ef1X = (bX - thrX * 16 + perpX * 5).toFixed(1);
-        const ef1Y = (bY - thrY * 16 + perpY * 5).toFixed(1);
-        const ef2X = (bX - thrX * 16 - perpX * 5).toFixed(1);
-        const ef2Y = (bY - thrY * 16 - perpY * 5).toFixed(1);
-
-        // Dashed angle-arc slightly outside the orbit ring
+        // Dashed angle-arc just outside the orbit ring, from the reference point to the burn point (counter-clockwise on screen => sweep 0)
         const arcR = OR + 12;
-        const [a0x, a0y] = pt(90, arcR);
+        const [a0x, a0y] = pt(refSvgDeg, arcR);
         const [a1x, a1y] = pt(burnSvgDeg, arcR);
-        const arcSweep = r.outbound ? 1 : 0; // CW=1 (outbound ahead), CCW=0 (inbound behind)
-
-        // Angle label at arc midpoint
-        const arcMidDeg = r.outbound ? (90 + ejAngle / 2) : (90 - ejAngle / 2);
-        const [lblX, lblY] = pt(arcMidDeg, arcR + 14);
+        // Small angles: put the number inside the ring, on the burn dot's side of the reference line, so it clears the labels
+        const smallAngle = Math.abs(ejAngle) < 25;
+        const [lblX0, lblY0] = pt(refSvgDeg - ejAngle / 2, smallAngle ? OR - 22 : arcR + 14);
+        const lblSide = (bY - rfY) >= 0 ? 1 : -1;
+        const lblX = lblX0, lblY = lblY0 + (smallAngle ? lblSide * 10 : 0);
+        const refLabel = bp.refName === 'retrograde' ? 'RG' : 'PG';
+        const [rlX, rlY] = [rfX, rfY - 10];                       // label sits just above the reference dot (never clipped at the edge)
 
         return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;margin:6px auto 10px;">
     <circle cx="${cx}" cy="${cy}" r="${OR}" fill="none" stroke="#2a3f5f" stroke-width="2.2"/>
-    <path d="M${a0x.toFixed(1)},${a0y.toFixed(1)} A${arcR},${arcR} 0 0 ${arcSweep} ${a1x.toFixed(1)},${a1y.toFixed(1)}" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-dasharray="4,3" opacity="0.8"/>
+    <path d="M${a0x.toFixed(1)},${a0y.toFixed(1)} A${arcR},${arcR} 0 0 ${ejAngle >= 0 ? 0 : 1} ${a1x.toFixed(1)},${a1y.toFixed(1)}" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-dasharray="4,3" opacity="0.8"/>
     <line x1="${cx}" y1="${cy}" x2="${(cx + OR + 24).toFixed(1)}" y2="${cy}" stroke="var(--cyan)" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>
-    <circle cx="${pgX.toFixed(1)}" cy="${pgY.toFixed(1)}" r="4.5" fill="var(--cyan)" opacity="0.9"/>
+    <circle cx="${pgX.toFixed(1)}" cy="${pgY.toFixed(1)}" r="3.5" fill="var(--cyan)" opacity="0.55"/>
+    ${bp.refName === 'retrograde' ? `<line x1="${cx}" y1="${cy}" x2="${(cx - OR - 24).toFixed(1)}" y2="${cy}" stroke="var(--cyan)" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.35"/>` : ''}
+    <circle cx="${rfX.toFixed(1)}" cy="${rfY.toFixed(1)}" r="4.5" fill="var(--cyan)" opacity="0.9"/>
+    ${bp.refName === 'retrograde' ? `<text x="${rlX.toFixed(1)}" y="${(rlY + 3).toFixed(1)}" text-anchor="middle" fill="var(--cyan)" font-size="9" font-family="monospace" opacity="0.85" font-weight="bold">${refLabel}</text>` : ''}
     <text x="${(cx + OR + 27).toFixed(1)}" y="${(cy + 4).toFixed(1)}" fill="var(--cyan)" font-size="9" font-family="monospace" opacity="0.75" font-weight="bold">PG</text>
     <circle cx="${cx}" cy="${cy}" r="${PR}" fill="${oCol}" opacity="0.9"/>
     <text x="${cx}" y="${(cy + 4).toFixed(1)}" text-anchor="middle" fill="#fff" font-size="8.5" font-family="monospace" opacity="0.85" font-weight="bold">${r.originSelected.name.slice(0, 4).toUpperCase()}</text>
-    <line x1="${ex0X}" y1="${ex0Y}" x2="${ex1X}" y2="${ex1Y}" stroke="#ffb830" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-    <line x1="${emX}" y1="${emY}" x2="${ef1X}" y2="${ef1Y}" stroke="#ff8c00" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
-    <line x1="${emX}" y1="${emY}" x2="${ef2X}" y2="${ef2Y}" stroke="#ff8c00" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
     <circle cx="${bX.toFixed(1)}" cy="${bY.toFixed(1)}" r="6.5" fill="var(--amber)" opacity="0.95"/>
     <circle cx="${bX.toFixed(1)}" cy="${bY.toFixed(1)}" r="7.5" fill="none" stroke="var(--amber)" stroke-width="1" opacity="0.5"/>
-    <text x="${lblX.toFixed(1)}" y="${(lblY + 4).toFixed(1)}" text-anchor="middle" fill="var(--amber)" font-size="9.5" font-family="monospace" opacity="0.95" font-weight="bold">${ejAngle.toFixed(1)}°</text>
+    <text x="${lblX.toFixed(1)}" y="${(lblY + 4).toFixed(1)}" text-anchor="middle" fill="var(--amber)" font-size="9.5" font-family="monospace" opacity="0.95" font-weight="bold">${Math.abs(ejAngle).toFixed(1)}°</text>
   </svg>`;
       }
 
@@ -7833,19 +8052,12 @@
           const os = stateAt(currentResult.origin, UT);
           const ds = stateAt(currentResult.dest, UT);
           currentResult.currentPhase = angNormPM180((ds.theta - os.theta) * 180 / Math.PI);
-          // Recompute window countdown each frame
-          const rate = currentResult.dest.n - currentResult.origin.n;
-          if (Math.abs(rate) > 1e-12) {
-            const curRad = currentResult.currentPhase * DEG, reqRad = currentResult.requiredPhase * DEG;
-            if (rate > 0) {
-              let diff = reqRad - curRad;
-              diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-              currentResult.waitSec = diff / rate;
-            } else {
-              let diff = curRad - reqRad;
-              diff = ((diff % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-              currentResult.waitSec = diff / (-rate);
-            }
+          // Window countdown: the window is a fixed point in time solved from the real orbits (see applyWindow),
+          // so it no longer drifts as it approaches. Re-solve only once it is well past, or if time was wound back.
+          if (currentResult.windowUT != null) {
+            const toWindow = currentResult.windowUT - UT;
+            if (toWindow < -currentResult.windowGraceSec || toWindow > 2 * currentResult.synodicSec) applyWindow(currentResult, UT);
+            else currentResult.waitSec = toWindow;
           }
 
           updateTransferArc();   // update transfer ellipse
