@@ -791,8 +791,8 @@
 
     .shortcuts-bubble {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      bottom: 16px;
+      right: calc(16px + 184px + 12px);
       z-index: 10;
       background: rgba(9, 15, 28, .86);
       border: 1px solid var(--border);
@@ -3160,7 +3160,7 @@
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
             style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v3.7.0</div>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.0</div>
           <div class="bug-report-btn" id="bugReportBtn" onclick="showBugReportModal()" title="Report a bug">Submit bug
             report</div>
           <div class="bmc-wrap" id="bmcWrap">
@@ -3348,62 +3348,52 @@
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
-        <h2>[3.7.0] - 2026-09-25</h2>
+        <h2>[4.0] - 2026-10-03</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Bug Report Feature</strong>: New 'Submit Bug Report' button in the bottom-left corner (next to the
-            changelog
-            version badge) opens a modal form for submitting bug reports directly to GitHub. Users can describe the bug,
-            attach a screenshot (PNG/JPG/GIF, max 5MB), and the issue opens pre-filled on GitHub with all context
-            included. No backend required — entirely client-side.</li>
-          <li><strong>Screenshot Support in Bug Reports</strong>: File upload with both click-to-browse and
-            drag-and-drop support. Screenshots are converted to base64 and embedded in the GitHub issue body as inline
-            markdown images so developers see the bug context immediately.</li>
-          <li><strong>HUD Layout Reorganization</strong>: Repositioned all on-map HUD elements to eliminate overlap with
-            the sidebar and improve visual hierarchy:
-            <ul>
-              <li><strong>Top-left</strong>: Origin/Destination dropdowns (new HUD panel, fully synced with sidebar)
-              </li>
-              <li><strong>Top-right</strong>: Keyboard shortcuts and warp controls</li>
-              <li><strong>Middle-right</strong>: Camera HUD (zoom %, tilt, rotation, focus)</li>
-              <li><strong>Bottom-right</strong>: Zoom controls (+/− buttons, reset), Map legend</li>
-              <li>All elements properly spaced and no longer hidden behind the sidebar</li>
-            </ul>
-          </li>
+          <li><strong>Verification code on bug reports</strong>: "Open GitHub Issue" unlocks after you type the 5 characters shown in the form.</li>
+          <li><strong>Automatic app screenshot</strong>: Opening the bug report form captures the whole app and copies it to the clipboard. Press Ctrl+V in the GitHub issue to attach it. You can retake it or remove it.</li>
+          <li><strong>Your own screenshot</strong>: Click, drag and drop, or paste an image instead (PNG, JPG, GIF or WebP, up to 5 MB). Dropping works anywhere on the form.</li>
+          <li><strong>Collapsible legend</strong>: The map legend is now a box with a minimize button, like Controls. Press L to toggle it. The zoom buttons sit above it.</li>
         </ul>
         <h3>Changed</h3>
         <ul>
-          <li><strong>Sidebar Origin/Dest Dropdowns</strong>: Now fully synced with new top-left HUD dropdowns. Changes
-            in either location update both in real time. Swap button (⇄) works identically in both places.</li>
-          <li><strong>HUD Styling</strong>: Added orange color variable (<code>--orange: #ff8c3c</code>) and applied
-            consistent styling across all new HUD elements to match existing design language.</li>
+          <li><strong>Transfer window timing</strong>: "Window opens at" is now worked out from the real orbit positions instead of average speeds. It no longer shifts as you get close (for Kerbin to Duna it used to move by about 5 days), the countdown no longer reaches zero a few days early, and the window stays open until the phase is off by 1° (about 2.5 days for Duna) before the countdown moves on to the next one.</li>
+          <li><strong>Required phase angle</strong>: Shows the real angle for the window instead of the circular-orbit value. For eccentric destinations like Duna it can differ by a degree or two.</li>
+          <li><strong>Exact transfer numbers</strong>: Flight time, ejection and capture Δv, v∞, transfer orbit size, arrival time and the burn angle now come from the same trajectory that is drawn on the map, using the cheapest flight time for the window. The old numbers assumed circular orbits and would have missed Duna by about a million km. Following the new ones reaches the planet.</li>
+          <li><strong>Ejection card</strong>: Now titled "Ejection Angle (burn point)". The diagram marks the reference point (RG for retrograde, PG for prograde) and the burn angle is measured from it. The orange exhaust lines on the burn marker are gone.</li>
+          <li><strong>Source layout</strong>: The code is now 43 small files in <code>src/parts</code> that <code>npm run build</code> joins into the single <code>index.html</code>, with physics tests and a GitHub check. Nothing changes for users.</li>
         </ul>
-        <h3>Technical Details</h3>
-        <ul>
-          <li>Bug report form validates file type (must be image/*) and size (max 5MB) before upload</li>
-          <li>Screenshots converted to data URIs and embedded in GitHub issue markdown:
-            <code>![filename](data:image/png;base64,...)</code>
-          </li>
-          <li>HUD positioning changed from sidebar-width-offset calculations to flush-edge positioning
-            (<code>right: 16px</code>, <code>left: 16px</code>)</li>
-          <li>Origin/Dest HUD dropdowns synced via JavaScript event listeners</li>
-        </ul>
-
-        <h2>[3.6.6] - 2026-09-22</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Map View Off-Center (Not a Camera Bug)</strong>: <code>.map-wrap</code> had
-            <code>position: fixed; inset: 0;</code> — almost certainly a leftover from the v3.6.5 UI relocation work —
-            which made it span the entire browser window instead of just the space left after the sidebar. The 3D
-            scene itself was rendering correctly centered on its own camera target; what was visible was only the left
-            portion of a full-window-wide canvas, with the sidebar painting over the rest, so the Sun and planets
-            appeared shifted well right of the actual center of the visible map area. Restored
-            <code>.map-wrap</code> to <code>position: relative; flex: 1 1 auto; min-width: 0;</code> so it's a normal
-            flex child of <code>.main</code> again, sized to the space actually available. All other map overlays
-            (<code>.zoom-controls</code>, <code>.legend</code>, <code>#labelContainer</code>, <code>.map-hud</code>)
-            already used <code>position: absolute</code> and re-anchor correctly now that their positioned ancestor
-            is sized properly again — no other changes were needed.
-          </li>
+          <li><strong>Ejection angle was on the wrong side</strong>: For an outbound transfer it said to burn ahead of prograde, which sends the ship out against the planet's motion. It now says how far ahead of retrograde to burn (outbound) or ahead of prograde (inbound), including any tilt in the departure direction.</li>
+          <li><strong>Bug report with a screenshot didn't open</strong>: The image was packed into the GitHub link, which made it too long. Screenshots now go through the clipboard.</li>
+          <li><strong>Dropped images opened in a new tab</strong>: Only the small drop box caught drops. Dropping now works anywhere on the form.</li>
+          <li><strong>JPG screenshots couldn't be copied</strong>: The clipboard only takes PNG, so uploads are converted first.</li>
+          <li><strong>Submit button off-screen on short windows</strong>: The bug report form now scrolls inside the window.</li>
+        </ul>
+        <h3>Known Issues</h3>
+        <ul>
+          <li>Transfers are flat (no orbital tilt). Duna and Eve are fine, but Moho (7°) and Eeloo (6°) won't intercept exactly.</li>
+          <li>The return-trip estimate still uses the quick circular-orbit numbers.</li>
+          <li>The map doesn't render on mobile browsers, and the kRPC2 bridge doesn't work yet (see 3.6.4).</li>
+        </ul>
+
+                <h2>[3.7.0] - 2026-09-25</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Bug report button</strong>: A button in the bottom-left opens a form (title, description, optional screenshot) that opens a pre-filled GitHub issue.</li>
+          <li><strong>Origin and destination on the map</strong>: Dropdowns in the top-left, synced with the sidebar.</li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>HUD layout</strong>: Controls top-right, camera readout middle-right, zoom buttons and legend bottom-right. Nothing sits behind the sidebar.</li>
+        </ul>
+
+<h2>[3.6.6] - 2026-09-22</h2>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Map view off-center</strong>: <code>.map-wrap</code> was <code>position: fixed</code> and covered the whole window, so the sidebar sat on top of the right part of the map and the Sun looked shifted right. It is a normal flex child again (<code>position: relative; flex: 1 1 auto; min-width: 0</code>).</li>
         </ul>
 
         <h2>[3.6.5] - 2026-09-16</h2>
@@ -3433,35 +3423,13 @@
         <h2>[3.6.4] - 2026-09-15</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Sidebar Rendering Below the Map on Desktop</strong>: A stray extra closing
-            <code>&lt;div&gt;</code> left over from an earlier edit (immediately after the version badge) was silently
-            closing <code>.bottom-left-bar</code>, then cascading to prematurely close <code>.map-wrap</code> and
-            <code>.main</code> one element too early. The net effect: the sidebar ended up as a sibling of
-            <code>.main</code> instead of nested inside it, so it rendered full-width below the map instead of beside it
-            on desktop widths. This was a pure HTML nesting bug, not a CSS/media-query issue — the responsive
-            breakpoints themselves were never at fault.
-          </li>
-          <li><strong>Orbital Drift Root Cause Fix Restored</strong>: An orbital calibration fix from earlier work had
-            gone missing from this branch and is restored here. The in-game calendar uses 425 days per year, not 426 as
-            previously assumed — a one-day-per-year discrepancy that compounds with every year elapsed, which is why the
-            long-standing "orbits drift after 1-2 years" issue was small at first and grew steadily worse over time.
-            <code>YEAR_DAYS</code> corrected from 426 to 425, and <code>m0Deg</code> recalibrated for all six planets
-            using direct in-game Mean Anomaly readings taken ~15 years apart, cross-validated to within 0.01° per
-            planet. Orbital periods and orientDeg values were independently confirmed already correct (via Kepler's
-            third law and self-consistent Argument-of-Periapsis/LAN readings) and did not need to change. New m0Deg
-            values: Moho 124.90, Eve 314.44, Duna 348.60, Dres 110.74, Jool 334.08, Eeloo 158.80 (previously 108.64 /
-            165.54 / 350.99 / 116.10 / 339.25 / 163.48).
-          </li>
+          <li><strong>Sidebar rendered below the map</strong>: A stray <code>&lt;/div&gt;</code> closed <code>.map-wrap</code> and <code>.main</code> too early, so the sidebar ended up outside <code>.main</code> and dropped below the map on desktop. It was an HTML nesting bug, not a CSS one.</li>
+          <li><strong>Orbits drifted after 1-2 years</strong>: The in-game year is 425 days, not 426. <code>YEAR_DAYS</code> is corrected and <code>m0Deg</code> is recalibrated for all six planets from in-game readings taken about 15 years apart (within 0.01° each). New m0Deg: Moho 124.90, Eve 314.44, Duna 348.60, Dres 110.74, Jool 334.08, Eeloo 158.80 (was 108.64 / 165.54 / 350.99 / 116.10 / 339.25 / 163.48).</li>
         </ul>
 
         <h3>Known Issues</h3>
         <ul>
-          <li><strong>LAN Not Modeled Separately</strong>: The 3D orbit renderer combines Argument of Periapsis and
-            Longitude of Ascending Node into a single <code>orientDeg</code> value and applies inclination as a simple
-            tilt, which is exact only when LAN is 0. Real LAN values are nonzero for every planet, so there's a small
-            residual (constant, not growing over time) out-of-plane position error, largest for higher-inclination
-            bodies like Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°). A fully correct fix would track LAN
-            separately with proper 3-axis rotation.</li>
+          <li><strong>LAN isn't modeled separately</strong>: Argument of periapsis and LAN are combined into one <code>orientDeg</code> and inclination is a plain tilt, which is only exact when LAN is 0. That leaves a small constant position error: largest for Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°).</li>
           <li><strong>kRPC2 Dependency Mod Doesn't Work</strong>: The kRPC2 dependency mod on the KSP2 side does not
             work yet — the Python bridge (<code>kerbalist_bridge.py</code>) cannot connect to KSP2 because the required
             server-side mod is not functional.</li>
@@ -3500,10 +3468,7 @@
         <h2>[3.6] - 2026-09-13</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Full Mobile Responsive Design</strong>: Kerbalist now works great on phones and tablets. On small
-            screens, a Map / Controls toggle lets you view the 3D map or the sidebar controls — whichever you need.
-            The map stays fully interactive with touch controls (1-finger rotate, 2-finger zoom &amp; pan). Sidebar
-            elements are touch-friendly with larger tap targets, compact layouts, and smooth scrolling.</li>
+          <li><strong>Mobile layout</strong>: On small screens a Map / Controls toggle switches between the 3D map and the sidebar. The map uses touch controls (1-finger rotate, 2-finger zoom and pan) and the sidebar has bigger tap targets.</li>
         </ul>
 
         <h2>[3.5.6] - 2026-09-13</h2>
@@ -3540,16 +3505,7 @@
             separate clamp.</li>
         </ul>
 
-        <h3>Known Issues</h3>
-        <ul>
-          <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after
-            approximately 1-2 in-game years from the reference UT.</li>
-          <li><strong>kRPC2 Dependency Mod Doesn't Work</strong>: The kRPC2 dependency mod on the KSP2 side does not
-            work yet — the Python bridge (<code>kerbalist_bridge.py</code>) cannot connect to KSP2 because the required
-            server-side mod is not functional.</li>
-        </ul>
-
-        <h2>[3.5.5] - 2026-09-12</h2>
+<h2>[3.5.5] - 2026-09-12</h2>
         <h3>Fixed</h3>
         <ul>
           <li><strong>Moon Transfer Visualization Bug (Critical)</strong>: Fixed a coordinate double-counting bug where
@@ -3608,7 +3564,7 @@
           <li><strong>Instant Camera Centering</strong>: Camera now visually centers on a body immediately upon
             double-click without requiring mouse movement. Added continuous updateCamera() calls to the render loop to
             keep focused bodies centered as they move.</li>
-          <li><strong>Camera Reset Behavior</strong>: Pressing R to reset view now properly clears the focused-planet
+          <li><strong>Camera Reset Behavior</strong>: Pressing R to reset view now clears the focused-planet
             lock, so the camera returns to full-system view and doesn't get pulled back to the last selected body.</li>
           <li><strong>Moon Label Visibility Threshold</strong>: Moon labels now appear 50% closer to the camera
             (threshold reduced from camR &gt; 150 to camR &gt; 75), making them visible at wider zoom ranges without
@@ -3617,29 +3573,11 @@
             moon orbit lines increased from 120 to 600 segments. Bodies now stay perfectly aligned with their orbits
             even at maximum zoom without visible polygon edges.</li>
           <li><strong>Camera Lock Release on Pan</strong>: When the user pans with Shift+drag or middle-click+drag, the
-            camera focus lock is properly released after a brief grace period (200ms) to prevent accidental unlocking
+            camera focus lock is released after a brief grace period (200ms) to prevent accidental unlocking
             from double-click mouse settling.</li>
         </ul>
 
-        <h3>Technical Details</h3>
-        <ul>
-          <li>Added lastDoubleClickTime tracking to prevent clearing focusedPlanet immediately after a double-click.
-          </li>
-          <li>updateCamera() now called every frame in the render loop rather than only on mouse input, ensuring focused
-            bodies stay centered.</li>
-          <li>Mousemove handler checks time since last double-click before clearing focus on pan detection, allowing
-            ~200ms grace period.</li>
-          <li>Orbit line tessellation increased to maintain visual smoothness across the full zoom range (0.02 to 2400
-            world units).</li>
-        </ul>
-
-        <h3>Known Issues</h3>
-        <ul>
-          <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after
-            approximately 1-2 in-game years from the reference UT.</li>
-        </ul>
-
-        <h2>[3.5.0] - 2026-09-06</h2>
+<h2>[3.5.0] - 2026-09-06</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Full Label Interactivity</strong>: Planet and moon names are now fully interactive and much larger
@@ -3661,27 +3599,12 @@
             still be panned.</li>
           <li><strong>World-Space Orbit Lines &amp; Bodies</strong>: Restructured moon orbits and bodies to use true
             world-space positioning instead of being nested under planet meshes. Planets and moons now sit exactly on
-            their orbit lines. Orbit lines properly track parent planet positions each frame.</li>
-          <li><strong>Camera Tracking</strong>: Camera now properly locks to and follows focused bodies as they orbit,
+            their orbit lines. Orbit lines track parent planet positions each frame.</li>
+          <li><strong>Camera Tracking</strong>: Camera now locks to and follows focused bodies as they orbit,
             keeping them in view even as the system evolves.</li>
         </ul>
 
-        <h3>Technical Details</h3>
-        <ul>
-          <li>Moon orbits and bodies removed from planet mesh hierarchy; both now added to scene root with world-space
-            positioning.</li>
-          <li>moonLocalPosition() now returns full world coordinates including parent planet's position.</li>
-          <li>updateMap() positions moon orbit lines at parent planet's world location each frame.</li>
-          <li>focusedPlanet mechanism updated to track camera target continuously.</li>
-        </ul>
-
-        <h3>Known Issues</h3>
-        <ul>
-          <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after
-            approximately 1-2 in-game years from the reference UT.</li>
-        </ul>
-
-        <h2>[3.0 - 3.4 Consolidated] - 2026-09-06</h2>
+<h2>[3.0 - 3.4 Consolidated] - 2026-09-06</h2>
         <h3>Major Changes</h3>
 
         <h4>Scaling &amp; Coordinate System (v3.0)</h4>
@@ -3696,7 +3619,7 @@
         <h4>Camera &amp; Zoom (v3.1 &amp; v3.4)</h4>
         <ul>
           <li><strong>Zoom-Based Scale Transition (LOD)</strong>: Map fades between exaggerated overview (far) and
-            true-to-scale physical view (near), exactly like KSP2. Smooth blend as camera approaches a planet.</li>
+            true-to-scale physical view (near), like KSP2. Smooth blend as camera approaches a planet.</li>
           <li><strong>Deeper Zoom Range</strong>: Camera min distance 30 → 0.02 units; near plane 0.5 → 0.0005.
             Logarithmic depth buffer for stable rendering across the huge range.</li>
           <li><strong>Camera Lock to Focused Body</strong>: Zoom into a planet or use context menu to lock camera.
@@ -3716,26 +3639,17 @@
         <h4>Orbital Data (v2.7 - v2.9)</h4>
         <ul>
           <li><strong>Orbital Epoch Synchronization</strong>: All planet m0Deg values synchronized to KSP2 game state at
-            reference UT (T+6y,59d,04:16:57). Perfect in-game alignment.</li>
+            reference UT (T+6y,59d,04:16:57). Planet positions match the game.</li>
           <li><strong>Corrected Orbital Mechanics (v2.8-v2.9)</strong>: Fixed time base (21600s/day, not 86400), proper
             phase-angle interpretation relative to Kerbin, and full Kepler inversion accounting for eccentricity and
-            argument of periapsis. All planets reproduce observed in-game phase angles exactly.</li>
+            argument of periapsis. All planets match the in-game phase angles.</li>
           <li><strong>Jool Landing Removed</strong>: Jool is a gas giant; removed misleading landing Δv estimate.</li>
           <li><strong>Moon Data</strong>: All moon gravitational parameters (μ) added for accurate moon
             insertion/landing calculations.</li>
         </ul>
 
-        <h3>Technical Summary</h3>
-        <p>v3.0-3.4 represents a major rewrite to match KSP2's true system proportions and interactivity model. Core
-          architecture now separates exaggerated overview (for usability at full-system zoom) from true-scale near-view
-          (for accurate planning when zoomed in). All interactive elements (labels, right-click, camera focus) now work
-          reliably on both planets and moons. Orbital epoch synchronization ensures Kerbalist and KSP2 are in sync for
-          mission planning.</p>
-
         <h3>Known Issues</h3>
         <ul>
-          <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after
-            approximately 1-2 in-game years from the reference UT.</li>
           <li><strong>Drast Inside Dres</strong>: Drast's semi-major axis (43,400 m) is smaller than Dres's own physical
             radius (138,000 m) in the current KSP2 Redux moon data, placing its orbit inside the planet itself—almost
             certainly a units slip (likely meant to be 43,400 km). Left unchanged since the moon data was intentionally
@@ -3745,12 +3659,7 @@
         <h2>[2.9] - 2026-09-06</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Orbital Epoch Sync Corrected Again (v2.8 fix still incomplete)</strong>: The v2.8 recalculation
-            fixed the time base and phase-angle interpretation but still assumed mean anomaly equals true anomaly and
-            ignored each planet&#x27;s argument of periapsis (orientDeg). This is only valid for near-circular orbits
-            with zero orientation offset. Moho (e=0.2), Dres (e=0.145), and Eeloo (e=0.26) are all significantly
-            eccentric, and every outer planet has a non-zero orientDeg, so the previous values were still wrong for
-            these bodies.</li>
+          <li><strong>Epoch sync corrected again</strong>: 2.8 still treated mean anomaly as true anomaly and ignored each planet's argument of periapsis, which is wrong for eccentric orbits (Moho 0.2, Dres 0.145, Eeloo 0.26). m0Deg is now derived with the same math the app uses to draw positions, and all six planets match their in-game phase angles within 0.01°.</li>
           <li><strong>Full Kepler Inversion</strong>: m0Deg is now derived using the same math the app itself uses to
             render positions (<code>theta = trueAnomaly + orientDeg</code>, with true anomaly related to mean anomaly
             through the eccentric anomaly via Kepler&#x27;s equation). Verified numerically against the app&#x27;s own
@@ -3760,23 +3669,10 @@
             a real maneuver. The reference &quot;Landing @ Jool&quot; line (previously an arbitrary, misleadingly small
             ~2,400 m/s estimate) has been removed rather than guessed at.</li>
         </ul>
-        <h3>Technical Details</h3>
-        <p><strong>Verification:</strong> All six planets, when run through the app&#x27;s own eccentric-orbit position
-          formula, reproduce their observed KSP2 Target-panel phase angles to within 0.01°.</p>
-
-        <h3>Known Issues</h3>
-        <ul>
-          <li><strong>Orbital Drift After 1-2 Years</strong>: Planetary orbits begin to drift noticeably after
-            approximately 1-2 in-game years from the reference UT.</li>
-        </ul>
-
-        <h2>[2.8] - 2026-09-06</h2>
+<h2>[2.8] - 2026-09-06</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Orbital Epoch Sync Corrected (v2.7 fix was wrong)</strong>: The v2.7 synchronization used two
-            incorrect assumptions: it converted UT using 24-hour days instead of KSP2&#x27;s actual 6-hour Kerbin day,
-            and it treated observed &quot;Phase angle&quot; readings (which are relative to Kerbin) as if they were each
-            planet&#x27;s absolute heliocentric angle. Both errors have been corrected.</li>
+          <li><strong>Epoch sync corrected</strong>: 2.7 used 24-hour days instead of the 6-hour Kerbin day (21,600 s) and treated the Target panel's phase angles (target minus origin) as absolute angles. m0Deg is recalculated for all six planets; Eeloo's phase angle now matches the in-game -16.90°.</li>
           <li><strong>Recalculated m0Deg Values</strong>: All six planets recalculated using the correct 21,600s/day
             time base and proper phase-angle-relative-to-Kerbin interpretation, then verified against the in-game Target
             panel (Eeloo phase angle now matches -16.90° exactly at the reference UT).</li>
@@ -3785,10 +3681,7 @@
             identical. Landing estimate now scales from low-orbit velocity directly instead of a velocity difference.
           </li>
         </ul>
-        <h3>Technical Details</h3>
-        <p><strong>Verification:</strong> Computed phase angle (Eeloo relative to Kerbin) at the reference UT now equals
-          -16.90°, matching the KSP2 Target panel reading exactly.</p>
-        <h2>[2.7] - 2026-09-05</h2>
+<h2>[2.7] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Orbital Epoch Synchronization</strong>: Synchronized all planet orbital mean anomalies (m0Deg) to
@@ -3813,38 +3706,7 @@
           <li><strong>Transfer Window Accuracy</strong>: Transfer window calculations now align with actual in-game
             opportunities due to corrected orbital epochs.</li>
         </ul>
-        <h3>Technical Details</h3>
-        <p><strong>Synchronization Method:</strong></p>
-        <ul>
-          <li>Calculated mean motion for each planet: <code>n = 2π / period</code></li>
-          <li>Applied Kepler equation inverse: <code>m0 = θ_observed - (n × UT)</code></li>
-          <li>All values calibrated to KSP2 Redux system orbital data</li>
-          <li>Reference UT: T+006y 059d 04:16:43 (from user observation)</li>
-        </ul>
-        <p><strong>Result:</strong></p>
-        <p>When Kerbalist is set to the reference UT, all planets appear at their actual in-game positions:</p>
-        <ul>
-          <li>Moho: observed 120.30° ✓</li>
-          <li>Eve: observed -54.20° (327.07° normalized) ✓</li>
-          <li>Duna: observed -3.00° (329.68° normalized) ✓</li>
-          <li>Dres: observed -39.40° (111.81° corrected) ✓</li>
-          <li>Jool: observed -3.80° (294.43° normalized) ✓</li>
-          <li>Eeloo: observed -16.90° (3.04° normalized) ✓</li>
-        </ul>
-        <h3>Benefits</h3>
-        <p>✓ <strong>Perfect KSP2 alignment</strong>: Planet positions match game state at reference UT</p>
-        <p>✓ <strong>Accurate mission planning</strong>: Transfer calculations correspond to real in-game windows</p>
-        <p>✓ <strong>Consistent tool-game experience</strong>: Plan in Kerbalist, execute in KSP2, arrive as predicted
-        </p>
-        <p>✓ <strong>Simplified workflow</strong>: No more manual adjustment for orbital desynchronization</p>
-        <h3>User Impact</h3>
-        <ul>
-          <li><strong>Existing missions</strong>: May need adjustment if planned at different UT than v2.7 reference
-          </li>
-          <li><strong>Future missions</strong>: Can be precisely planned in Kerbalist and executed in KSP2</li>
-          <li><strong>Accuracy</strong>: ±0.1° or better depending on orbital period</li>
-        </ul>
-        <h2>[2.6] - 2026-09-05</h2>
+<h2>[2.6] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>KSP2 Moon Gravitational Parameters</strong>: Added actual KSP2 gravitational parameters (mu
@@ -3876,8 +3738,7 @@
           <li><strong>Moon Orbital Mechanics</strong>: All moon insertion and landing calculations now use correct
             orbital velocity formulas based on accurate gravitational parameters rather than compensation multipliers.
           </li>
-          <li><strong>Physics-Visualization Separation</strong>: Cleanly separated orbital data (unchanged KSP2 values)
-            from visualization scaling (Three.js camera/viewport). Calculations now use pure, unmodified KSP2 data.</li>
+          <li><strong>Physics and display separated</strong>: Calculations use the original KSP2 orbital data; map scaling only affects the 3D view.</li>
         </ul>
         <h3>Technical Details</h3>
         <p><strong>Moon Gravitational Parameters (added to all moons):</strong></p>
@@ -3894,28 +3755,10 @@
           <li>Bop: 1.221×10⁹ m³/s²</li>
           <li>Pol: 7.21×10⁸ m³/s²</li>
         </ul>
-        <p><strong>Architecture Improvements:</strong></p>
-        <ul>
-          <li>Original orbital semi-major axes, periods, radii, eccentricities: unchanged from KSP2</li>
-          <li>Physics calculations: use unmodified KSP2 data directly</li>
-          <li>Map view: Three.js scaling applied only to visualization (doesn&#x27;t affect math)</li>
-          <li>Result: All calculations now match KSP2 game values without compensation factors</li>
-        </ul>
-        <h3>Backwards Compatibility</h3>
-        <p>All changes are fully backwards compatible:</p>
-        <ul>
-          <li>Existing features work unchanged</li>
-          <li>Map visual appearance and zoom level preserved</li>
-          <li>Only difference: moon Δv calculations now accurate instead of using compensation multipliers</li>
-          <li>No user action required</li>
-        </ul>
         <h2>[2.5] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Porkchop Plot User Guide</strong>: New informational card above the porkchop plot explaining what
-            it shows, how to read axes/colors, how to identify good transfer windows, and step-by-step workflow for
-            mission planning. Includes detailed instruction on clicking cells to inspect specific transfer
-            opportunities.</li>
+          <li><strong>Porkchop plot guide</strong>: A card above the plot explains the axes and colors, how to spot a good window, and how to click a cell to inspect it.</li>
           <li><strong>Landing Δv Reference Estimates</strong>: Added &quot;Landing @ [destination]&quot; line item
             showing estimated powered descent cost for destination (planets and moons). Displayed as reference value
             only, depends on approach geometry.</li>
@@ -3961,22 +3804,7 @@
             deriving from escape velocity rather than orbital velocity, better reflecting actual circularization costs.
           </li>
         </ul>
-        <h3>Technical Details</h3>
-        <ul>
-          <li><strong>Orbit Insertion Calculation</strong>: Now uses
-            <code>moonEscapeVelocity = sqrt(2 × μ_moon / moonRadius)</code> with 0.3× factor for insertion, 0.4× for
-            moon landing.
-          </li>
-          <li><strong>Planet Landing Calculation</strong>: Uses
-            <code>planetEscapeVelocity = sqrt(2 × μ_planet / planetRadius)</code> with 0.5× factor for
-            atmospheric/gravity losses.
-          </li>
-          <li><strong>Transfer Total Isolation</strong>: Separated heliocentric transfer total from local maneuver
-            estimates in both calculation and display layers.</li>
-          <li><strong>Validation Logic</strong>: Maintains moon-friendly validation from v2.4 while fixing resulting
-            display issues.</li>
-        </ul>
-        <h2>[2.4] - 2026-08-28</h2>
+<h2>[2.4] - 2026-08-28</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Moon Transfer Δv Budgeting</strong>: Fixed moon destination transfers showing identical Δv budget
@@ -3990,16 +3818,7 @@
           <li><strong>Return Trip Moon Budgeting</strong>: Round-trip return-to-Kerbin calculations now include outbound
             moon orbit insertion cost for accurate mission budgeting.</li>
         </ul>
-        <h3>Technical Updates</h3>
-        <ul>
-          <li><strong>Validation Logic</strong>: Modified transfer validation to allow same parent planet when
-            destination is a moon (previously rejected such transfers).</li>
-          <li><strong>Orbit Insertion Formula</strong>: Uses <code>V_insertion = 1.5 × sqrt(μ_moon / r_orbit)</code>
-            where orbit altitude = max(20% of moon radius, 10km) to estimate capture and circularization burns.</li>
-          <li><strong>UI Clarifications</strong>: Updated notes to distinguish heliocentric-only Δv from total budget
-            including moon insertion costs.</li>
-        </ul>
-        <h2>[2.3] - 2026-08-27</h2>
+<h2>[2.3] - 2026-08-27</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Return-to-Kerbin Δv Budgeting</strong>: Added mission time on target body controls to the Δv
@@ -4021,11 +3840,8 @@
         </ul>
         <h3>Changed</h3>
         <ul>
-          <li><strong>Card Layout &amp; Workflow Reordering</strong>: Moved the Ejection Angle card directly below the
-            Δv Budget card for better visual sequence during mission planning.</li>
-          <li><strong>UI &amp; Typography Scaling</strong>: Scaled all sidebar UI elements, fonts, controls, padding,
-            and borders up by +30% and increased note text size by +20% for improved readability, automatically scaling
-            SVG diagrams to match.</li>
+          <li><strong>Card order</strong>: The Ejection Angle card now sits directly below the Δv Budget card.</li>
+          <li><strong>UI scaling</strong>: Sidebar UI, fonts, controls, padding and borders are 30% larger and note text 20% larger; diagrams scale with them.</li>
           <li><strong>Dres Ring System &amp; Drast Orbit Integration</strong>: Re-centered Dres&#x27;s ring system
             directly along the orbit of Drast with multi-band ring texturing so Drast orbits embedded within the ring
             band.</li>
@@ -4064,13 +3880,7 @@
         </ul>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Assist Leg Flight-Time Phasing</strong>: Gravity-assist leg durations were previously estimated
-            with a naive semi-major-axis-only Hohmann-time formula that assumed exact 180-degree opposition between the
-            flyby planet and the next body at arrival. When the flyby planet wasn&#x27;t actually well-positioned for
-            that assumption, this could force a near-parabolic trajectory (eccentricity ≈ 1) to satisfy the mismatched
-            geometry, producing a sharply distorted, incorrect-looking arc. Leg durations are now refined by numerically
-            searching for genuine opposition between the two bodies, with a small offset applied to avoid landing
-            exactly on the Lambert solver&#x27;s own singularity at 180 degrees</li>
+          <li><strong>Gravity assist leg timing</strong>: Leg durations assumed the flyby planet sat exactly opposite the next body, which could force a near-parabolic, distorted arc when it didn't. Durations are now found by searching for real opposition, with a small offset to stay clear of the Lambert solver's singularity at 180°.</li>
         </ul>
         <h2>[1.7.0] - 2026-08-07</h2>
         <h3>Changed</h3>
@@ -4139,7 +3949,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v3.7.0 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v4.0 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -4654,7 +4464,7 @@
         }
 
         issueBody += `## Environment\n`;
-        issueBody += `- **App Version:** v3.7.0\n`;
+        issueBody += `- **App Version:** v4.0\n`;
         issueBody += `- **Browser:** ${browserInfo}\n`;
         issueBody += `- **Reported:** ${timestamp}\n`;
 
@@ -4756,7 +4566,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v3.7.0';
+    const VERSION = 'v4.0';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -8275,7 +8085,7 @@
 
         <div class="bug-report-info">
           <strong>📋 Auto-included:</strong><br>
-          • App Version: v3.7.0<br>
+          • App Version: v4.0<br>
           • Browser: <span id="bugBrowserInfo">Chrome</span><br>
           • Timestamp: <span id="bugTimestamp">--</span>
         </div>
