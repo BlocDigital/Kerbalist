@@ -1,4 +1,10 @@
-      <div class="sidebar">
+      <!-- Collapsed rail — sits between the viewport area and the sidebar -->
+      <div class="sidebar-collapsed-rail" id="sidebarCollapsedRail" title="Click to expand planner ([ or ])" role="button" tabindex="0">
+        <span class="rail-text rail-text-collapse">Collapse</span>
+        <span class="rail-text rail-text-expand">Expand</span>
+      </div>
+
+      <div class="sidebar" id="sidebar">
         <div class="select-row">
           <div class="field">
             <label>Origin</label>
@@ -118,7 +124,11 @@
           </div>
 
         </div>
+
+        <div id="warpControls" class="warp-controls"></div>
+        <div id="timeControls" class="time-controls"></div>
+
+        </div>
       </div>
     </div>
   </div>
-
