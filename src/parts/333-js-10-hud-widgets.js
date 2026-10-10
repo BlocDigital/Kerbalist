@@ -5,13 +5,19 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 (function() {
   const hudContainer = document.getElementById('hudContainer');
   if (!hudContainer) return;
-  window.hudWidgets.positions = {
-    'window': { x: 1100, y: 70, w: 310, h: 145 },
-    'phase': { x: 860, y: 120, w: 290, h: 235 },
-    'ejection': { x: 20, y: 530, w: 330, h: 220 },
-    'time': { x: 1100, y: 350, w: 310, h: 140 },
-    'ghost': { x: 210, y: 70, w: 310, h: 125 }
-  };
+  function getDefaultPositions() {
+    const W = window.innerWidth || 1920;
+    const H = window.innerHeight || 1080;
+    return {
+      'ghost':    { x: 185, y: 16, w: 290, h: 110 },
+      'ejection': { x: Math.max(500, W - 880), y: 65, w: 320, h: 320 },
+      'phase':    { x: Math.max(720, W - 520), y: 300, w: 290, h: 235 },
+      'window':   { x: Math.max(680, W - 700), y: Math.max(480, H - 350), w: 300, h: 145 },
+      'time':     { x: Math.max(680, W - 700), y: Math.max(620, H - 195), w: 300, h: 135 }
+    };
+  }
+
+  window.hudWidgets.positions = getDefaultPositions();
 
   // Load from localStorage
   function loadPositions() {
@@ -20,7 +26,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       if (saved) {
         const parsed = JSON.parse(saved);
         for (let k in parsed) {
-          if (parsed[k] && parsed[k].w && parsed[k].w < 290) parsed[k].w = 290;
+          if (parsed[k] && parsed[k].w && parsed[k].w < 280) parsed[k].w = 290;
         }
         window.hudWidgets.positions = { ...window.hudWidgets.positions, ...parsed };
       }
@@ -31,6 +37,12 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   function savePositions() {
     try {
       localStorage.setItem('kerbalist_widget_positions', JSON.stringify(window.hudWidgets.positions));
+      const pinned = [];
+      for (let [type, wid] of Object.entries(window.hudWidgets.active)) {
+        const el = document.getElementById(wid);
+        if (el && el.classList.contains('pinned')) pinned.push(type);
+      }
+      localStorage.setItem('kerbalist_widget_pinned', JSON.stringify(pinned));
     } catch (e) {}
   }
 
@@ -41,7 +53,8 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const existing = document.getElementById(id);
     if (existing) return existing;
 
-    const pos = window.hudWidgets.positions[type] || { x: 100, y: 100, w: 260, h: 180 };
+    const defs = getDefaultPositions();
+    const pos = window.hudWidgets.positions[type] || defs[type] || { x: 100, y: 100, w: 290, h: 180 };
     
     const widget = document.createElement('div');
     widget.id = id;
@@ -59,6 +72,16 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       </div>
       <div class="hud-resize-handle"></div>
     `;
+
+    // Restore pinned state if previously saved
+    try {
+      const pinned = JSON.parse(localStorage.getItem('kerbalist_widget_pinned') || '[]');
+      if (pinned.includes(type)) {
+        widget.classList.add('pinned');
+        const pinBtn = widget.querySelector('.hud-pin-btn');
+        if (pinBtn) pinBtn.classList.add('active');
+      }
+    } catch (e) {}
 
     hudContainer.appendChild(widget);
     attachWidgetHandlers(widget, type);
@@ -82,6 +105,9 @@ window.hudWidgets.active = window.hudWidgets.active || {};
         }
       }
       savePositions();
+      if (window.saveActiveWidgets) {
+        window.saveActiveWidgets();
+      }
     }
   };
 

@@ -9,53 +9,70 @@
       BODY_OPTIONS.forEach(({ body, isMoon, label }) => {
         const o1 = document.createElement('option'); o1.value = body.name; o1.textContent = label;
         const o2 = document.createElement('option'); o2.value = body.name; o2.textContent = label;
-        const o3 = document.createElement('option'); o3.value = body.name; o3.textContent = label;
-        const o4 = document.createElement('option'); o4.value = body.name; o4.textContent = label;
         if (isMoon) {
           o1.dataset.parent = body.parent;
           o2.dataset.parent = body.parent;
-          o3.dataset.parent = body.parent;
-          o4.dataset.parent = body.parent;
         }
         originSelect.appendChild(o1);
         destSelect.appendChild(o2);
-        hudOriginSelect.appendChild(o3);
-        hudDestSelect.appendChild(o4);
+        if (hudOriginSelect && hudDestSelect) {
+          const o3 = document.createElement('option'); o3.value = body.name; o3.textContent = label;
+          const o4 = document.createElement('option'); o4.value = body.name; o4.textContent = label;
+          if (isMoon) {
+            o3.dataset.parent = body.parent;
+            o4.dataset.parent = body.parent;
+          }
+          hudOriginSelect.appendChild(o3);
+          hudDestSelect.appendChild(o4);
+        }
       });
       originSelect.value = 'Kerbin';
       destSelect.value = 'Duna';
-      hudOriginSelect.value = 'Kerbin';
-      hudDestSelect.value = 'Duna';
+      if (hudOriginSelect && hudDestSelect) {
+        hudOriginSelect.value = 'Kerbin';
+        hudDestSelect.value = 'Duna';
+      }
 
       function syncSelectsFromSidebar() {
-        hudOriginSelect.value = originSelect.value;
-        hudDestSelect.value = destSelect.value;
+        if (hudOriginSelect && hudDestSelect) {
+          hudOriginSelect.value = originSelect.value;
+          hudDestSelect.value = destSelect.value;
+        }
       }
 
       function syncSelectsFromHud() {
-        originSelect.value = hudOriginSelect.value;
-        destSelect.value = hudDestSelect.value;
+        if (hudOriginSelect && hudDestSelect) {
+          originSelect.value = hudOriginSelect.value;
+          destSelect.value = hudDestSelect.value;
+        }
       }
 
       function refreshHud() {
-        document.getElementById('hudOrigin').textContent = 'ORIGIN — ' + originSelect.value;
-        document.getElementById('hudDest').textContent = 'DEST — ' + destSelect.value;
+        const ho = document.getElementById('hudOrigin');
+        const hd = document.getElementById('hudDest');
+        if (ho) ho.textContent = 'ORIGIN — ' + originSelect.value;
+        if (hd) hd.textContent = 'DEST — ' + destSelect.value;
         syncSelectsFromSidebar();
       }
       refreshHud();
       originSelect.onchange = refreshHud;
       destSelect.onchange = refreshHud;
-      hudOriginSelect.onchange = syncSelectsFromHud;
-      hudDestSelect.onchange = syncSelectsFromHud;
+      if (hudOriginSelect) hudOriginSelect.onchange = syncSelectsFromHud;
+      if (hudDestSelect) hudDestSelect.onchange = syncSelectsFromHud;
 
       document.getElementById('swapBtn').onclick = () => {
         const a = originSelect.value; originSelect.value = destSelect.value; destSelect.value = a; refreshHud();
       };
 
-      document.getElementById('hudSwapBtn').onclick = () => {
-        const a = hudOriginSelect.value; hudOriginSelect.value = hudDestSelect.value; hudDestSelect.value = a;
-        syncSelectsFromHud();
-      };
+      const hudSwapBtn = document.getElementById('hudSwapBtn');
+      if (hudSwapBtn) {
+        hudSwapBtn.onclick = () => {
+          if (hudOriginSelect && hudDestSelect) {
+            const a = hudOriginSelect.value; hudOriginSelect.value = hudDestSelect.value; hudDestSelect.value = a;
+            syncSelectsFromHud();
+          }
+        };
+      }
 
       document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => switchTab(t.dataset.tab));

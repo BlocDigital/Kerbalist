@@ -768,8 +768,8 @@
 
     .map-hud {
       position: absolute;
-      top: 115px;
-      left: 12px;
+      top: 16px;
+      left: 16px;
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -3521,18 +3521,6 @@
           <div class="lg-row"><span class="dot" style="background:var(--violet)"></span>Gravity assist</div>
         </div>
 
-        <!-- Origin/Destination HUD (Top-Left) -->
-        <div class="origin-dest-hud">
-          <div class="hud-field">
-            <label>Origin</label>
-            <select id="hudOriginSelect" class="hud-select"></select>
-          </div>
-          <button class="hud-swap-btn" id="hudSwapBtn" title="Swap origin/destination">⇄</button>
-          <div class="hud-field">
-            <label>Destination</label>
-            <select id="hudDestSelect" class="hud-select"></select>
-          </div>
-        </div>
 
         <!-- Context Menu (Right-Click) -->
         <div class="context-menu" id="contextMenu">
@@ -6904,53 +6892,70 @@
       BODY_OPTIONS.forEach(({ body, isMoon, label }) => {
         const o1 = document.createElement('option'); o1.value = body.name; o1.textContent = label;
         const o2 = document.createElement('option'); o2.value = body.name; o2.textContent = label;
-        const o3 = document.createElement('option'); o3.value = body.name; o3.textContent = label;
-        const o4 = document.createElement('option'); o4.value = body.name; o4.textContent = label;
         if (isMoon) {
           o1.dataset.parent = body.parent;
           o2.dataset.parent = body.parent;
-          o3.dataset.parent = body.parent;
-          o4.dataset.parent = body.parent;
         }
         originSelect.appendChild(o1);
         destSelect.appendChild(o2);
-        hudOriginSelect.appendChild(o3);
-        hudDestSelect.appendChild(o4);
+        if (hudOriginSelect && hudDestSelect) {
+          const o3 = document.createElement('option'); o3.value = body.name; o3.textContent = label;
+          const o4 = document.createElement('option'); o4.value = body.name; o4.textContent = label;
+          if (isMoon) {
+            o3.dataset.parent = body.parent;
+            o4.dataset.parent = body.parent;
+          }
+          hudOriginSelect.appendChild(o3);
+          hudDestSelect.appendChild(o4);
+        }
       });
       originSelect.value = 'Kerbin';
       destSelect.value = 'Duna';
-      hudOriginSelect.value = 'Kerbin';
-      hudDestSelect.value = 'Duna';
+      if (hudOriginSelect && hudDestSelect) {
+        hudOriginSelect.value = 'Kerbin';
+        hudDestSelect.value = 'Duna';
+      }
 
       function syncSelectsFromSidebar() {
-        hudOriginSelect.value = originSelect.value;
-        hudDestSelect.value = destSelect.value;
+        if (hudOriginSelect && hudDestSelect) {
+          hudOriginSelect.value = originSelect.value;
+          hudDestSelect.value = destSelect.value;
+        }
       }
 
       function syncSelectsFromHud() {
-        originSelect.value = hudOriginSelect.value;
-        destSelect.value = hudDestSelect.value;
+        if (hudOriginSelect && hudDestSelect) {
+          originSelect.value = hudOriginSelect.value;
+          destSelect.value = hudDestSelect.value;
+        }
       }
 
       function refreshHud() {
-        document.getElementById('hudOrigin').textContent = 'ORIGIN — ' + originSelect.value;
-        document.getElementById('hudDest').textContent = 'DEST — ' + destSelect.value;
+        const ho = document.getElementById('hudOrigin');
+        const hd = document.getElementById('hudDest');
+        if (ho) ho.textContent = 'ORIGIN — ' + originSelect.value;
+        if (hd) hd.textContent = 'DEST — ' + destSelect.value;
         syncSelectsFromSidebar();
       }
       refreshHud();
       originSelect.onchange = refreshHud;
       destSelect.onchange = refreshHud;
-      hudOriginSelect.onchange = syncSelectsFromHud;
-      hudDestSelect.onchange = syncSelectsFromHud;
+      if (hudOriginSelect) hudOriginSelect.onchange = syncSelectsFromHud;
+      if (hudDestSelect) hudDestSelect.onchange = syncSelectsFromHud;
 
       document.getElementById('swapBtn').onclick = () => {
         const a = originSelect.value; originSelect.value = destSelect.value; destSelect.value = a; refreshHud();
       };
 
-      document.getElementById('hudSwapBtn').onclick = () => {
-        const a = hudOriginSelect.value; hudOriginSelect.value = hudDestSelect.value; hudDestSelect.value = a;
-        syncSelectsFromHud();
-      };
+      const hudSwapBtn = document.getElementById('hudSwapBtn');
+      if (hudSwapBtn) {
+        hudSwapBtn.onclick = () => {
+          if (hudOriginSelect && hudDestSelect) {
+            const a = hudOriginSelect.value; hudOriginSelect.value = hudDestSelect.value; hudDestSelect.value = a;
+            syncSelectsFromHud();
+          }
+        };
+      }
 
       document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => switchTab(t.dataset.tab));
@@ -8321,13 +8326,19 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 (function() {
   const hudContainer = document.getElementById('hudContainer');
   if (!hudContainer) return;
-  window.hudWidgets.positions = {
-    'window': { x: 1100, y: 70, w: 310, h: 145 },
-    'phase': { x: 860, y: 120, w: 290, h: 235 },
-    'ejection': { x: 20, y: 530, w: 330, h: 220 },
-    'time': { x: 1100, y: 350, w: 310, h: 140 },
-    'ghost': { x: 210, y: 70, w: 310, h: 125 }
-  };
+  function getDefaultPositions() {
+    const W = window.innerWidth || 1920;
+    const H = window.innerHeight || 1080;
+    return {
+      'ghost':    { x: 185, y: 16, w: 290, h: 110 },
+      'ejection': { x: Math.max(500, W - 880), y: 65, w: 320, h: 320 },
+      'phase':    { x: Math.max(720, W - 520), y: 300, w: 290, h: 235 },
+      'window':   { x: Math.max(680, W - 700), y: Math.max(480, H - 350), w: 300, h: 145 },
+      'time':     { x: Math.max(680, W - 700), y: Math.max(620, H - 195), w: 300, h: 135 }
+    };
+  }
+
+  window.hudWidgets.positions = getDefaultPositions();
 
   // Load from localStorage
   function loadPositions() {
@@ -8336,7 +8347,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       if (saved) {
         const parsed = JSON.parse(saved);
         for (let k in parsed) {
-          if (parsed[k] && parsed[k].w && parsed[k].w < 290) parsed[k].w = 290;
+          if (parsed[k] && parsed[k].w && parsed[k].w < 280) parsed[k].w = 290;
         }
         window.hudWidgets.positions = { ...window.hudWidgets.positions, ...parsed };
       }
@@ -8347,6 +8358,12 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   function savePositions() {
     try {
       localStorage.setItem('kerbalist_widget_positions', JSON.stringify(window.hudWidgets.positions));
+      const pinned = [];
+      for (let [type, wid] of Object.entries(window.hudWidgets.active)) {
+        const el = document.getElementById(wid);
+        if (el && el.classList.contains('pinned')) pinned.push(type);
+      }
+      localStorage.setItem('kerbalist_widget_pinned', JSON.stringify(pinned));
     } catch (e) {}
   }
 
@@ -8357,7 +8374,8 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const existing = document.getElementById(id);
     if (existing) return existing;
 
-    const pos = window.hudWidgets.positions[type] || { x: 100, y: 100, w: 260, h: 180 };
+    const defs = getDefaultPositions();
+    const pos = window.hudWidgets.positions[type] || defs[type] || { x: 100, y: 100, w: 290, h: 180 };
     
     const widget = document.createElement('div');
     widget.id = id;
@@ -8375,6 +8393,16 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       </div>
       <div class="hud-resize-handle"></div>
     `;
+
+    // Restore pinned state if previously saved
+    try {
+      const pinned = JSON.parse(localStorage.getItem('kerbalist_widget_pinned') || '[]');
+      if (pinned.includes(type)) {
+        widget.classList.add('pinned');
+        const pinBtn = widget.querySelector('.hud-pin-btn');
+        if (pinBtn) pinBtn.classList.add('active');
+      }
+    } catch (e) {}
 
     hudContainer.appendChild(widget);
     attachWidgetHandlers(widget, type);
@@ -8398,6 +8426,9 @@ window.hudWidgets.active = window.hudWidgets.active || {};
         }
       }
       savePositions();
+      if (window.saveActiveWidgets) {
+        window.saveActiveWidgets();
+      }
     }
   };
 
@@ -8513,11 +8544,46 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     'ghost': { title: 'Ghost Body', selector: '[data-card="ghost"]' }
   };
 
+  window.saveActiveWidgets = function() {
+    try {
+      const active = Object.keys(window.hudWidgets.active);
+      localStorage.setItem('kerbalist_active_widgets', JSON.stringify(active));
+    } catch (e) {}
+  };
+
+  // Restore active widgets on load
+  let restored = false;
+  function restoreActiveWidgets() {
+    if (restored) return;
+    const cards = document.querySelectorAll('[data-card]');
+    if (!cards || cards.length === 0) return;
+    restored = true;
+
+    let toActivate = ['ghost']; // Default: ghost body active next to status
+    try {
+      const saved = localStorage.getItem('kerbalist_active_widgets');
+      if (saved !== null) {
+        toActivate = JSON.parse(saved);
+      }
+    } catch (e) {}
+
+    if (Array.isArray(toActivate)) {
+      toActivate.forEach(type => {
+        if (widgetConfig[type] && !window.hudWidgets.active[type]) {
+          window.toggleTransferWidget(type);
+        }
+      });
+    }
+  }
+
   // Debounce widget updates to prevent rapid firing
   let updateTimer = null;
   function debounceUpdateWidgets() {
     clearTimeout(updateTimer);
-    updateTimer = setTimeout(updateAllWidgets, 150);
+    updateTimer = setTimeout(() => {
+      restoreActiveWidgets();
+      updateAllWidgets();
+    }, 150);
   }
 
   // Watch for transfer results changes (content only, not button state)
@@ -8532,7 +8598,6 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   });
 
   function updateAllWidgets() {
-    // Only update content of active widgets, NEVER touch button state here
     for (let [type, widgetId] of Object.entries(window.hudWidgets.active)) {
       if (widgetId) {
         updateTransferWidgetContent(type);
@@ -8558,7 +8623,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const wrapper = clone.querySelector('.wrapper');
     if (wrapper) wrapper.remove();
     // Remove button if present
-    const btn = clone.querySelector('.hud-pin-card-btn');
+    const btn = clone.querySelector('.hud-pin-card-btn, .hud-card-toggle');
     if (btn) btn.remove();
     // Remove note
     const note = clone.querySelector('.note');
@@ -8582,6 +8647,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     }
     // Update button state only after widget action completes
     window.updateButtonStateForType(type);
+    window.saveActiveWidgets();
   };
 
   // Update card header toggle state
