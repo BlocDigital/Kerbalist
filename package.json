@@ -1,0 +1,16 @@
+{
+  "name": "kerbalist",
+  "version": "4.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Kerbalist - KSP2 interplanetary transfer planner. index.html is generated from src/parts.",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "verify": "node tools/build.mjs --verify",
+    "test": "node --test test/pin.test.mjs",
+    "check": "node tools/build.mjs --syntax && node --test test/pin.test.mjs && node tools/build.mjs --verify",
+    "report": "node tools/build.mjs --report",
+    "index": "node tools/build.mjs --index"
+  }
+}

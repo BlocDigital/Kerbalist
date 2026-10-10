@@ -1,0 +1,59 @@
+    :root {
+      --bg: #060a11;
+      --bg-grid: #0a1120;
+      --panel: rgba(11, 18, 32, 0.7);
+      --panel2: rgba(15, 24, 48, 0.7);
+      --panel3: rgba(16, 28, 51, 0.7);
+      --border: #1d2c47;
+      --border-bright: #2c4470;
+      --text: #dbe7f5;
+      --text-dim: #7688a6;
+      --text-dimmer: #4d5d78;
+      --cyan: #4fe0e8;
+      --cyan-dim: #1f5d63;
+      --amber: #ffb454;
+      --amber-dim: #7a5222;
+      --orange: #ff8c3c;
+      --green: #7ee787;
+      --red: #ff6b6b;
+      --violet: #b78cff;
+      --font-display: 'Rajdhani', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 20% -10%, #0d1830 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 110%, #0a1526 0%, transparent 50%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      overflow: hidden;
+      touch-action: manipulation;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      padding-top: env(safe-area-inset-top, 0);
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ---------- RESPONSIVE BREAKPOINTS ---------- */
+    :root {
+      --sidebar-width: 510px;
+      --breakpoint-sm: 600px;
+      --breakpoint-md: 1024px;
+    }
+

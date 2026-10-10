@@ -1,0 +1,63 @@
+  </script>
+  <!-- Kerbol Calendar Modal -->
+  <div class="cal-modal" id="calModal">
+    <div class="cal-modal-content">
+      <div class="cal-modal-header">
+        <h3>Kerbol Calendar</h3>
+        <button class="cal-modal-close" id="calCloseBtn">×</button>
+      </div>
+      <div class="cal-modal-body">
+        <!-- Year input (3 digits, no spinners) -->
+        <div class="cal-year-input">
+          <input type="text" class="cal-year-field" id="calYearInput" maxlength="3" value="0" inputmode="numeric"
+            pattern="[0-9]*" title="Kerbal Year">
+          <span class="cal-year-label">Year</span>
+        </div>
+
+        <!-- Season navigation -->
+        <div class="cal-season-nav">
+          <button class="cal-season-btn" id="calSeasonPrev">◀</button>
+          <div class="cal-season-display" id="calSeasonDisplay">Vernal Equinox</div>
+          <button class="cal-season-btn" id="calSeasonNext">▶</button>
+        </div>
+
+        <!-- Season progress bar -->
+        <div class="cal-season-indicator" id="calSeasonBar">
+          <div class="cal-season-bar active"></div>
+          <div class="cal-season-bar"></div>
+          <div class="cal-season-bar"></div>
+          <div class="cal-season-bar"></div>
+        </div>
+
+        <!-- Day-of-year grid (425 days, shown as 1-7 in 7-row months) -->
+        <div class="cal-month-grid" id="calMonthGrid">
+          <div class="cal-day-header">1</div>
+          <div class="cal-day-header">2</div>
+          <div class="cal-day-header">3</div>
+          <div class="cal-day-header">4</div>
+          <div class="cal-day-header">5</div>
+          <div class="cal-day-header">6</div>
+          <div class="cal-day-header">7</div>
+        </div>
+
+        <!-- Time input -->
+        <div class="cal-time-row">
+          <input type="text" class="cal-time-field" id="calHour" maxlength="2" value="00" inputmode="numeric"
+            pattern="[0-9]*">
+          <span class="cal-time-sep">:</span>
+          <input type="text" class="cal-time-field" id="calMin" maxlength="2" value="00" inputmode="numeric"
+            pattern="[0-9]*">
+          <span class="cal-time-sep">:</span>
+          <input type="text" class="cal-time-field" id="calSec" maxlength="2" value="00" inputmode="numeric"
+            pattern="[0-9]*">
+        </div>
+
+        <!-- Apply/Cancel -->
+        <div class="cal-apply-row">
+          <button class="cal-apply-btn secondary" id="calCancelBtn">Cancel</button>
+          <button class="cal-apply-btn primary" id="calApplyBtn">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
