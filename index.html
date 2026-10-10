@@ -3106,149 +3106,228 @@
 
 .hud-widget {
   position: absolute;
-  background: rgba(9, 15, 28, 0.5);
-  border: 1px solid rgba(42, 74, 106, 0.8);
-  border-radius: 4px;
-  padding: 12px;
-  min-width: 200px;
-  min-height: 100px;
+  background: rgba(10, 16, 28, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 14px 12px;
+  min-width: 290px;
+  min-height: 80px;
   cursor: move;
   pointer-events: auto;
   user-select: none;
-  font-family: 'Courier New', monospace;
-  font-size: clamp(9px, 2vw, 11px);
-  color: var(--text-color, #c0d0e0);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  transition: background 0.2s, border-color 0.2s;
+  font-family: var(--font-display, 'Rajdhani', sans-serif);
+  color: var(--text, #dbe7f5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .hud-widget.pinned {
-  background: rgba(9, 15, 28, 0.05);
-  border-color: rgba(42, 74, 106, 0.5);
   cursor: default;
 }
 
 .hud-widget:hover {
-  border-color: rgba(100, 232, 248, 0.6);
+  border-color: rgba(79, 224, 232, 0.4);
+  background: rgba(10, 16, 28, 0.65);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(79, 224, 232, 0.12);
+}
+
+.hud-widget.dragging {
+  opacity: 0.95;
+  border-color: var(--cyan, #4fe0e8);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(79, 224, 232, 0.25);
 }
 
 .hud-title {
-  font-weight: bold;
-  color: var(--cyan, #64e8f8);
+  font-family: var(--font-display, 'Rajdhani', sans-serif);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan, #4fe0e8);
   margin: 0 0 8px 0;
-  font-size: 1.1em;
-  border-bottom: 1px solid rgba(100, 232, 248, 0.3);
-  padding-bottom: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(79, 224, 232, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-title::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan, #4fe0e8);
+  box-shadow: 0 0 6px var(--cyan, #4fe0e8);
+  flex-shrink: 0;
 }
 
 .hud-content {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-height: 60px;
   flex-direction: column;
+  width: 100%;
+}
+
+.hud-content .stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+  gap: 12px;
+}
+
+.hud-content .stat-row:last-child {
+  border-bottom: none;
+}
+
+.hud-content .stat-row .k {
+  font-family: var(--font-display, 'Rajdhani', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim, #7688a6);
+  white-space: nowrap;
+}
+
+.hud-content .stat-row .v {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text, #dbe7f5);
+  text-align: right;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.hud-content .stat-row .v.hi {
+  color: var(--cyan, #4fe0e8);
+}
+
+.hud-content .stat-row .v.warn {
+  color: var(--amber, #ffb454);
+}
+
+.hud-content .stat-row .v.good {
+  color: var(--green, #7ee787);
+}
+
+.hud-content .stat-row .v.bad {
+  color: var(--red, #ff6b6b);
 }
 
 .hud-content .countdown {
-  font-size: 1.8em;
-  color: var(--cyan, #64e8f8);
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-  margin: 8px 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--green, #7ee787);
+  text-align: center;
+  letter-spacing: 0.04em;
+  padding: 4px 0 6px;
+  text-shadow: 0 0 10px rgba(126, 231, 135, 0.25);
 }
 
-.hud-content .label {
-  font-size: 0.9em;
-  color: rgba(192, 208, 224, 0.7);
-  margin: 4px 0;
+.hud-content .countdown.past {
+  color: var(--text-dim, #7688a6);
+  text-shadow: none;
 }
 
-.hud-content .value {
-  font-size: 1.1em;
-  color: #64e8f8;
-  font-weight: bold;
-  margin: 6px 0;
+.hud-content .big-num {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cyan, #4fe0e8);
+  text-align: center;
+  letter-spacing: 0.03em;
+  padding: 4px 0 6px;
+  text-shadow: 0 0 12px rgba(79, 224, 232, 0.3);
+}
+
+.hud-content .phase-gauge {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0 6px;
+}
+
+.hud-content svg {
+  display: block;
+  margin: 0 auto;
 }
 
 .hud-buttons {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 7px;
+  right: 8px;
   display: flex;
-  gap: 4px;
+  gap: 5px;
   opacity: 0;
-  transition: opacity 0.2s;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
   z-index: 10;
 }
 
-.hud-widget:hover .hud-buttons,
-.hud-widget.pinned .hud-buttons {
+.hud-widget:hover .hud-buttons {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .hud-btn {
-  background: rgba(42, 74, 106, 0.6);
-  border: 1px solid rgba(100, 232, 248, 0.4);
-  color: var(--cyan, #64e8f8);
-  width: 24px;
-  height: 24px;
+  background: rgba(14, 24, 42, 0.85);
+  border: 1px solid rgba(79, 224, 232, 0.3);
+  color: var(--cyan, #4fe0e8);
+  width: 22px;
+  height: 22px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 3px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: bold;
-  transition: background 0.2s, border-color 0.2s;
+  transition: all 0.15s ease;
   pointer-events: auto;
 }
 
 .hud-btn:hover {
-  background: rgba(100, 232, 248, 0.2);
-  border-color: rgba(100, 232, 248, 0.8);
+  background: rgba(79, 224, 232, 0.2);
+  border-color: var(--cyan, #4fe0e8);
+  color: #fff;
 }
 
 .hud-pin-btn.active {
-  background: rgba(76, 175, 80, 0.3);
-  border-color: #4caf50;
-  color: #4caf50;
+  background: rgba(126, 231, 135, 0.25);
+  border-color: var(--green, #7ee787);
+  color: var(--green, #7ee787);
 }
 
 .hud-close-btn:hover {
-  background: rgba(244, 67, 54, 0.3);
-  border-color: #f44336;
-  color: #f44336;
+  background: rgba(255, 107, 107, 0.25);
+  border-color: var(--red, #ff6b6b);
+  color: var(--red, #ff6b6b);
 }
 
 .hud-resize-handle {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 16px;
-  height: 16px;
-  background: linear-gradient(135deg, transparent 0%, rgba(100, 232, 248, 0.3) 100%);
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, transparent 0%, rgba(79, 224, 232, 0.4) 100%);
   cursor: nwse-resize;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease;
   pointer-events: auto;
-  border-radius: 0 0 4px 0;
+  border-radius: 0 0 8px 0;
 }
 
 .hud-widget:hover .hud-resize-handle {
   opacity: 1;
-}
-
-.hud-widget.pinned .hud-resize-handle {
-  display: none;
-}
-
-/* Dragging state */
-.hud-widget.dragging {
-  opacity: 0.9;
-  box-shadow: 0 8px 24px rgba(100, 232, 248, 0.3);
-  border-color: rgba(100, 232, 248, 0.8);
 }
 /* Stats Overlay - Very Faint Community Statistics */
 
@@ -8243,11 +8322,11 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   const hudContainer = document.getElementById('hudContainer');
   if (!hudContainer) return;
   window.hudWidgets.positions = {
-    'window': { x: 1140, y: 70, w: 260, h: 180 },
-    'phase': { x: 880, y: 120, w: 280, h: 200 },
-    'ejection': { x: 20, y: 560, w: 280, h: 200 },
-    'time': { x: 1140, y: 350, w: 260, h: 180 },
-    'ghost': { x: 210, y: 70, w: 280, h: 200 }
+    'window': { x: 1100, y: 70, w: 310, h: 145 },
+    'phase': { x: 860, y: 120, w: 290, h: 235 },
+    'ejection': { x: 20, y: 530, w: 330, h: 220 },
+    'time': { x: 1100, y: 350, w: 310, h: 140 },
+    'ghost': { x: 210, y: 70, w: 310, h: 125 }
   };
 
   // Load from localStorage
@@ -8255,7 +8334,11 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     try {
       const saved = localStorage.getItem('kerbalist_widget_positions');
       if (saved) {
-        window.hudWidgets.positions = { ...window.hudWidgets.positions, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        for (let k in parsed) {
+          if (parsed[k] && parsed[k].w && parsed[k].w < 290) parsed[k].w = 290;
+        }
+        window.hudWidgets.positions = { ...window.hudWidgets.positions, ...parsed };
       }
     } catch (e) {}
   }

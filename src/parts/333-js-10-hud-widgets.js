@@ -6,11 +6,11 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   const hudContainer = document.getElementById('hudContainer');
   if (!hudContainer) return;
   window.hudWidgets.positions = {
-    'window': { x: 1140, y: 70, w: 260, h: 180 },
-    'phase': { x: 880, y: 120, w: 280, h: 200 },
-    'ejection': { x: 20, y: 560, w: 280, h: 200 },
-    'time': { x: 1140, y: 350, w: 260, h: 180 },
-    'ghost': { x: 210, y: 70, w: 280, h: 200 }
+    'window': { x: 1100, y: 70, w: 310, h: 145 },
+    'phase': { x: 860, y: 120, w: 290, h: 235 },
+    'ejection': { x: 20, y: 530, w: 330, h: 220 },
+    'time': { x: 1100, y: 350, w: 310, h: 140 },
+    'ghost': { x: 210, y: 70, w: 310, h: 125 }
   };
 
   // Load from localStorage
@@ -18,7 +18,11 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     try {
       const saved = localStorage.getItem('kerbalist_widget_positions');
       if (saved) {
-        window.hudWidgets.positions = { ...window.hudWidgets.positions, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        for (let k in parsed) {
+          if (parsed[k] && parsed[k].w && parsed[k].w < 290) parsed[k].w = 290;
+        }
+        window.hudWidgets.positions = { ...window.hudWidgets.positions, ...parsed };
       }
     } catch (e) {}
   }
