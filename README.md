@@ -1,6 +1,6 @@
 # Kerbalist v4.1
 
-**Astrodynamics Suite for Kerbal Space Program 2 Redux
+**Astrodynamics Suite for Kerbal Space Program 2 Redux (KSP1, OPM,**
 
 Kerbalist helps you plan efficient transfers between planets in Kerbal Space Program. Calculate transfer windows, ejection angles, and capture requirements all in one tool.
 
