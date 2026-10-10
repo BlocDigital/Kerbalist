@@ -98,3 +98,44 @@
       resetBtn.onclick = () => { UT = 0; };
       warpWrap.appendChild(resetBtn);
 
+      // --- Sidebar collapse/expand ---
+      // sidebarEl already declared in mobile toggle section (line ~6950)
+      const sidebarCollapsedRail = document.getElementById('sidebarCollapsedRail');
+
+      // Load persisted state
+      const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+      if (savedCollapsed === 'true') {
+        sidebarEl.classList.add('collapsed');
+        document.body.classList.add('sidebar-collapsed');
+      }
+
+      function toggleSidebarCollapse() {
+        const isCollapsed = sidebarEl.classList.toggle('collapsed');
+        document.body.classList.toggle('sidebar-collapsed', isCollapsed);
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+      }
+      // Expose to inline onclick handlers
+      window.toggleSidebarCollapse = toggleSidebarCollapse;
+
+      // Allow click activation of collapsed rail
+      if (sidebarCollapsedRail) {
+        sidebarCollapsedRail.addEventListener('click', () => {
+          toggleSidebarCollapse();
+        });
+        sidebarCollapsedRail.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            toggleSidebarCollapse();
+            e.preventDefault();
+          }
+        });
+      }
+
+      // Keyboard shortcuts: [ and ] to collapse/expand
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === '[' || e.key === ']') {
+          toggleSidebarCollapse();
+          e.preventDefault();
+        }
+      });
+
