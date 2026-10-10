@@ -1,0 +1,158 @@
+/* HUD Widgets - Draggable, Pinnable Transfer Info Cards */
+
+#hudContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.hud-widget {
+  position: absolute;
+  background: rgba(9, 15, 28, 0.5);
+  border: 1px solid rgba(42, 74, 106, 0.8);
+  border-radius: 4px;
+  padding: 12px;
+  min-width: 200px;
+  min-height: 100px;
+  cursor: move;
+  pointer-events: auto;
+  user-select: none;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(9px, 2vw, 11px);
+  color: var(--text-color, #c0d0e0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.hud-widget.pinned {
+  background: rgba(9, 15, 28, 0.05);
+  border-color: rgba(42, 74, 106, 0.5);
+  cursor: default;
+}
+
+.hud-widget:hover {
+  border-color: rgba(100, 232, 248, 0.6);
+}
+
+.hud-title {
+  font-weight: bold;
+  color: var(--cyan, #64e8f8);
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+  border-bottom: 1px solid rgba(100, 232, 248, 0.3);
+  padding-bottom: 6px;
+}
+
+.hud-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 60px;
+  flex-direction: column;
+}
+
+.hud-content .countdown {
+  font-size: 1.8em;
+  color: var(--cyan, #64e8f8);
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  margin: 8px 0;
+}
+
+.hud-content .label {
+  font-size: 0.9em;
+  color: rgba(192, 208, 224, 0.7);
+  margin: 4px 0;
+}
+
+.hud-content .value {
+  font-size: 1.1em;
+  color: #64e8f8;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.hud-buttons {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.hud-widget:hover .hud-buttons,
+.hud-widget.pinned .hud-buttons {
+  opacity: 1;
+}
+
+.hud-btn {
+  background: rgba(42, 74, 106, 0.6);
+  border: 1px solid rgba(100, 232, 248, 0.4);
+  color: var(--cyan, #64e8f8);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  transition: background 0.2s, border-color 0.2s;
+  pointer-events: auto;
+}
+
+.hud-btn:hover {
+  background: rgba(100, 232, 248, 0.2);
+  border-color: rgba(100, 232, 248, 0.8);
+}
+
+.hud-pin-btn.active {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.hud-close-btn:hover {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: #f44336;
+  color: #f44336;
+}
+
+.hud-resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, transparent 0%, rgba(100, 232, 248, 0.3) 100%);
+  cursor: nwse-resize;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: auto;
+  border-radius: 0 0 4px 0;
+}
+
+.hud-widget:hover .hud-resize-handle {
+  opacity: 1;
+}
+
+.hud-widget.pinned .hud-resize-handle {
+  display: none;
+}
+
+/* Dragging state */
+.hud-widget.dragging {
+  opacity: 0.9;
+  box-shadow: 0 8px 24px rgba(100, 232, 248, 0.3);
+  border-color: rgba(100, 232, 248, 0.8);
+}

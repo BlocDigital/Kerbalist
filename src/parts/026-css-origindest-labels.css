@@ -1,0 +1,245 @@
+    /* Origin/Destination HUD (Top-Left) */
+    .origin-dest-hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      background: rgba(9, 15, 28, .78);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      pointer-events: auto;
+      backdrop-filter: blur(4px);
+    }
+
+    .hud-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hud-field label {
+      font-size: 11px;
+      color: var(--text-dimmer);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 600;
+    }
+
+    .hud-select {
+      background: var(--panel3);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 13px;
+      padding: 7px 8px;
+      outline: none;
+      cursor: pointer;
+      min-width: 100px;
+      transition: border-color 0.15s;
+    }
+
+    .hud-select:focus {
+      border-color: var(--cyan);
+    }
+
+    .hud-select:hover {
+      border-color: var(--border-bright);
+    }
+
+    .hud-swap-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+
+    .hud-swap-btn:hover {
+      color: var(--cyan);
+      border-color: var(--border-bright);
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10;
+      width: 184px;
+      box-sizing: border-box;
+      background: rgba(9, 15, 28, .86);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12.5px 16.25px;
+      font-size: 12.075px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      pointer-events: auto;
+      backdrop-filter: blur(4px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    /* header + toggle: same look as the Controls bubble */
+    .legend .lg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 2px;
+    }
+
+    .legend .lg-title,
+    .legend .lg-min-label {
+      font-size: 11.25px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .legend .lg-min-label {
+      display: none;
+    }
+
+    .legend .lg-row {
+      display: flex;
+      align-items: center;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    .legend.collapsed {
+      width: auto;
+      padding: 6px 10px;
+      gap: 0;
+    }
+
+    .legend.collapsed .lg-row,
+    .legend.collapsed .lg-title {
+      display: none;
+    }
+
+    .legend.collapsed .lg-header {
+      margin-bottom: 0;
+    }
+
+    .legend.collapsed .lg-min-label {
+      display: inline-block;
+    }
+
+    .legend .dot,
+    .legend .swatch-line {
+      flex: 0 0 auto;
+    }
+
+    .legend .dot {
+      display: inline-block;
+      width: 9.2px;
+      height: 9.2px;
+      border-radius: 50%;
+      margin-right: 5.75px;
+      vertical-align: middle;
+    }
+
+    .legend .swatch-line {
+      display: inline-block;
+      width: 18.4px;
+      height: 2px;
+      vertical-align: middle;
+      margin-right: 5.75px;
+    }
+
+    .legend .swatch-line.dashed {
+      border-top: 2px dashed currentColor;
+      height: 0;
+      background: none;
+    }
+
+    /* 3D labels */
+    #labelContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 100;
+    }
+
+    .planet-label-3d {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-dim);
+      white-space: nowrap;
+      transform: translate(12px, -12px);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .9), 0 0 8px rgba(0, 0, 0, .7);
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.15s ease, background 0.15s ease, text-shadow 0.15s ease;
+      user-select: none;
+      pointer-events: auto;
+      z-index: 100;
+    }
+
+    .planet-label-3d:hover {
+      color: var(--cyan);
+      background: rgba(100, 200, 255, 0.15);
+      text-shadow: 0 0 12px rgba(100, 200, 255, 0.5), 0 1px 4px rgba(0, 0, 0, .9);
+    }
+
+    .planet-label-3d:active {
+      transform: translate(12px, -12px) scale(0.95);
+    }
+
+    .ghost-label-3d {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--amber);
+      white-space: nowrap;
+      opacity: 0.85;
+      transform: translate(10px, -10px);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .9);
+    }
+
+    .assist-label-3d {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--violet);
+      white-space: nowrap;
+      opacity: 0.9;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, .9), 0 0 8px rgba(0, 0, 0, .7);
+      transform: translate(-50%, -100%);
+      background: rgba(9, 6, 20, .55);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(183, 140, 255, .25);
+    }
+
+    .assist-label-3d.leg {
+      font-size: 8.5px;
+      opacity: 0.8;
+      color: #c9aeff;
+      transform: translate(-50%, -50%);
+      background: rgba(9, 6, 20, .5);
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid rgba(183, 140, 255, .18);
+    }
+
