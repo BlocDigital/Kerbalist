@@ -34,8 +34,8 @@
 
     .map-hud {
       position: absolute;
-      top: 115px;
-      left: 12px;
+      top: 16px;
+      left: 16px;
       display: flex;
       flex-direction: column;
       gap: 6px;
