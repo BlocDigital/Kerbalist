@@ -2625,6 +2625,12 @@
     }
 
     /* ---------- SIDEBAR COLLAPSE / EXPAND ---------- */
+    /* Smooth collapse/expand animation */
+    .sidebar {
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                  flex 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     /* Collapsed rail — narrow strip between viewport and sidebar */
     .sidebar-collapsed-rail {
       display: flex;
@@ -2638,7 +2644,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background .2s ease;
+      transition: background .3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar-collapsed-rail:hover {
@@ -2682,6 +2688,49 @@
       flex: 0 0 0;
       overflow: hidden;
       border-left: none;
+    }
+
+    /* ---------- HUD elements shift right when sidebar collapses ---------- */
+    /* All right-half HUD elements get smooth transitions */
+    .shortcuts-bubble,
+    .zoom-controls,
+    .cam-hud,
+    .legend,
+    .hud-widget {
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                  left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.sidebar-collapsed .shortcuts-bubble,
+    body.sidebar-collapsed .zoom-controls,
+    body.sidebar-collapsed .cam-hud {
+      right: 44px !important;
+    }
+
+    body:not(.sidebar-collapsed) .shortcuts-bubble,
+    body:not(.sidebar-collapsed) .zoom-controls,
+    body:not(.sidebar-collapsed) .cam-hud {
+      right: 16px !important;
+    }
+
+    /* Legend also shifts */
+    body.sidebar-collapsed .legend {
+      right: 44px !important;
+    }
+
+    body:not(.sidebar-collapsed) .legend {
+      right: 16px !important;
+    }
+
+    /* Bottom-left elements stay put */
+    .bottom-left-bar,
+    .map-hud,
+    .context-menu {
+      transition: none;
+    }
+    body.sidebar-collapsed .bottom-left-bar,
+    body.sidebar-collapsed .map-hud {
+      left: 12px;
     }
 
     /* porkchop */
@@ -7067,6 +7116,15 @@
         const isCollapsed = sidebarEl.classList.toggle('collapsed');
         document.body.classList.toggle('sidebar-collapsed', isCollapsed);
         localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+        // Shift floating HUD widgets on right side
+        const shift = isCollapsed ? 28 : -28;
+        const widgets = document.querySelectorAll('.hud-widget');
+        widgets.forEach(w => {
+          const currentLeft = parseFloat(w.style.left) || 0;
+          const newLeft = Math.max(16, currentLeft + shift);
+          w.style.left = newLeft + 'px';
+        });
       }
       // Expose to inline onclick handlers
       window.toggleSidebarCollapse = toggleSidebarCollapse;

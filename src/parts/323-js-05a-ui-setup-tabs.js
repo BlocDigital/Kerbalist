@@ -113,6 +113,15 @@
         const isCollapsed = sidebarEl.classList.toggle('collapsed');
         document.body.classList.toggle('sidebar-collapsed', isCollapsed);
         localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+        // Shift floating HUD widgets on right side
+        const shift = isCollapsed ? 28 : -28;
+        const widgets = document.querySelectorAll('.hud-widget');
+        widgets.forEach(w => {
+          const currentLeft = parseFloat(w.style.left) || 0;
+          const newLeft = Math.max(16, currentLeft + shift);
+          w.style.left = newLeft + 'px';
+        });
       }
       // Expose to inline onclick handlers
       window.toggleSidebarCollapse = toggleSidebarCollapse;
