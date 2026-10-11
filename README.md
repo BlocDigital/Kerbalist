@@ -1,6 +1,6 @@
 # Kerbalist v4.1
 
-**Astrodynamics Suite for Kerbal Space Program 2 Redux
+Astrodynamics Suite for Kerbal Space Program 2 Redux
 
 Kerbalist helps you plan efficient transfers between planets in Kerbal Space Program. Calculate transfer windows, ejection angles, and capture requirements all in one tool.
 
@@ -46,7 +46,7 @@ Modern browsers with WebGL support. Desktop and tablet recommended (mobile map r
 
 ## License
 
-© 2026 Larry. All rights reserved.
+Copyright (c) 2026 - Kerbol Astrodynamics Team - Bloc Digital
 
 ---
 
