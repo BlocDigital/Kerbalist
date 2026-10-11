@@ -8020,16 +8020,45 @@
       function renderTransferResults() {
         const r = currentResult;
         if (!r) { document.getElementById('transferResults').innerHTML = '<div class="placeholder">No transfer computed.</div>'; return; }
-        const ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
-        const ejArrBurn = r.arrEj.dvBurn;
+        
         const moonInsertDv = r.moonInsertionDv || 0;
         const landingDv = r.landingDv || 0;
-        const totalDv = ejDepBurn + ejArrBurn;  // Main transfer Δv (heliocentric only)
-        const totalHelioDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
-        const phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
-        const closeEnough = Math.abs(phaseDiff) < 2;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
         const selectedAssist = (selectedAssistIdx !== null && currentAssists[selectedAssistIdx]) ? currentAssists[selectedAssistIdx] : null;
+
+        // Determine which trajectory to display based on assist selection
+        let ejDepBurn, ejArrBurn, totalHelioDv, currentPhase, requiredPhase, phaseDiff, closeEnough;
+
+        if (selectedAssist) {
+          // Gravity assist trajectory: use assist's v∞ values
+          ejDepBurn = selectedAssist.solved.vInfDep;
+          ejArrBurn = selectedAssist.solved.vInfArr;
+          totalHelioDv = selectedAssist.solved.totalDv;
+          
+          // Phase angle relative to the assist planet
+          const assistPlanet = selectedAssist.planet;
+          currentPhase = angleToBody(assistPlanet, UT);
+          
+          // Required phase: approximate as angle to assist planet at departure
+          const originState = stateAt(r.origin, UT);
+          const assistState = stateAt(assistPlanet, UT);
+          requiredPhase = Math.atan2(assistState.y - originState.y, assistState.x - originState.x) * 180 / Math.PI;
+          requiredPhase = (requiredPhase + 360) % 360;
+          
+          phaseDiff = angNormPM180(currentPhase - requiredPhase);
+          closeEnough = Math.abs(phaseDiff) < 2;
+        } else {
+          // Direct transfer: use original currentResult values
+          ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
+          ejArrBurn = r.arrEj.dvBurn;
+          totalHelioDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
+          currentPhase = r.currentPhase;
+          requiredPhase = r.requiredPhase;
+          phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
+          closeEnough = Math.abs(phaseDiff) < 2;
+        }
+
+        const totalDv = ejDepBurn + ejArrBurn;  // Main transfer Δv (heliocentric only)
         const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tof;
         const ghostUT = UT + waitSec + totalFlightTime;
         const originName = r.originSelected.name;
@@ -8055,8 +8084,8 @@
       <div class="stat-row"><span class="k">Capture burn @ ${parentPlanetName || destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
       ${isMoonDest ? `<div class="stat-row"><span class="k">Moon orbit insertion @ ${destName}</span><span class="v hi">${moonInsertDv.toFixed(0)} m/s</span></div>` : ''}
       ${landingDv > 0 ? `<div class="stat-row"><span class="k">Landing @ ${destName}</span><span class="v hi">${landingDv.toFixed(0)} m/s</span></div>` : ''}
-      <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
-      <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${(selectedAssist ? selectedAssist.solved.vInfDep : Math.abs(r.dv1_helio)).toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${(selectedAssist ? selectedAssist.solved.vInfArr : Math.abs(r.dv2_helio)).toFixed(0)} m/s</span></div>
       <div class="mission-time-row">
         <div class="mission-time-label">Mission time on target planet</div>
         <div class="mission-stepper" aria-label="Mission time on target planet in days">
@@ -8079,10 +8108,10 @@
       <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec !== null ? utToDateString(ghostUT) : '—'}</span></div>
     </div>
     <div class="card" data-card="phase">
-      <h3><span class="dot"></span>Phase Angle<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
-      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
-      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
+      <h3><span class="dot"></span>Phase Angle${selectedAssist ? ` (to ${selectedAssist.planet.name})` : ''}<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
+      <div class="phase-gauge">${phaseGaugeSvg(currentPhase, requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${requiredPhase.toFixed(1)}°</span></div>
       <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough ? 'good' : ''}">${phaseDiff.toFixed(1)}°</span></div>
     </div>
     <div class="card" data-card="ejection">
@@ -8094,9 +8123,14 @@
     </div>
     <div class="card" data-card="time">
       <h3><span class="dot"></span>Transfer Time<button class="hud-card-toggle${isHudActive('time')}" data-widget-type="time" onclick="window.toggleTransferWidget('time')" title="Toggle HUD widget">HUD</button></h3>
-      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tof)}</div>
-      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
-      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(selectedAssist ? selectedAssist.solved.totalTime : r.tof)}</div>
+      ${selectedAssist ? `
+        <div class="stat-row"><span class="k">Leg 1: ${originName} → ${selectedAssist.planet.name}</span><span class="v">${durationString(selectedAssist.solved.tof1)}</span></div>
+        <div class="stat-row"><span class="k">Leg 2: ${selectedAssist.planet.name} → ${destName}</span><span class="v">${durationString(selectedAssist.solved.tof2)}</span></div>
+      ` : `
+        <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
+        <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
+      `}
     </div>
     <div class="card" data-card="ghost" style="border-color:rgba(255,180,84,.22);">
       <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival${selectedAssist ? ' (via assist)' : ''}<button class="hud-card-toggle${isHudActive('ghost')}" data-widget-type="ghost" onclick="window.toggleTransferWidget('ghost')" title="Toggle HUD widget">HUD</button></h3>
@@ -8167,7 +8201,6 @@
         renderTransferResults();
         renderAssistOptions();
       };
-
       function ejectionDiagramSvg(r) {
         const W = 195, H = 195, cx = W / 2, cy = H / 2;
         const OR = 62; // parking orbit radius in px
