@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2026 - Kerbol Transfer Window Planner Team - Bloc Digital
+Copyright (c) 2026 - Kerbol Astrodynamics Team - Bloc Digital
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
