@@ -7,6 +7,7 @@
 - **On/Off toggle buttons**: Each transfer card has an ON/OFF button in the sidebar. Only one widget of each type can be spawned—clicking ON adds it to the map, OFF removes it.
 - **Pin functionality**: Click the 📌 button on a widget to toggle "pinned" mode. Pinned widgets have reduced opacity (10%), non-draggable header, and fixed positioning.
 - **Persistent state**: Widget positions, sizes, and pin states are saved to localStorage and restored on page reload.
+- **Sidebar improvements**: Sidebar is now resizable and can be collapsed.  
 
 ### Changed
 - **Content layout**: HUD widget content is now centered with responsive font sizing that scales to container size.
@@ -24,17 +25,18 @@
 - The return-trip estimate still uses the quick circular-orbit numbers.
 - The map doesn't render on mobile browsers, and the kRPC2 bridge doesn't work yet (see 3.6.4).
 
----
 
 ## [4.0] - 2026-10-03
 
 ### Added
+
 - **Verification code on bug reports**: "Open GitHub Issue" unlocks after you type the 5 characters shown in the form.
 - **Automatic app screenshot**: Opening the bug report form captures the whole app and copies it to the clipboard. Press Ctrl+V in the GitHub issue to attach it. You can retake it or remove it.
 - **Your own screenshot**: Click, drag and drop, or paste an image instead (PNG, JPG, GIF or WebP, up to 5 MB). Dropping works anywhere on the form.
 - **Collapsible legend**: The map legend is now a box with a minimize button, like Controls. Press L to toggle it. The zoom buttons sit above it.
 
 ### Changed
+
 - **Transfer window timing**: "Window opens at" is now worked out from the real orbit positions instead of average speeds. It no longer shifts as you get close (for Kerbin to Duna it used to move by about 5 days), the countdown no longer reaches zero a few days early, and the window stays open until the phase is off by 1° (about 2.5 days for Duna) before the countdown moves on to the next one.
 - **Required phase angle**: Shows the real angle for the window instead of the circular-orbit value. For eccentric destinations like Duna it can differ by a degree or two.
 - **Exact transfer numbers**: Flight time, ejection and capture Δv, v∞, transfer orbit size, arrival time and the burn angle now come from the same trajectory that is drawn on the map, using the cheapest flight time for the window. The old numbers assumed circular orbits and would have missed Duna by about a million km. Following the new ones reaches the planet.
@@ -42,6 +44,7 @@
 - **Source layout**: The code is now 43 small files in `src/parts` that `npm run build` joins into the single `index.html`, with physics tests and a GitHub check. Nothing changes for users.
 
 ### Fixed
+
 - **Ejection angle was on the wrong side**: For an outbound transfer it said to burn ahead of prograde, which sends the ship out against the planet's motion. It now says how far ahead of retrograde to burn (outbound) or ahead of prograde (inbound), including any tilt in the departure direction.
 - **Bug report with a screenshot didn't open**: The image was packed into the GitHub link, which made it too long. Screenshots now go through the clipboard.
 - **Dropped images opened in a new tab**: Only the small drop box caught drops. Dropping now works anywhere on the form.
@@ -49,6 +52,361 @@
 - **Submit button off-screen on short windows**: The bug report form now scrolls inside the window.
 
 ### Known Issues
+
 - Transfers are flat (no orbital tilt). Duna and Eve are fine, but Moho (7°) and Eeloo (6°) won't intercept exactly.
 - The return-trip estimate still uses the quick circular-orbit numbers.
 - The map doesn't render on mobile browsers, and the kRPC2 bridge doesn't work yet (see 3.6.4).
+
+## [3.7.0] - 2026-09-25
+
+### Added
+
+- **Bug report button**: A button in the bottom-left opens a form (title, description, optional screenshot) that opens a pre-filled GitHub issue.
+- **Origin and destination on the map**: Dropdowns in the top-left, synced with the sidebar.
+
+### Changed
+
+- **HUD layout**: Controls top-right, camera readout middle-right, zoom buttons and legend bottom-right. Nothing sits behind the sidebar.
+
+## [3.6.6] - 2026-09-22
+
+### Fixed
+
+- **Map view off-center**: `.map-wrap` was `position: fixed` and covered the whole window, so the sidebar sat on top of the right part of the map and the Sun looked shifted right. It is a normal flex child again (`position: relative; flex: 1 1 auto; min-width: 0`).
+
+## [3.6.5] - 2026-09-16
+
+### Added
+
+- **Live Camera HUD**: Added a subtle, semi-transparent real-time info HUD displaying camera position (X, Y, Z), zoom radius, focused celestial body, and orbital time warp level.
+- **Orbital Ghost Planet Halos**: Added faint ghost spheres (sized matching departure ghost spheres, radius 6.5) of matching planet color that fade out when zooming in close (97% zoom, threshold `camR < 75`) or when focusing near a body.
+
+### Changed
+
+- **UI Button Scaling & Layout**:
+  - Reduced "Buy me a beer" and "Changelog" button sizes by 25%.
+  - Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.
+  - Relocated camera control buttons upward so they no longer overlap with the map legend.
+  - Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.
+  - Scaled map legend size by +15%.
+
+## [3.6.4] - 2026-09-15
+
+### Fixed
+
+- **Sidebar rendered below the map**: A stray `</div>` closed `.map-wrap` and `.main` too early, so the sidebar ended up outside `.main` and dropped below the map on desktop. It was an HTML nesting bug, not a CSS one.
+- **Orbits drifted after 1-2 years**: The in-game year is 425 days, not 426. `YEAR_DAYS` is corrected and `m0Deg` is recalibrated for all six planets from in-game readings taken about 15 years apart (within 0.01° each). New m0Deg: Moho 124.90, Eve 314.44, Duna 348.60, Dres 110.74, Jool 334.08, Eeloo 158.80 (was 108.64 / 165.54 / 350.99 / 116.10 / 339.25 / 163.48).
+
+### Known Issues
+
+- **LAN isn't modeled separately**: Argument of periapsis and LAN are combined into one `orientDeg` and inclination is a plain tilt, which is only exact when LAN is 0. That leaves a small constant position error: largest for Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°).
+- **kRPC2 Dependency Mod Doesn't Work**: The kRPC2 dependency mod on the KSP2 side does not work yet — the Python bridge (`kerbalist_bridge.py`) cannot connect to KSP2 because the required server-side mod is not functional.
+- **Map Does Not Render on Mobile**: The 3D map canvas fails to initialize or render on mobile browsers (both iOS Safari and Android Chrome). The sidebar controls and all non-map UI elements still work correctly.
+
+## [3.6.3] - 2026-09-15
+
+### Changed
+
+- **Map Legend Visual Updates**: Current phase and required phase indicators now use lines instead of dots to match their on-map representation. Required phase is a dashed line, transfer arc is a dashed green line, and the arrival ghost dot is joined by a green dot for the departure ghost.
+- **Controls Documentation**: Added right-click context menu to the in-app controls bubble and README Map Controls table.
+
+## [3.6.2] - 2026-09-15
+
+### Fixed
+
+- **Right-Click Context Menu No Longer Appears on Drag**: Right-clicking and immediately dragging the mouse no longer shows the context menu. The menu now only appears on a clean right-click release, matching standard OS behavior.
+
+## [3.6.1] - 2026-09-14
+
+### Fixed
+
+- **Double-Click Body Info Sync**: Double-clicking a planet or moon label on the map now updates the Body Info panel to show the selected body's data and switches to the Body Info tab. Previously the camera would zoom to the body but the info panel remained stale.
+
+## [3.6] - 2026-09-13
+
+### Added
+
+- **Mobile layout**: On small screens a Map / Controls toggle switches between the 3D map and the sidebar. The map uses touch controls (1-finger rotate, 2-finger zoom and pan) and the sidebar has bigger tap targets.
+
+## [3.5.6] - 2026-09-13
+
+### Fixed
+
+- **Moon Transfer Visualization Bug (Critical)**: Fixed a coordinate double-counting bug where transfers involving a moon rendered ghost arrival markers, dashed lines, transfer arcs, and return lines in incorrect positions—often roughly twice as far from the sun. Planet-to-planet transfers were unaffected.
+- **Moon Camera Lock**: Fixed moon tracking when double-clicking or using right-click "Zoom in". Camera-follow and context-menu logic now check both planet and moon meshes.
+- **Orbit Line Polygon Count Increased**: Planet orbit lines raised from 1200 to 4000 segments and moon lines from 600 to 2000, preventing visible drift at extreme zoom.
+- **Drast Rendering Fused With Dres**: Moon orbit display radius now clamps to 1.3× its parent planet's physical radius, keeping Drast and similar moons clearly outside their parent.
+- **Deeper Zoom Range**: Lowered minimum camera distance from 0.02 to 0.012 world units, adding roughly 4–5 zoom-in steps.
+
+### Technical Details
+
+- Root cause: moonLocalPosition() returns a moon's full world-space position (parent position already added internally), but bodyWorldPositionAt() was adding the parent's position a second time on top of that result.
+- bodyWorldPositionAt() now calls moonLocalPosition() directly for moons without re-adding the parent offset.
+- This single fix corrects every visualization that depends on bodyWorldPositionAt() for a moon: ghost arrival marker, dashed arrival line, transfer arc, and return trip overlay lines.
+- updateMap()'s per-frame camera-follow check and the context menu's zoom-in handler now resolve the focused body via `planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet]`.
+- moonOrbitDisplayRadius() now returns `Math.max(rawOrbitRadius, parentPhysicalRadius * 1.3)`, and the Dres ring's inner-radius calculation now reuses this same clamped function instead of its own separate clamp.
+
+## [3.5.4] - 2026-09-12
+
+### Fixed
+
+- **Camera Focus Lock Persistence**: Double-clicking a body now locks the camera on it permanently until the user explicitly pans away (Shift+drag or middle-click+drag) or resets the view. Previously the focus was lost immediately after releasing the mouse button.
+- **Instant Camera Centering**: Camera now visually centers on a body immediately upon double-click without requiring mouse movement. Added continuous updateCamera() calls to the render loop to keep focused bodies centered as they move.
+- **Camera Reset Behavior**: Pressing R to reset view now clears the focused-planet lock, so the camera returns to full-system view and doesn't get pulled back to the last selected body.
+- **Moon Label Visibility Threshold**: Moon labels now appear 50% closer to the camera (threshold reduced from camR > 150 to camR > 75), making them visible at wider zoom ranges without requiring extreme zoom.
+- **Orbit Line Smoothness at Zoom**: Planet orbit lines increased from 220 to 1200 segments and moon orbit lines increased from 120 to 600 segments. Bodies now stay perfectly aligned with their orbits even at maximum zoom without visible polygon edges.
+- **Camera Lock Release on Pan**: When the user pans with Shift+drag or middle-click+drag, the camera focus lock is released after a brief grace period (200ms) to prevent accidental unlocking from double-click mouse settling.
+
+## [3.5.0] - 2026-09-06
+
+### Added
+
+- **Full Label Interactivity**: Planet and moon names are now fully interactive and much larger (16px, bold). Click to set origin, double-click to lock camera, right-click for context menu. Works identically for planets and moons.
+- **Middle-Click Panning**: Pan the map with middle-click + drag (equivalent to Shift+drag). Adds an alternative to shift-dragging for camera panning.
+
+### Fixed
+
+- **Body Selection System**: Fixed broken setOrigin/setDestination functions. All body selection now works directly via the origin/destination select elements with proper change event firing.
+- **Label Positioning**: Removed CSS transitions that caused labels to lag while panning. Labels now snap instantly to their correct positions, only animating color/glow on hover.
+- **Clickable Label Container**: Fixed pointer-events blocking—label container is now pointer-events: none with individual labels at pointer-events: auto, so labels are clickable but canvas can still be panned.
+- **World-Space Orbit Lines & Bodies**: Restructured moon orbits and bodies to use true world-space positioning instead of being nested under planet meshes. Planets and moons now sit exactly on their orbit lines. Orbit lines track parent planet positions each frame.
+- **Camera Tracking**: Camera now locks to and follows focused bodies as they orbit, keeping them in view even as the system evolves.
+
+## [3.0 - 3.4 Consolidated] - 2026-09-06
+
+### Major Changes
+
+#### Scaling & Coordinate System (v3.0)
+
+- **Map Rewritten to Real KSP2 Proportions**: Single unified physical scale (world units per meter) replaces all custom tuning. All distances—heliocentric and moon-relative—use the same linear scale. Deleted "inner system expansion" (32% Duna inflation) and per-planet moon-orbit tuning buckets.
+- **Raw System View**: Moons appear tightly clustered at full-system zoom (correct—that's what the real proportions look like). Zoom in to resolve them at accurate scale.
+
+#### Camera & Zoom (v3.1 & v3.4)
+
+- **Zoom-Based Scale Transition (LOD)**: Map fades between exaggerated overview (far) and true-to-scale physical view (near), like KSP2. Smooth blend as camera approaches a planet.
+- **Deeper Zoom Range**: Camera min distance 30 → 0.02 units; near plane 0.5 → 0.0005. Logarithmic depth buffer for stable rendering across the huge range.
+- **Camera Lock to Focused Body**: Zoom into a planet or use context menu to lock camera. Camera stays locked to body's center as it orbits. Reset zoom clears lock.
+
+#### Interactivity (v3.2 - v3.4)
+
+- **Moon Label Visibility**: Moon labels hidden at far zoom (they cluster on planet); fade in as you zoom close.
+- **Right-Click Context Menu**: Right-click planet/moon for menu with zoom, set origin/destination, clear, reset, show info options.
+- **Click Helper Spheres**: Invisible collision spheres (10× planet, 5× moon) make bodies much easier to select without zooming extremely close.
+
+#### Orbital Data (v2.7 - v2.9)
+
+- **Orbital Epoch Synchronization**: All planet m0Deg values synchronized to KSP2 game state at reference UT (T+6y,59d,04:16:57). Planet positions match the game.
+- **Corrected Orbital Mechanics (v2.8-v2.9)**: Fixed time base (21600s/day, not 86400), proper phase-angle interpretation relative to Kerbin, and full Kepler inversion accounting for eccentricity and argument of periapsis. All planets match the in-game phase angles.
+- **Jool Landing Removed**: Jool is a gas giant; removed misleading landing Δv estimate.
+- **Moon Data**: All moon gravitational parameters (μ) added for accurate moon insertion/landing calculations.
+
+### Known Issues
+
+- **Drast Inside Dres**: Drast's semi-major axis (43,400 m) is smaller than Dres's own physical radius (138,000 m) in the current KSP2 Redux moon data, placing its orbit inside the planet itself—almost certainly a units slip (likely meant to be 43,400 km). Left unchanged since the moon data was intentionally kept as-is; the Dres ring rendering is clamped to stay visually outside Dres regardless.
+
+## [2.9] - 2026-09-06
+
+### Fixed
+
+- **Epoch sync corrected again**: 2.8 still treated mean anomaly as true anomaly and ignored each planet's argument of periapsis, which is wrong for eccentric orbits (Moho 0.2, Dres 0.145, Eeloo 0.26). m0Deg is now derived with the same math the app uses to draw positions, and all six planets match their in-game phase angles within 0.01°.
+- **Full Kepler Inversion**: m0Deg is now derived using the same math the app itself uses to render positions (`theta = trueAnomaly + orientDeg`, with true anomaly related to mean anomaly through the eccentric anomaly via Kepler's equation). Verified numerically against the app's own `stateAt()` function - all six planets reproduce their observed in-game phase angles exactly.
+- **Jool Landing Δv Removed**: Jool is a gas giant with no solid surface - landing there is not a real maneuver. The reference "Landing @ Jool" line (previously an arbitrary, misleadingly small ~2,400 m/s estimate) has been removed rather than guessed at.
+
+## [2.8] - 2026-09-06
+
+### Fixed
+
+- **Epoch sync corrected**: 2.7 used 24-hour days instead of the 6-hour Kerbin day (21,600 s) and treated the Target panel's phase angles (target minus origin) as absolute angles. m0Deg is recalculated for all six planets; Eeloo's phase angle now matches the in-game -16.90°.
+- **Recalculated m0Deg Values**: All six planets recalculated using the correct 21,600s/day time base and proper phase-angle-relative-to-Kerbin interpretation. Verified against the in-game Target panel: computed Eeloo phase angle now matches -16.90° exactly at the reference UT.
+- **Negative Landing Δv Bug**: Fixed moon landing Δv reference estimate returning a negative value for small airless moons (e.g. Gilly), where low-orbit and surface velocities are nearly identical, making a velocity-difference formula unstable. Landing estimate now scales directly from low-orbit velocity instead.
+
+## [2.7] - 2026-09-05
+
+### Added
+
+- **Orbital Epoch Synchronization**: Synchronized all planet orbital mean anomalies (m0Deg) to match actual KSP2 game state at reference time T+006y 059d 04:16:43 (225,951,403 seconds). Enables precise transfer window planning that matches in-game opportunities.
+
+### Changed
+
+- **Planetary m0Deg Values**: Updated all planet mean anomalies based on observed orbital positions from KSP2 Redux system:
+  - Moho: 180° → 215.09°
+  - Eve: 180° → 327.07°
+  - Duna: 180° → 329.68°
+  - Dres: 180° → 111.81°
+  - Jool: 6° → 294.43°
+  - Eeloo: 180° → 3.04°
+
+### Fixed
+
+- **Orbital Position Mismatch**: Fixed issue where Kerbalist orbital calculations didn't match KSP2 game state at the same UT. All planets now position correctly relative to KSP2.
+- **Transfer Window Accuracy**: Transfer window calculations now align with actual in-game opportunities due to corrected orbital epochs.
+
+## [2.6] - 2026-09-05
+
+### Added
+
+- **KSP2 Moon Gravitational Parameters**: Added actual KSP2 gravitational parameters (mu values) to all moon definitions in RAW_MOONS data. Ensures calculations use true KSP2 physics instead of derived values.
+- **KSP2 Redux Dres Moon System**: Confirmed Drast and Beyl remain as Dres moons with proper KSP2 Redux system gravitational parameters (Drast: 3.7392×10⁶ m³/s², Beyl: 4.8695448×10⁷ m³/s²).
+
+### Changed
+
+- **Orbital Data Architecture**: Switched from modified/scaled orbital data to using original unmodified KSP2 orbital parameters for all physics calculations. Map view scaling now applies only to Three.js visualization layer, not to calculation data.
+- **Moon Insertion Calculation**: Simplified to use actual orbital velocity formula with proper mu values: `lowOrbitVelocity × 1.2` (velocity matching + circularization). Removed complex compensation factors.
+- **Moon Landing Calculation**: Changed to orbital velocity difference approach: `(lowOrbitVelocity - surfaceVelocity) × 1.5`. Uses actual moon gravitational parameters instead of escape velocity estimates.
+- **getMoonMu() Function**: Updated to prioritize pre-defined KSP2 mu values from RAW_MOONS data, falling back only when necessary.
+
+### Fixed
+
+- **Small Moon Δv Budgets**: Fixed catastrophically incorrect values for small moons (e.g., Kerbin → Gilly showed 26,750 m/s insertion). Root cause: missing moon mu values forced incorrect Kepler-law derivation. Now uses actual KSP2 gravitational parameters.
+- **Moon Orbital Mechanics**: All moon insertion and landing calculations now use correct orbital velocity formulas based on accurate gravitational parameters rather than compensation multipliers.
+- **Physics and display separated**: Calculations use the original KSP2 orbital data; map scaling only affects the 3D view.
+
+### Technical Details
+
+**Moon Gravitational Parameters (added to all moons):**
+- Gilly: 2.4868349×10⁹ m³/s²
+- Mun: 6.5026800×10¹⁰ m³/s²
+- Minmus: 1.7658000×10⁹ m³/s²
+- Ike: 1.8568369×10¹⁰ m³/s²
+- Drast: 3.7392×10⁶ m³/s² (KSP2 Redux)
+- Beyl: 4.8695448×10⁷ m³/s² (KSP2 Redux)
+- Laythe: 1.962000×10¹² m³/s²
+- Vall: 2.2476×10¹⁰ m³/s²
+- Tylo: 2.8253×10¹² m³/s²
+- Bop: 1.221×10⁹ m³/s²
+- Pol: 7.21×10⁸ m³/s²
+
+## [2.5] - 2026-09-05
+
+### Added
+
+- **Porkchop plot guide**: A card above the plot explains the axes and colors, how to spot a good window, and how to click a cell to inspect it.
+- **Landing Δv Reference Estimates**: Added "Landing @ [destination]" line item showing estimated powered descent cost for destination (planets and moons). Displayed as reference value only, depends on approach geometry.
+- **getMoonMu() Helper Function**: New utility function calculating moon gravitational parameters from orbital data, with fallback to known KSP2 moon values for accurate moon insertion and landing cost estimates.
+
+### Changed
+
+- **Moon Insertion & Landing Display**: Changed from auto-add-to-total approach to "reference values only" display. Moon insertion and landing Δv now shown as separate informational line items, not included in main transfer total. Updated all related UI notes to clarify this distinction.
+- **Total Δv Definition**: Redefined total Δv to show heliocentric transfer cost only (ejection + capture), making it clear what's needed for the interplanetary portion. Moon insertion and landing shown separately as rough estimates that vary with approach geometry.
+- **Moon Insertion Formula**: Simplified from `1.5 × sqrt(μ / r_orbit)` to `0.3 × escape_velocity`, preventing unrealistic values for small moons.
+- **Landing Formula**: Simplified to `0.4 × escape_velocity` (moons) and `0.5 × escape_velocity` (planets), providing more realistic estimates across gravity variations.
+- **Porkchop Plot Display**: Changed colors to show heliocentric transfer Δv only; moon insertion and landing no longer inflate the grid values. Updated note to clarify reference values are shown separately.
+- **Return Trip Budgeting**: Updated to use heliocentric transfer cost only, removing inflated moon insertion/landing costs from round-trip totals.
+- **Big Number Label**: Changed main total display from "m/s total" to "m/s interplanetary transfer" to clarify it's not the complete mission budget.
+
+### Fixed
+
+- **Outrageous Moon Δv Budgets**: Fixed bug where moon destinations showed unrealistic Δv (e.g., Kerbin → Bop showed 141,336 m/s). Now shows ~3,200 m/s to Bop with ~150 m/s insertion as reference.
+- **Zero Moon Insertion Δv**: Fixed moon insertion always showing 0 m/s by implementing proper gravitational parameter calculation via getMoonMu() helper.
+- **Porkchop Plot Inflation**: Fixed porkchop grid colors being inflated by landing costs, which obscured actual transfer window valleys and made visual comparison unreliable.
+- **Return Budget Inflation**: Fixed return-to-Kerbin budgets including moon insertion/landing costs from outbound journey, inflating realistic estimates.
+- **Moon Insertion Reference Accuracy**: Improved accuracy of moon insertion estimates by deriving from escape velocity rather than orbital velocity, better reflecting actual circularization costs.
+
+## [2.4] - 2026-08-28
+
+### Added
+
+- **Moon Transfer Δv Budgeting**: Fixed moon destination transfers showing identical Δv budget to parent planet by adding automatic moon orbit insertion cost calculation (~1.5x the moon's circular orbital velocity). Now correctly displays: ejection burn @ origin, capture burn @ parent planet, and moon orbit insertion @ destination with separate line items in total budget.
+- **Moon Insertion Cost Display**: Added dedicated line item "Moon orbit insertion @ [moon name]" showing estimated Δv cost for orbit insertion at destination moon.
+- **Porkchop Plot Moon Support**: Moon destinations now appear in porkchop plot generator with colors including moon insertion cost, labeled as "Total Δv (heliocentric + moon insertion)".
+- **Return Trip Moon Budgeting**: Round-trip return-to-Kerbin calculations now include outbound moon orbit insertion cost for accurate mission budgeting.
+
+## [2.3] - 2026-08-27
+
+### Added
+
+- **Return-to-Kerbin Δv Budgeting**: Added mission time on target body controls to the Δv Budget card, with step buttons for -20, -10, -1, +1, +10, and +20 days.
+- **Return Window Details**: The Δv Budget card now estimates the next target-to-Kerbin transfer window after the mission stay, including return departure UT, Kerbin arrival UT, return ejection burn, Kerbin capture burn, return Δv, and round-trip Δv.
+- **Return Trip Map Visualization**: Added an optional checkbox to draw the return transfer arc on the 3D map with distinct colors, including return departure and Kerbin arrival ghost positions.
+
+## [2.2] - 2026-08-11
+
+### Added
+
+- **Heliocentric Δv Total Display**: Added a supplementary heliocentric total m/s readout in a smaller font beneath the main ejection/capture parking orbit Δv budget.
+- **Ejection Angle Visual Schematic**: Added a local planetary orbit diagram to the Ejection Angle card showing the parking orbit around the origin body, the prograde marker, and the precise burn position with thrust vector exhaust flames.
+
+### Changed
+
+- **Card order**: The Ejection Angle card now sits directly below the Δv Budget card.
+- **UI scaling**: Sidebar UI, fonts, controls, padding and borders are 30% larger and note text 20% larger; diagrams scale with them.
+- **Dres Ring System & Drast Orbit Integration**: Re-centered Dres's ring system directly along the orbit of Drast with multi-band ring texturing so Drast orbits embedded within the ring band.
+
+## [2.0] - 2026-08-10
+
+### Added
+
+- **Dres Moon System Expansion**: Added Drast and Beyl as selectable moons of Dres, including local 3D orbits, physical display data from the supplied KSP2 screenshots, labels, click selection, and transfer dropdown entries
+
+### Changed
+
+- **Dres Ring Alignment**: Narrowed the Dres ring band and aligned it with Dres's equatorial plane so it matches the in-game ring appearance more closely
+- **Moon Velocity Display**: Moon body info now derives local orbital speed from the parent planet's gravitational parameter instead of Kerbol's
+
+## [1.7.2] - 2026-08-09
+
+### Added
+
+- **Gravity Assist Planning**: New Assists tab automatically detects planets positioned for a viable flyby on the current route and estimates combined delta-v by solving two independent Lambert arcs (origin → assist planet, assist planet → destination), compared directly against the direct Hohmann transfer
+- **Assist Route Visualization**: Selecting an assist route draws both transfer legs in the 3D scene, dims the direct arc so the assist route reads as the active option, and drops a glowing marker at the flyby encounter point
+- **Assist Route Labels**: Flyby planet name and per-leg origin/assist/destination labels with flight-time annotations, rendered as screen-space labels that track the 3D scene as the camera moves
+- **Assist Arrival Ghost**: A second, violet-colored arrival ghost shows the destination's real position at the assist route's own arrival time, distinct from the direct transfer's amber ghost — multi-leg routes often arrive years apart from a direct transfer
+- **Gravity Assist Legend Entry**: Map legend now includes a violet swatch identifying gravity-assist-related elements
+
+### Fixed
+
+- **Gravity assist leg timing**: Leg durations assumed the flyby planet sat exactly opposite the next body, which could force a near-parabolic, distorted arc when it didn't. Durations are now found by searching for real opposition, with a small offset to stay clear of the Lambert solver's singularity at 180°.
+
+## [1.7.0] - 2026-08-07
+
+### Changed
+
+- **Hohmann Transfer Arc Correction**: Fixed transfer arc drawing to use a real Lambert trajectory solution instead of an idealized 180-degree ellipse. The previous method could miss the arrival point for eccentric destinations; the new approach solves for the exact elliptical/hyperbolic orbit connecting departure and arrival points at the computed transfer time
+- Orbital display scaling adjusted so planet spheres and moon orbits maintain proper physical distance ratios
+
+### Fixed
+
+- Moon orbit rendering tightened to prevent inner-planet moon rings from overlapping neighboring planetary orbits while keeping outer moon systems legible
+
+## [1.6.1] - 2026-08-06
+
+### Added
+
+- **Moon Destination Selection**: Moons now appear in origin and destination dropdowns below their parent planets with dashed labels (e.g., `- Mun`) to distinguish them from planets
+- **Clear Transfer Button**: New button beside Plan Transfer to remove transfer arcs, phase lines, arrival ghosts, and reset the transfer panel
+
+### Changed
+
+- **Moon Orbit Display Scaling**: Tightened inner-planet moon orbit rendering for readability while preserving outer moon visibility
+
+## [1.6.0] - 2026-08-05
+
+### Added
+
+- Complete Moon System: All stock KSP/KSP2 moons (Gilly, Mun, Minmus, Ike, Laythe, Vall, Tylo, Bop, Pol) with 3D local orbits, real-time ephemeris propagation, raycast clicking, and physical data inspection
+- Double Click Centering: Double-click any planet or moon to snap camera focus directly to that celestial body
+
+### Changed
+
+- Expanded Visual Scale: Scaled down planet spheres and expanded moon orbit radii so moons clearly orbit outside planetary atmospheres
+- Subtle Camera Focal Marker: Added minimal dark grey 3D pivot dot tracking camera focus position in space
+
+## [1.5.0] - 2026-08-04
+
+### Added
+
+- Full 3D WebGL Solar System Map: Replaced 2D SVG map with Three.js WebGL scene supporting accurate planetary orbital inclinations
+- Free-Look Orbital Camera: Left drag rotates, Shift+drag or middle-click+drag pans, scroll zooms, R key or reset button returns to default view
+- Destination Arrival Ghost: Translucent ghost planet shows exact projected destination position at arrival time
+- 3D Trajectory Inclination Matching: Transfer arc interpolates inclination angles from departure to destination (e.g., 0 Kerbin 5 Dres)
+- UI & Controls HUD: On-screen keyboard/mouse controls overlay card and expanded UT sync input fields supporting 4-digit years
+
+## [1.0] - Initial Release
+
+### Added
+
+- Interactive Kerbol system visualization
+- Hohmann transfer calculations
+- Delta-V calculator
+- Phase angle calculator
+- Transfer arc visualization
