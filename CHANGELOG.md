@@ -7,6 +7,7 @@
 - **On/Off toggle buttons**: Each transfer card has an ON/OFF button in the sidebar. Only one widget of each type can be spawned—clicking ON adds it to the map, OFF removes it.
 - **Pin functionality**: Click the 📌 button on a widget to toggle "pinned" mode. Pinned widgets have reduced opacity (10%), non-draggable header, and fixed positioning.
 - **Persistent state**: Widget positions, sizes, and pin states are saved to localStorage and restored on page reload.
+- **Sidebar improvements**: Sidebar is now resizable and can be collapsed.  
 
 ### Changed
 - **Content layout**: HUD widget content is now centered with responsive font sizing that scales to container size.
