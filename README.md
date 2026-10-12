@@ -46,6 +46,8 @@ Modern browsers with WebGL support. Desktop and tablet recommended (mobile map r
 
 ## License
 
+MIT https://github.com/BlocDigital/Kerbalist/blob/main/LICENSE.md
+
 Copyright (c) 2026 - Kerbol Astrodynamics Team - Bloc Digital
 
 ---
