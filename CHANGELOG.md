@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.3.1] - 2026-10-18
+
+### Fixed
+- **Active vessel apoapsis and periapsis**: Now match the game's values. They were calculated from the speed relative to the planet's surface, not its centre.
+
+
 ## [4.3] - 2026-10-18
 
 ### Added
