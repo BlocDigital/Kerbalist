@@ -7,6 +7,55 @@
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
+        <h2>[4.3] - 2026-10-18 &mdash; Kerbalist v4.3 &middot; Astrodynamics Suite</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Active vessel panel as a HUD element</strong>: Pin, drag, resize and close it like the other panels. It shows apoapsis and periapsis, worked out from the telemetry the bridge sends.</li>
+          <li><strong>Vessel tag on the map</strong>: Shows the full vessel name with a leader line. It's marked approximate until the bridge sends the vessel's position.</li>
+          <li><strong>Settings tab</strong>: Its HUD Layout button resets every HUD element to its default position and size.</li>
+          <li><strong>Live sync overlay</strong>: Covers the time controls while live sync drives the clock, and locks the time buttons.</li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>Game orbits in live sync</strong>: Body positions and orbit rings come from the game's state vectors. The stock orbit table is no longer used for them.</li>
+          <li><strong>HUD scaling</strong>: HUD elements scale with their box size. Widgets can be resized smaller, down to 140 by 90 pixels, and the vessel panel adds or removes columns as it's resized.</li>
+          <li><strong>Default HUD layout</strong>: Updated to the layout used in the 4.3 screenshots.</li>
+          <li><strong>Live sync panel</strong>: Larger, with a solid background and bigger text.</li>
+          <li><strong>KSP2 Telemetry Bridge</strong>: The mod is now version 1.2.0. It starts through a Unity startup hook as well as the mod loader's hook.</li>
+        </ul>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Vessel panel styling</strong>: Labels and values now have clear spacing.</li>
+          <li><strong>Resizing</strong>: No longer stops at 290 pixels, and the box no longer jumps when a resize starts.</li>
+          <li><strong>Vessel tag</strong>: No longer shows an acronym, and it's sized to match the rest of the map labels.</li>
+        </ul>
+        <h3>Known Issues</h3>
+        <ul>
+          <li>The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts may not match the bodies shown in live sync.</li>
+          <li>The active vessel is only drawn approximately, at its parent body, until the bridge sends its position.</li>
+          <li>The info panel shows stock orbital values in live sync.</li>
+          <li>The Settings tab may crowd the tab bar in narrow sidebars.</li>
+        </ul>
+
+        <h2>[4.2] - 2026-10-17 &mdash; Kerbalist v4.2 &middot; Astrodynamics Suite</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
+          <li><strong>Active vessel HUD</strong>: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.</li>
+          <li><strong>Vessel filter panel</strong>: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.</li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>Game orbits in live sync</strong>: While the bridge is live, body positions and orbit rings no longer use the stock orbit table. The app uses a fixed axis mapping instead of fitting against the stock orbits.</li>
+          <li><strong>Live status line</strong>: Reads &quot;synced &hellip; game orbits&quot; with the vessel count.</li>
+        </ul>
+        <h3>Known Issues</h3>
+        <ul>
+          <li>The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts may not match the bodies shown in live sync.</li>
+          <li>The active vessel is not drawn on the map yet (the bridge does not send its position relative to its body). The HUD still works.</li>
+          <li>The info panel shows stock orbital values in live sync.</li>
+        </ul>
+
         <h2>[4.1] - 2026-10-10 &mdash; Kerbalist v4.1 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
@@ -628,7 +677,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v4.1 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v4.3 &middot; CHANGELOG.md</div>
     </div>
   </div>
 

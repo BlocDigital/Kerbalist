@@ -185,7 +185,8 @@
         const mat = new THREE.LineBasicMaterial({ color: new THREE.Color(planet.color), transparent: true, opacity: 0.38 });
         return new THREE.Line(geo, mat);
       }
-      PLANETS.forEach(p => scene.add(buildOrbitLine(p)));
+      const planetRingLines = {};
+      PLANETS.forEach(p => { const l = buildOrbitLine(p); planetRingLines[p.name] = l; scene.add(l); });
 
       /* ---- Lighting for Photorealistic Shading ---- */
       const sunLight = new THREE.PointLight(0xfffaed, 2.5, 0, 0);

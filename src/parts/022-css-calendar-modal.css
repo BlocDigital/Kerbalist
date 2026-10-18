@@ -390,12 +390,13 @@
       top: 42px;
       right: 0;
       z-index: 40;
-      width: 300px;
-      background: var(--panel);
+      width: 440px;
+      max-width: calc(100vw - 24px);
+      background: #0b141f;
       border: 1px solid var(--border-bright);
       border-radius: 10px;
-      padding: 13px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+      padding: 18px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .75);
     }
 
     .live-panel.open {
@@ -404,7 +405,7 @@
 
     .live-panel h4 {
       margin: 0 0 8px;
-      font-size: 10.5px;
+      font-size: 13px;
       letter-spacing: .1em;
       text-transform: uppercase;
       color: var(--text-dim);
@@ -413,22 +414,23 @@
     .live-panel .opt {
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 9px 10px;
-      margin-bottom: 9px;
+      padding: 14px 15px;
+      margin-bottom: 12px;
+      background: #0f1a27;
     }
 
     .live-panel .opt-title {
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 3px;
+      margin-bottom: 5px;
     }
 
     .live-panel .opt-desc {
-      font-size: 10.5px;
-      color: var(--text-dimmer);
-      line-height: 1.5;
-      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.55;
+      margin-bottom: 10px;
     }
 
     .live-panel input[type=text] {
@@ -438,8 +440,8 @@
       border-radius: 5px;
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 11.5px;
-      padding: 6px 7px;
+      font-size: 14px;
+      padding: 9px 10px;
       outline: none;
       margin-bottom: 7px;
     }
@@ -455,9 +457,9 @@
       color: var(--cyan);
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 11px;
+      font-size: 13.5px;
       letter-spacing: .05em;
-      padding: 7px;
+      padding: 11px;
       border-radius: 6px;
       cursor: pointer;
       text-transform: uppercase;
@@ -474,8 +476,9 @@
     }
 
     .live-status {
-      font-size: 10.5px;
-      color: var(--text-dimmer);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-dim);
       margin-top: 2px;
       font-family: var(--font-mono);
       line-height: 1.4;
@@ -526,5 +529,45 @@
       border-left: 1px solid var(--border);
       margin-left: 2px;
       padding-left: 10px;
+    }
+
+    /* Live sync overlay: sits over the time-multiplier row while the game drives UT */
+    .warp-controls {
+      position: relative;
+    }
+
+    .live-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      pointer-events: auto;
+      cursor: not-allowed;
+      background:
+        repeating-linear-gradient(45deg, rgba(255, 64, 64, 0.22) 0 2px, transparent 2px 9px),
+        rgba(40, 6, 10, 0.45);
+      border: 1px solid rgba(255, 64, 64, 0.55);
+      color: #ff6b6b;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+    }
+
+    .live-overlay.show {
+      display: flex;
+    }
+
+    /* Time multiplier buttons are locked while live sync drives the clock */
+    .warp-controls.live-locked {
+      user-select: none;
+    }
+
+    .warp-controls.live-locked button {
+      pointer-events: none;
     }
 
