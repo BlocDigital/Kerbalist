@@ -748,7 +748,8 @@
       align-items: center;
       justify-content: center;
       border-radius: 8px;
-      pointer-events: none;
+      pointer-events: auto;
+      cursor: not-allowed;
       background:
         repeating-linear-gradient(45deg, rgba(255, 64, 64, 0.22) 0 2px, transparent 2px 9px),
         rgba(40, 6, 10, 0.45);
@@ -764,6 +765,16 @@
     .live-overlay.show {
       display: flex;
     }
+
+    /* Time multiplier buttons are locked while live sync drives the clock */
+    .warp-controls.live-locked {
+      user-select: none;
+    }
+
+    .warp-controls.live-locked button {
+      pointer-events: none;
+    }
+
     /* ---------- MAIN LAYOUT ---------- */
     .main {
       flex: 1 1 auto;
@@ -3253,8 +3264,8 @@
   border: 1px solid transparent;
   border-radius: 8px;
   padding: 10px 14px 12px;
-  min-width: 290px;
-  min-height: 80px;
+  min-width: 140px;
+  min-height: 90px;
   cursor: move;
   pointer-events: auto;
   user-select: none;
@@ -3306,10 +3317,15 @@
   flex-shrink: 0;
 }
 
+.hud-title,
+.hud-content {
+  zoom: var(--hud-s, 1);
+  width: calc(100% / var(--hud-s, 1));
+}
+
 .hud-content {
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
 
 .hud-content .stat-row {
@@ -3630,92 +3646,61 @@
       font: 11px var(--font-mono);
     }
 
-    .vessel-hud {
-      position: absolute;
-      right: 12px;
-      top: 56px;
-      z-index: 15;
-      width: 250px;
-      padding: 10px 12px;
-      background: var(--panel2);
-      border: 1px solid var(--border-bright);
-      border-left: 3px solid var(--green);
-      border-radius: 8px;
-      font-family: var(--font-display);
-      color: var(--text);
-      opacity: 0;
-      transform: translateX(18px) scale(0.98);
-      pointer-events: none;
-      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    .vh-panel {
+      font-family: var(--font-display, 'Rajdhani', sans-serif);
     }
 
-    .vessel-hud.vh-visible {
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-    }
-
-    .vessel-hud .vh-head {
+    .vh-panel .vh-name {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--green);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--cyan, #4fe0e8);
+      margin-bottom: 12px;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
-    .vessel-hud .vh-pulse {
+    .vh-panel .vh-pulse {
+      flex: 0 0 auto;
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--green);
+      background: var(--green, #7ee787);
       animation: vhPulse 1.8s infinite;
     }
 
-    .vessel-hud .vh-name {
-      margin: 4px 0 8px;
-      font-size: 17px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .vessel-hud .vh-grid {
+    .vh-panel .vh-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px 10px;
+      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+      gap: 12px 18px;
     }
 
-    .vessel-hud .vh-grid span {
+    .vh-panel .vh-grid > div {
+      min-width: 0;
+    }
+
+    .vh-panel .vh-grid span {
       display: block;
-      font-size: 10px;
-      color: var(--text-dim);
-      text-transform: uppercase;
+      font-size: 11px;
       letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim, #7688a6);
+      margin-bottom: 4px;
     }
 
-    .vessel-hud .vh-grid b {
-      font: 600 12px var(--font-mono);
-      color: var(--text);
+    .vh-panel .vh-grid b {
+      display: block;
+      font: 600 16px/1.2 var(--font-mono, monospace);
+      color: var(--text, #dbe7f5);
+      overflow-wrap: anywhere;
     }
 
     @keyframes vhPulse {
       0% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0.6); }
       70% { box-shadow: 0 0 0 8px rgba(126, 231, 135, 0); }
       100% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .vessel-hud,
-      .vessel-panel {
-        transition: none;
-      }
-
-      .vessel-hud .vh-pulse {
-        animation: none;
-      }
     }
 
     /* ===== Map overlay for the active vessel ===== */
@@ -3758,7 +3743,7 @@
       white-space: nowrap;
       transform: translate(0, -50%);
       font: 700 11px/1 var(--font-mono);
-      letter-spacing: 0.14em;
+      letter-spacing: 0.08em;
       color: var(--cyan);
       background: rgba(8, 14, 24, 0.88);
       border: 1px solid var(--cyan-dim);
@@ -3967,6 +3952,7 @@
           <div class="tab" data-tab="assists">Assists</div>
           <div class="tab" data-tab="porkchop">Porkchop</div>
           <div class="tab" data-tab="info">Body Info</div>
+          <div class="tab" data-tab="settings">Settings</div>
         </div>
 
         <div class="tab-panels">
@@ -4050,6 +4036,14 @@
 
           <div class="tab-panel" id="panel-info">
             <div class="card" id="infoCard"></div>
+          </div>
+
+          <div class="tab-panel" id="panel-settings">
+            <div class="card">
+              <h3><span class="dot"></span>HUD Layout</h3>
+              <button class="plan-btn" id="resetHudLayoutBtn">Reset HUD elements to default positions</button>
+              <div class="note">Moves every HUD element back to its default position and size.</div>
+            </div>
           </div>
 
         </div>
@@ -7410,7 +7404,10 @@
       liveOverlay.className = 'live-overlay';
       liveOverlay.textContent = 'LIVE SYNC';
       warpWrap.appendChild(liveOverlay);
-      function setLiveOverlay(on) { liveOverlay.classList.toggle('show', !!on); }
+      function setLiveOverlay(on) {
+        liveOverlay.classList.toggle('show', !!on);
+        warpWrap.classList.toggle('live-locked', !!on);
+      }
 
       // --- Sidebar collapse/expand ---
       // sidebarEl already declared in mobile toggle section (line ~6950)
@@ -9289,8 +9286,8 @@
         const ap = vesselApsidesFor(a);
         const fmtAp = (v) => (v && isFinite(v)) ? fmtKm(v) : '—';
         const html = `
-          <div class="vh-head"><span class="vh-pulse"></span><span class="vh-label">Active vessel</span></div>
-          <div class="vh-name">${escHtml(a.name || a.id || 'Unnamed')}</div>
+          <div class="vh-panel">
+          <div class="vh-name"><span class="vh-pulse"></span>${escHtml(a.name || a.id || 'Unnamed')}</div>
           <div class="vh-grid">
             <div><span>Body</span><b>${escHtml(a.body || '—')}</b></div>
             <div><span>Situation</span><b>${escHtml(situationOf(a))}</b></div>
@@ -9298,6 +9295,7 @@
             <div><span>Speed</span><b>${typeof a.orbitalSpeed === 'number' ? Math.round(a.orbitalSpeed).toLocaleString('en-GB') + ' m/s' : '—'}</b></div>
             <div><span>Apoapsis</span><b>${ap ? fmtAp(ap.ap) : '—'}</b></div>
             <div><span>Periapsis</span><b>${ap ? fmtAp(ap.pe) : '—'}</b></div>
+          </div>
           </div>`;
         window.updateHudContent('vesselHudWidget', html);
       }
@@ -9315,7 +9313,7 @@
         line.setAttribute('class', 'vo-line');
         const ring = document.createElementNS(NS, 'circle');
         ring.setAttribute('class', 'vo-ring');
-        ring.setAttribute('r', '11');
+        ring.setAttribute('r', '14');
         svg.appendChild(line);
         svg.appendChild(ring);
         labelCtr.appendChild(svg);
@@ -9349,7 +9347,7 @@
         o.ring.style.display = exact ? '' : 'none';
         o.line.classList.toggle('approx', !exact);
         o.tag.classList.toggle('approx', !exact);
-        o.tag.textContent = vesselAcronym(active.name || active.id);
+        o.tag.textContent = active.name || active.id;
         o.tag.title = exact ? (active.name || '') : (`${active.name || ''} — position approximate: the bridge does not send the vessel's position yet`);
         o.tag.style.left = tx + 'px';
         o.tag.style.top = ty + 'px';
@@ -9472,12 +9470,12 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const W = window.innerWidth || 1920;
     const H = window.innerHeight || 1080;
     return {
-      'ghost':    { x: 185, y: 16, w: 290, h: 110 },
-      'ejection': { x: Math.max(500, W - 880), y: 65, w: 320, h: 320 },
-      'phase':    { x: Math.max(720, W - 520), y: 300, w: 290, h: 235 },
-      'window':   { x: Math.max(680, W - 700), y: Math.max(480, H - 350), w: 300, h: 145 },
-      'time':     { x: Math.max(680, W - 700), y: Math.max(620, H - 195), w: 300, h: 135 },
-      'vessel':   { x: Math.max(900, W - 330), y: 150, w: 280, h: 200 }
+      'ghost':    { x: 313, y: 972,  w: 289, h: 111 },
+      'ejection': { x: 5,   y: 192,  w: 368, h: 311 },
+      'phase':    { x: 3,   y: 945,  w: 295, h: 267 },
+      'window':   { x: 313, y: 1092, w: 331, h: 128 },
+      'time':     { x: 658, y: 1125, w: 327, h: 130 },
+      'vessel':   { x: 375, y: 108,  w: 290, h: 215 }
     };
   }
 
@@ -9512,7 +9510,34 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 
   loadPositions();
 
+  // Puts every HUD element back at its default position and size, and clears the saved layout.
+  window.resetHudLayout = function() {
+    window.hudWidgets.positions = getDefaultPositions();
+    try { localStorage.removeItem('kerbalist_widget_positions'); } catch (e) {}
+    Object.entries(window.hudWidgets.active).forEach(([type, id]) => {
+      const el = document.getElementById(id);
+      const d = window.hudWidgets.positions[type];
+      if (!el || !d) return;
+      el.style.left = d.x + 'px';
+      el.style.top = d.y + 'px';
+      el.style.width = d.w + 'px';
+      el.style.height = d.h + 'px';
+    });
+  };
+  const resetHudBtn = document.getElementById('resetHudLayoutBtn');
+  if (resetHudBtn) resetHudBtn.addEventListener('click', window.resetHudLayout);
+
   // Create widget
+  // Padding and border add to the outer size when box-sizing is content-box, so resize must subtract them.
+  function boxExtra(el) {
+    const cs = getComputedStyle(el);
+    if (cs.boxSizing === 'border-box') return { w: 0, h: 0 };
+    return {
+      w: parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth),
+      h: parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)
+    };
+  }
+
   window.createHudWidget = function(id, type, title) {
     const existing = document.getElementById(id);
     if (existing) return existing;
@@ -9536,6 +9561,28 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       </div>
       <div class="hud-resize-handle"></div>
     `;
+
+    // Content scales with the box: the factor is the box size relative to the widget's default size.
+    const refSize = defs[type] || pos;
+    const applyHudScale = () => {
+      // Text grows with both dimensions (geometric mean), then shrinks until the content fits the box height.
+      const clamp = (v) => Math.min(3, Math.max(0.3, v));
+      let f = clamp(Math.sqrt((widget.offsetWidth / refSize.w) * (widget.offsetHeight / refSize.h)));
+      const content = widget.querySelector('.hud-content');
+      const title = widget.querySelector('.hud-title');
+      const cs = getComputedStyle(widget);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+      for (let i = 0; i < 10 && content; i++) {
+        widget.style.setProperty('--hud-s', f.toFixed(3));
+        const needed = (title ? title.getBoundingClientRect().height : 0) + content.getBoundingClientRect().height;
+        const room = widget.getBoundingClientRect().height - padY;
+        if (needed <= room || f <= 0.3) break;
+        f = clamp(f * 0.94);
+      }
+      widget.style.setProperty('--hud-s', f.toFixed(3));
+    };
+    if (window.ResizeObserver) new ResizeObserver(applyHudScale).observe(widget);
+    applyHudScale();
 
     // Restore pinned state if previously saved
     try {
@@ -9622,8 +9669,9 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       } else if (isResizing) {
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-        widget.style.width = Math.max(200, startWidth + dx) + 'px';
-        widget.style.height = Math.max(100, startHeight + dy) + 'px';
+        const extra = boxExtra(widget);
+        widget.style.width = Math.max(140, startWidth + dx - extra.w) + 'px';
+        widget.style.height = Math.max(90, startHeight + dy - extra.h) + 'px';
       }
     });
 
