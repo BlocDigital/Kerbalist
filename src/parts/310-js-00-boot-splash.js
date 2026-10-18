@@ -1,7 +1,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v4.1';
+    const VERSION = 'v4.3';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app

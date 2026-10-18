@@ -9,11 +9,12 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const W = window.innerWidth || 1920;
     const H = window.innerHeight || 1080;
     return {
-      'ghost':    { x: 185, y: 16, w: 290, h: 110 },
-      'ejection': { x: Math.max(500, W - 880), y: 65, w: 320, h: 320 },
-      'phase':    { x: Math.max(720, W - 520), y: 300, w: 290, h: 235 },
-      'window':   { x: Math.max(680, W - 700), y: Math.max(480, H - 350), w: 300, h: 145 },
-      'time':     { x: Math.max(680, W - 700), y: Math.max(620, H - 195), w: 300, h: 135 }
+      'ghost':    { x: 313, y: 972,  w: 289, h: 111 },
+      'ejection': { x: 5,   y: 192,  w: 368, h: 311 },
+      'phase':    { x: 3,   y: 945,  w: 295, h: 267 },
+      'window':   { x: 313, y: 1092, w: 331, h: 128 },
+      'time':     { x: 658, y: 1125, w: 327, h: 130 },
+      'vessel':   { x: 375, y: 108,  w: 290, h: 215 }
     };
   }
 
@@ -48,7 +49,34 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 
   loadPositions();
 
+  // Puts every HUD element back at its default position and size, and clears the saved layout.
+  window.resetHudLayout = function() {
+    window.hudWidgets.positions = getDefaultPositions();
+    try { localStorage.removeItem('kerbalist_widget_positions'); } catch (e) {}
+    Object.entries(window.hudWidgets.active).forEach(([type, id]) => {
+      const el = document.getElementById(id);
+      const d = window.hudWidgets.positions[type];
+      if (!el || !d) return;
+      el.style.left = d.x + 'px';
+      el.style.top = d.y + 'px';
+      el.style.width = d.w + 'px';
+      el.style.height = d.h + 'px';
+    });
+  };
+  const resetHudBtn = document.getElementById('resetHudLayoutBtn');
+  if (resetHudBtn) resetHudBtn.addEventListener('click', window.resetHudLayout);
+
   // Create widget
+  // Padding and border add to the outer size when box-sizing is content-box, so resize must subtract them.
+  function boxExtra(el) {
+    const cs = getComputedStyle(el);
+    if (cs.boxSizing === 'border-box') return { w: 0, h: 0 };
+    return {
+      w: parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth),
+      h: parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)
+    };
+  }
+
   window.createHudWidget = function(id, type, title) {
     const existing = document.getElementById(id);
     if (existing) return existing;
@@ -72,6 +100,28 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       </div>
       <div class="hud-resize-handle"></div>
     `;
+
+    // Content scales with the box: the factor is the box size relative to the widget's default size.
+    const refSize = defs[type] || pos;
+    const applyHudScale = () => {
+      // Text grows with both dimensions (geometric mean), then shrinks until the content fits the box height.
+      const clamp = (v) => Math.min(3, Math.max(0.3, v));
+      let f = clamp(Math.sqrt((widget.offsetWidth / refSize.w) * (widget.offsetHeight / refSize.h)));
+      const content = widget.querySelector('.hud-content');
+      const title = widget.querySelector('.hud-title');
+      const cs = getComputedStyle(widget);
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+      for (let i = 0; i < 10 && content; i++) {
+        widget.style.setProperty('--hud-s', f.toFixed(3));
+        const needed = (title ? title.getBoundingClientRect().height : 0) + content.getBoundingClientRect().height;
+        const room = widget.getBoundingClientRect().height - padY;
+        if (needed <= room || f <= 0.3) break;
+        f = clamp(f * 0.94);
+      }
+      widget.style.setProperty('--hud-s', f.toFixed(3));
+    };
+    if (window.ResizeObserver) new ResizeObserver(applyHudScale).observe(widget);
+    applyHudScale();
 
     // Restore pinned state if previously saved
     try {
@@ -158,8 +208,9 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       } else if (isResizing) {
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-        widget.style.width = Math.max(200, startWidth + dx) + 'px';
-        widget.style.height = Math.max(100, startHeight + dy) + 'px';
+        const extra = boxExtra(widget);
+        widget.style.width = Math.max(140, startWidth + dx - extra.w) + 'px';
+        widget.style.height = Math.max(90, startHeight + dy - extra.h) + 'px';
       }
     });
 
