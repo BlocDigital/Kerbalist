@@ -1,25 +1,6 @@
-# Environment & secrets
-.env
-.env.*
-*.env
-
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-venv/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-.hermes/
-
-# Docs
-docs/
-
-# OS
+node_modules/
+dist/
+*.log
 .DS_Store
-Thumbs.db
+__pycache__/
+test/

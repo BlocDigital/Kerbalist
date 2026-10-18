@@ -1,5 +1,32 @@
 # Changelog
 
+## [4.3] - 2026-10-18
+
+### Added
+- **Active vessel panel as a HUD element**: Pin, drag, resize and close it like the other panels. It shows apoapsis and periapsis, worked out from the telemetry the bridge sends.
+- **Vessel tag on the map**: Shows the full vessel name with a leader line. It's marked approximate until the bridge sends the vessel's position.
+- **Settings tab**: Its HUD Layout button resets every HUD element to its default position and size.
+- **Live sync overlay**: Covers the time controls while live sync drives the clock, and locks the time buttons.
+
+### Changed
+- **Game orbits in live sync**: Body positions and orbit rings come from the game's state vectors. The stock orbit table is no longer used for them.
+- **HUD scaling**: HUD elements scale with their box size. Widgets can be resized smaller, down to 140 by 90 pixels, and the vessel panel adds or removes columns as it's resized.
+- **Default HUD layout**: Updated to the layout used in the 4.3 screenshots.
+- **Live sync panel**: Larger, with a solid background and bigger text.
+- **KSP2 Telemetry Bridge**: The mod is now version 1.2.0. It starts through a Unity startup hook as well as the mod loader's hook.
+
+### Fixed
+- **Vessel panel styling**: Labels and values now have clear spacing.
+- **Resizing**: No longer stops at 290 pixels, and the box no longer jumps when a resize starts.
+- **Vessel tag**: No longer shows an acronym, and it's sized to match the rest of the map labels.
+
+### Known Issues
+- The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts may not match the bodies shown in live sync.
+- The active vessel is only drawn approximately, at its parent body, until the bridge sends its position.
+- The info panel shows stock orbital values in live sync.
+- The Settings tab may crowd the tab bar in narrow sidebars.
+
+
 ## [4.2] - 2026-10-17
 
 ### Added
