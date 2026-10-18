@@ -179,8 +179,11 @@
         if (a.orbit && typeof a.orbit.apoapsis === 'number' && typeof a.orbit.periapsis === 'number') {
           return { ap: a.orbit.apoapsis, pe: a.orbit.periapsis };
         }
-        return vesselApsides(a.altitude, a.horizontalSpeed, a.orbitalSpeed,
-          bridgeLive.radiusByName[a.body], bridgeLive.muByName[a.body]);
+        // horizontalSpeed is relative to the rotating surface, so it is not the orbital tangential speed.
+        // Take the tangential speed from the speed relative to the body's centre instead.
+        const v = a.orbitalSpeed, vr = a.verticalSpeed || 0;
+        const vt = Math.sqrt(Math.max(0, v * v - vr * vr));
+        return vesselApsides(a.altitude, vt, v, bridgeLive.radiusByName[a.body], bridgeLive.muByName[a.body]);
       }
 
       let hudSnapshot = null;

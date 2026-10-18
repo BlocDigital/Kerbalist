@@ -1,4 +1,4 @@
-# Kerbalist v4.3
+# Kerbalist v4.3.1
 
 Astrodynamics Suite for Kerbal Space Program 2 Redux
 
@@ -24,7 +24,7 @@ Kerbalist helps you plan efficient transfers between planets in Kerbal Space Pro
 
 Live sync needs the **Kerbalist Telemetry Bridge** mod running inside KSP2. It sends the game's time, planet and moon positions and the active vessel to Kerbalist while the game runs.
 
-1. Download the mod from the [v1.0 release](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0).
+1. Download the mod from the [Releases Page](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/).
 2. Install it by following the instructions on that release page.
 3. Start KSP2 with the mod enabled and load a save.
 4. In Kerbalist, open the time panel, choose **KSP2 Telemetry Bridge** and press **Connect**. The default address `ws://127.0.0.1:8765/ws` works unless you have changed the mod's port.
@@ -33,6 +33,7 @@ While live sync is on, the time buttons show a LIVE SYNC overlay, because the ga
 
 ## Version History
 
+- **v4.3.1** (2026-10-18): Fixed active vessel apoapsis and periapsis
 - **v4.3** (2026-10-18): Active vessel HUD element, vessel tag, Settings tab with HUD layout reset, live sync overlay, game orbits in live sync, HUD scaling
 - **v4.2** (2026-10-17): Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0), active vessel HUD
 - **v4.1** (2026-10-07): HUD Widgets — pin transfer info cards to the map
