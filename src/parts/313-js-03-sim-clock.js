@@ -6,12 +6,16 @@
       const WARP_LEVELS = [0, 1, 5, 50, 500, 5000, 50000, 500000];
       let lastFrameTime = performance.now();
       const DAY_SEC = 21600, YEAR_DAYS = 425;
+      // The game's calendar starts 426 days (one year and one day) before Kerbalist's. Only the display
+      // and the calendar picker use this offset; the stored UT is the game's own universal time.
+      const CALENDAR_OFFSET_SEC = 426 * DAY_SEC;
 
       function utToDateString(ut) {
-        const totalDays = Math.floor(ut / DAY_SEC);
+        const calUT = ut + CALENDAR_OFFSET_SEC;
+        const totalDays = Math.floor(calUT / DAY_SEC);
         const year = Math.floor(totalDays / YEAR_DAYS);
         const day = totalDays % YEAR_DAYS;
-        const secOfDay = ((ut % DAY_SEC) + DAY_SEC) % DAY_SEC;
+        const secOfDay = ((calUT % DAY_SEC) + DAY_SEC) % DAY_SEC;
         const h = Math.floor(secOfDay / 3600), m = Math.floor((secOfDay % 3600) / 60), s = Math.floor(secOfDay % 60);
         const pad = (n, l = 2) => String(Math.floor(n)).padStart(l, '0');
         return `T+${year}y,${day}d,${pad(h)}:${pad(m)}:${pad(s)}`;

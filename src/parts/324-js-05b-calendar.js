@@ -121,8 +121,9 @@
       function openCalendar() {
         // Capture year + day-of-year from current UT; reset time to midnight
         const totalSecondsInYear = YEAR_DAYS * DAY_SEC;
-        calendarState.year = Math.floor(UT / totalSecondsInYear);
-        const remainingSeconds = UT % totalSecondsInYear;
+        const calUT = UT + CALENDAR_OFFSET_SEC;
+        calendarState.year = Math.floor(calUT / totalSecondsInYear);
+        const remainingSeconds = calUT % totalSecondsInYear;
         calendarState.dayOfYear = Math.floor(remainingSeconds / DAY_SEC);
         calendarState.hour = 0;
         calendarState.min = 0;
@@ -161,7 +162,7 @@
 
         // Calculate UT
         const totalSecondsInYear = YEAR_DAYS * DAY_SEC;
-        UT = year * totalSecondsInYear + calendarState.dayOfYear * DAY_SEC + hour * 3600 + min * 60 + sec;
+        UT = year * totalSecondsInYear + calendarState.dayOfYear * DAY_SEC + hour * 3600 + min * 60 + sec - CALENDAR_OFFSET_SEC;
 
         // Update UT display
         document.getElementById('utValue').textContent = utToDateString(UT);
