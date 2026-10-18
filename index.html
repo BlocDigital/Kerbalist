@@ -3793,7 +3793,7 @@
           <h4>Sync UT with a running KSP2</h4>
           <div class="opt">
             <div class="opt-title">① KSP2 Telemetry Bridge (recommended)</div>
-            <div class="opt-desc">Connects to the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener"><b>Kerbalist Telemetry Bridge</b></a> mod running inside KSP2. UT, planet
+            <div class="opt-desc">Connects to the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/" target="_blank" rel="noopener"><b>Kerbalist Telemetry Bridge</b></a> mod running inside KSP2. UT, planet
               and moon positions, and every vessel in the system come straight from the game while it runs. Works while
               flying, no manual saving needed.</div>
             <input type="text" id="bridgeUrl" value="ws://127.0.0.1:8765/ws" placeholder="ws://127.0.0.1:8765/ws">
@@ -4103,7 +4103,7 @@
         <h2>[4.2] - 2026-10-17 &mdash; Kerbalist v4.2 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
+          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
           <li><strong>Active vessel HUD</strong>: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.</li>
           <li><strong>Vessel filter panel</strong>: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.</li>
         </ul>
@@ -5693,12 +5693,16 @@
       const WARP_LEVELS = [0, 1, 5, 50, 500, 5000, 50000, 500000];
       let lastFrameTime = performance.now();
       const DAY_SEC = 21600, YEAR_DAYS = 425;
+      // The game's calendar starts 426 days (one year and one day) before Kerbalist's. Only the display
+      // and the calendar picker use this offset; the stored UT is the game's own universal time.
+      const CALENDAR_OFFSET_SEC = 426 * DAY_SEC;
 
       function utToDateString(ut) {
-        const totalDays = Math.floor(ut / DAY_SEC);
+        const calUT = ut + CALENDAR_OFFSET_SEC;
+        const totalDays = Math.floor(calUT / DAY_SEC);
         const year = Math.floor(totalDays / YEAR_DAYS);
         const day = totalDays % YEAR_DAYS;
-        const secOfDay = ((ut % DAY_SEC) + DAY_SEC) % DAY_SEC;
+        const secOfDay = ((calUT % DAY_SEC) + DAY_SEC) % DAY_SEC;
         const h = Math.floor(secOfDay / 3600), m = Math.floor((secOfDay % 3600) / 60), s = Math.floor(secOfDay % 60);
         const pad = (n, l = 2) => String(Math.floor(n)).padStart(l, '0');
         return `T+${year}y,${day}d,${pad(h)}:${pad(m)}:${pad(s)}`;
@@ -6790,6 +6794,27 @@
       }
 
       /* ---- Planet & Moon position update (every frame) ---- */
+      // The faint halo around each planet and moon is 1.25 times its real radius, which is far below a
+      // pixel for small bodies, so it disappears. Give each halo a minimum on-screen size. The body
+      // itself keeps its real size.
+      const MIN_HALO_PIXELS = 4;
+      function enforceMinBodySize() {
+        const h = renderer.domElement.clientHeight || 1;
+        const pixelWorld = (dist) => 2 * Math.tan(camera.fov * Math.PI / 360) * dist / h;
+        const apply = (mesh) => {
+          if (!mesh) return;
+          mesh.scale.setScalar(1);
+          const dist = camera.position.distanceTo(mesh.getWorldPosition(new THREE.Vector3()));
+          const minRadius = pixelWorld(dist) * MIN_HALO_PIXELS;
+          mesh.children.forEach(child => {
+            const r = child.geometry && child.geometry.parameters && child.geometry.parameters.radius;
+            if (r) child.scale.setScalar(Math.max(1, minRadius / r));
+          });
+        };
+        PLANETS.forEach(p => apply(planetMeshes[p.name]));
+        MOONS.forEach(m => apply(moonMeshes[m.name]));
+      }
+
       function updateMap() {
         PLANETS.forEach(p => {
           const st = stateAt(p, UT);
@@ -6810,6 +6835,7 @@
         });
 
         updateBridgeVisuals(); // telemetry bridge overrides positions when connected
+        enforceMinBodySize();
 
         // Camera follows focused planet or moon
         if (focusedPlanet) {
@@ -7431,8 +7457,8 @@
       });
       const resetBtn = document.createElement('button');
       resetBtn.textContent = 'Epoch ⟲'; resetBtn.className = 'reset-btn'; resetBtn.dataset.reset = '1';
-      resetBtn.title = 'Reset to UT=0 (T+0y,0d,00:00:00)';
-      resetBtn.onclick = () => { UT = 0; };
+      resetBtn.title = 'Reset to the game calendar start (T+0y,0d,00:00:00)';
+      resetBtn.onclick = () => { UT = -CALENDAR_OFFSET_SEC; };
       warpWrap.appendChild(resetBtn);
 
       // Overlay shown over the warp row while live sync (bridge or save file) drives UT
@@ -7618,8 +7644,9 @@
       function openCalendar() {
         // Capture year + day-of-year from current UT; reset time to midnight
         const totalSecondsInYear = YEAR_DAYS * DAY_SEC;
-        calendarState.year = Math.floor(UT / totalSecondsInYear);
-        const remainingSeconds = UT % totalSecondsInYear;
+        const calUT = UT + CALENDAR_OFFSET_SEC;
+        calendarState.year = Math.floor(calUT / totalSecondsInYear);
+        const remainingSeconds = calUT % totalSecondsInYear;
         calendarState.dayOfYear = Math.floor(remainingSeconds / DAY_SEC);
         calendarState.hour = 0;
         calendarState.min = 0;
@@ -7658,7 +7685,7 @@
 
         // Calculate UT
         const totalSecondsInYear = YEAR_DAYS * DAY_SEC;
-        UT = year * totalSecondsInYear + calendarState.dayOfYear * DAY_SEC + hour * 3600 + min * 60 + sec;
+        UT = year * totalSecondsInYear + calendarState.dayOfYear * DAY_SEC + hour * 3600 + min * 60 + sec - CALENDAR_OFFSET_SEC;
 
         // Update UT display
         document.getElementById('utValue').textContent = utToDateString(UT);

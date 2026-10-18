@@ -36,7 +36,7 @@
 ## [4.2] - 2026-10-17
 
 ### Added
-- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
+- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
 - **Active vessel HUD**: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.
 - **Vessel filter panel**: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.
 
