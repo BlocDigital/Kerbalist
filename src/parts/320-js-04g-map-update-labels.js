@@ -1,4 +1,25 @@
       /* ---- Planet & Moon position update (every frame) ---- */
+      // The faint halo around each planet and moon is 1.25 times its real radius, which is far below a
+      // pixel for small bodies, so it disappears. Give each halo a minimum on-screen size. The body
+      // itself keeps its real size.
+      const MIN_HALO_PIXELS = 4;
+      function enforceMinBodySize() {
+        const h = renderer.domElement.clientHeight || 1;
+        const pixelWorld = (dist) => 2 * Math.tan(camera.fov * Math.PI / 360) * dist / h;
+        const apply = (mesh) => {
+          if (!mesh) return;
+          mesh.scale.setScalar(1);
+          const dist = camera.position.distanceTo(mesh.getWorldPosition(new THREE.Vector3()));
+          const minRadius = pixelWorld(dist) * MIN_HALO_PIXELS;
+          mesh.children.forEach(child => {
+            const r = child.geometry && child.geometry.parameters && child.geometry.parameters.radius;
+            if (r) child.scale.setScalar(Math.max(1, minRadius / r));
+          });
+        };
+        PLANETS.forEach(p => apply(planetMeshes[p.name]));
+        MOONS.forEach(m => apply(moonMeshes[m.name]));
+      }
+
       function updateMap() {
         PLANETS.forEach(p => {
           const st = stateAt(p, UT);
@@ -19,6 +40,7 @@
         });
 
         updateBridgeVisuals(); // telemetry bridge overrides positions when connected
+        enforceMinBodySize();
 
         // Camera follows focused planet or moon
         if (focusedPlanet) {

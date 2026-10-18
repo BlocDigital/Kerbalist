@@ -94,8 +94,8 @@
       });
       const resetBtn = document.createElement('button');
       resetBtn.textContent = 'Epoch ⟲'; resetBtn.className = 'reset-btn'; resetBtn.dataset.reset = '1';
-      resetBtn.title = 'Reset to UT=0 (T+0y,0d,00:00:00)';
-      resetBtn.onclick = () => { UT = 0; };
+      resetBtn.title = 'Reset to the game calendar start (T+0y,0d,00:00:00)';
+      resetBtn.onclick = () => { UT = -CALENDAR_OFFSET_SEC; };
       warpWrap.appendChild(resetBtn);
 
       // Overlay shown over the warp row while live sync (bridge or save file) drives UT
