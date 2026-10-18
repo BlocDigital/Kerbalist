@@ -8,7 +8,8 @@
         requestAnimationFrame(loop);
         const dt = Math.min((now - lastFrameTime) / 1000, 0.2);
         lastFrameTime = now;
-        UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]); // live sync ticks in real time between corrections
+        // Bridge snapshots set UT directly. Otherwise live sync ticks in real time between corrections.
+        if (!bridgeFresh()) UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]);
         
         // Throttle UT display to avoid constant DOM writes
         if (now - lastHudUpdate > 250) {

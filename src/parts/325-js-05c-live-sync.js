@@ -26,6 +26,8 @@
       }
 
       function stopLive() {
+        stopBridge();
+        setLiveOverlay(false);
         if (liveIntervalId) clearInterval(liveIntervalId);
         liveIntervalId = null;
         liveMode = null;
@@ -48,29 +50,15 @@
         return true;
       }
 
-      // --- Method 1: poll a local bridge (e.g. a kRPC2-backed script) ---
-      async function pollBridge(url) {
-        try {
-          const res = await fetch(url, { cache: 'no-store' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const data = await res.json();
-          const ut = typeof data.ut === 'number' ? data.ut : parseFloat(data.ut);
-          if (!syncUtNow(ut, 'bridge')) throw new Error('response had no numeric "ut" field');
-        } catch (err) {
-          setLiveStatus(`LIVE (bridge) — connection failed: ${err.message}. Is the companion script running?`, 'err');
-        }
-      }
-
+      // --- Method 1: KSP2 Telemetry Bridge (WebSocket, see part 337) ---
       bridgeConnectBtn.onclick = () => {
         if (liveMode === 'bridge') { stopLive(); return; }
         stopLive();
-        const url = bridgeUrlInput.value.trim();
-        if (!url) return;
         liveMode = 'bridge';
+        setLiveOverlay(true);
         bridgeConnectBtn.textContent = 'Disconnect';
         bridgeConnectBtn.classList.add('stop');
-        pollBridge(url);
-        liveIntervalId = setInterval(() => pollBridge(url), 2000);
+        startBridge(bridgeUrlInput.value.trim() || BRIDGE_WS_URL);
       };
 
       // --- Method 2: watch the local save file via the File System Access API ---
@@ -119,6 +107,7 @@
           saveFileHandle = handle;
           stopLive();
           liveMode = 'file';
+          setLiveOverlay(true);
           fileWatchBtn.textContent = 'Stop Watching';
           fileWatchBtn.classList.add('stop');
           readUtFromFile();

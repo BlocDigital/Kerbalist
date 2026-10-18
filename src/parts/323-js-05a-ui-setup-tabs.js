@@ -98,6 +98,16 @@
       resetBtn.onclick = () => { UT = 0; };
       warpWrap.appendChild(resetBtn);
 
+      // Overlay shown over the warp row while live sync (bridge or save file) drives UT
+      const liveOverlay = document.createElement('div');
+      liveOverlay.className = 'live-overlay';
+      liveOverlay.textContent = 'LIVE SYNC';
+      warpWrap.appendChild(liveOverlay);
+      function setLiveOverlay(on) {
+        liveOverlay.classList.toggle('show', !!on);
+        warpWrap.classList.toggle('live-locked', !!on);
+      }
+
       // --- Sidebar collapse/expand ---
       // sidebarEl already declared in mobile toggle section (line ~6950)
       const sidebarCollapsedRail = document.getElementById('sidebarCollapsedRail');

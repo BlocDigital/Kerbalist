@@ -18,6 +18,8 @@
           }
         });
 
+        updateBridgeVisuals(); // telemetry bridge overrides positions when connected
+
         // Camera follows focused planet or moon
         if (focusedPlanet) {
           const focusedMesh = planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet];

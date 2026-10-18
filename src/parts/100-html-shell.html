@@ -12,7 +12,7 @@
         <img class="mark" src="Kerbalist.png" alt="Kerbalist">
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Astrodynamics Suite <div>v4.1</div></div>
+          <div class="sub">Astrodynamics Suite <div>v4.3</div></div>
         </div>
       </div>
       <div class="ut-clock">
@@ -25,11 +25,11 @@
         <div class="live-panel" id="livePanel">
           <h4>Sync UT with a running KSP2</h4>
           <div class="opt">
-            <div class="opt-title">① Local bridge (recommended)</div>
-            <div class="opt-desc">Run a small companion script (e.g. using the <b>kRPC2</b> mod) that reads live UT from
-              KSP2 and serves it on localhost. This page polls it every 2s. Works while flying — no manual saving
-              needed.</div>
-            <input type="text" id="bridgeUrl" value="http://localhost:5005/ut" placeholder="http://localhost:5005/ut">
+            <div class="opt-title">① KSP2 Telemetry Bridge (recommended)</div>
+            <div class="opt-desc">Connects to the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener"><b>Kerbalist Telemetry Bridge</b></a> mod running inside KSP2. UT, planet
+              and moon positions, and every vessel in the system come straight from the game while it runs. Works while
+              flying, no manual saving needed.</div>
+            <input type="text" id="bridgeUrl" value="ws://127.0.0.1:8765/ws" placeholder="ws://127.0.0.1:8765/ws">
             <button id="bridgeConnectBtn">Connect</button>
           </div>
           <div class="opt">
@@ -102,7 +102,7 @@
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
             style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.1</div>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.3</div>
           <div class="bug-report-btn" id="bugReportBtn" onclick="showBugReportModal()" title="Report a bug">Submit bug
             report</div>
           <div class="bmc-wrap" id="bmcWrap">

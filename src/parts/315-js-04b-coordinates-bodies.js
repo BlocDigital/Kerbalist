@@ -21,6 +21,9 @@
 
       function bodyWorldPositionAt(body, t) {
         if (!body) return new THREE.Vector3();
+        // Live bridge data is only for the current moment; forecasts stay on the analytic model.
+        const live = bridgeBodyScene(body.name);
+        if (live && t === UT) return live.clone();
         if (body.parent) {
           // moonLocalPosition already returns full world position (includes parent offset)
           return moonLocalPosition(body, t);
