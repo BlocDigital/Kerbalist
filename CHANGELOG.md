@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.2] - 2026-10-17
+
+### Added
+- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
+- **Active vessel HUD**: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.
+- **Vessel filter panel**: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.
+
+### Changed
+- **Game orbits in live sync**: While the bridge is live, body positions and orbit rings no longer use the stock orbit table. The app uses a fixed axis mapping instead of fitting against the stock orbits.
+- **Live status line**: Reads "synced … game orbits" with the vessel count.
+
+### Known Issues
+- The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts may not match the bodies shown in live sync.
+- The active vessel is not drawn on the map yet (the bridge does not send its position relative to its body). The HUD still works.
+- The info panel shows stock orbital values in live sync.
+
+
 ## [4.1] - 2026-10-07
 
 ### Added

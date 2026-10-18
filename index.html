@@ -594,12 +594,13 @@
       top: 42px;
       right: 0;
       z-index: 40;
-      width: 300px;
-      background: var(--panel);
+      width: 440px;
+      max-width: calc(100vw - 24px);
+      background: #0b141f;
       border: 1px solid var(--border-bright);
       border-radius: 10px;
-      padding: 13px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+      padding: 18px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .75);
     }
 
     .live-panel.open {
@@ -608,7 +609,7 @@
 
     .live-panel h4 {
       margin: 0 0 8px;
-      font-size: 10.5px;
+      font-size: 13px;
       letter-spacing: .1em;
       text-transform: uppercase;
       color: var(--text-dim);
@@ -617,22 +618,23 @@
     .live-panel .opt {
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 9px 10px;
-      margin-bottom: 9px;
+      padding: 14px 15px;
+      margin-bottom: 12px;
+      background: #0f1a27;
     }
 
     .live-panel .opt-title {
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 3px;
+      margin-bottom: 5px;
     }
 
     .live-panel .opt-desc {
-      font-size: 10.5px;
-      color: var(--text-dimmer);
-      line-height: 1.5;
-      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.55;
+      margin-bottom: 10px;
     }
 
     .live-panel input[type=text] {
@@ -642,8 +644,8 @@
       border-radius: 5px;
       color: var(--text);
       font-family: var(--font-mono);
-      font-size: 11.5px;
-      padding: 6px 7px;
+      font-size: 14px;
+      padding: 9px 10px;
       outline: none;
       margin-bottom: 7px;
     }
@@ -659,9 +661,9 @@
       color: var(--cyan);
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 11px;
+      font-size: 13.5px;
       letter-spacing: .05em;
-      padding: 7px;
+      padding: 11px;
       border-radius: 6px;
       cursor: pointer;
       text-transform: uppercase;
@@ -678,8 +680,9 @@
     }
 
     .live-status {
-      font-size: 10.5px;
-      color: var(--text-dimmer);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-dim);
       margin-top: 2px;
       font-family: var(--font-mono);
       line-height: 1.4;
@@ -732,6 +735,35 @@
       padding-left: 10px;
     }
 
+    /* Live sync overlay: sits over the time-multiplier row while the game drives UT */
+    .warp-controls {
+      position: relative;
+    }
+
+    .live-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(45deg, rgba(255, 64, 64, 0.22) 0 2px, transparent 2px 9px),
+        rgba(40, 6, 10, 0.45);
+      border: 1px solid rgba(255, 64, 64, 0.55);
+      color: #ff6b6b;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+    }
+
+    .live-overlay.show {
+      display: flex;
+    }
     /* ---------- MAIN LAYOUT ---------- */
     .main {
       flex: 1 1 auto;
@@ -3501,6 +3533,253 @@
     left: 10px;
   }
 }
+    /* ===== Telemetry bridge: vessel layer, filter panel, active-vessel HUD ===== */
+    .vessel-label-3d {
+      position: absolute;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      font: 600 10px/1 var(--font-mono);
+      color: var(--text-dim);
+      text-shadow: 0 0 4px #000;
+      padding: 2px 4px;
+      transform: translate(-50%, -150%);
+    }
+
+    .vessel-label-3d.active {
+      color: var(--cyan);
+    }
+
+    .vessel-toggle {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      z-index: 20;
+      display: none;
+      font: 600 12px var(--font-display);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: var(--panel);
+      border: 1px solid var(--cyan-dim);
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+    }
+
+    .vessel-toggle.show {
+      display: block;
+    }
+
+    .vessel-panel {
+      position: absolute;
+      left: 12px;
+      top: 46px;
+      z-index: 20;
+      width: 240px;
+      max-height: 60vh;
+      overflow: auto;
+      padding: 10px;
+      background: var(--panel2);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      font: 12px var(--font-display);
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .vessel-panel.open {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .vessel-panel .vp-search,
+    .vessel-panel .vp-body {
+      width: 100%;
+      margin-bottom: 8px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 6px;
+      font: inherit;
+    }
+
+    .vessel-panel .vp-row {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-dim);
+    }
+
+    .vessel-panel .vp-check {
+      display: block;
+      margin: 4px 0;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .vessel-panel .vp-count {
+      margin-top: 8px;
+      color: var(--text-dim);
+      font: 11px var(--font-mono);
+    }
+
+    .vessel-hud {
+      position: absolute;
+      right: 12px;
+      top: 56px;
+      z-index: 15;
+      width: 250px;
+      padding: 10px 12px;
+      background: var(--panel2);
+      border: 1px solid var(--border-bright);
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      font-family: var(--font-display);
+      color: var(--text);
+      opacity: 0;
+      transform: translateX(18px) scale(0.98);
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .vessel-hud.vh-visible {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .vessel-hud .vh-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    .vessel-hud .vh-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: vhPulse 1.8s infinite;
+    }
+
+    .vessel-hud .vh-name {
+      margin: 4px 0 8px;
+      font-size: 17px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .vessel-hud .vh-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+    }
+
+    .vessel-hud .vh-grid span {
+      display: block;
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .vessel-hud .vh-grid b {
+      font: 600 12px var(--font-mono);
+      color: var(--text);
+    }
+
+    @keyframes vhPulse {
+      0% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(126, 231, 135, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .vessel-hud,
+      .vessel-panel {
+        transition: none;
+      }
+
+      .vessel-hud .vh-pulse {
+        animation: none;
+      }
+    }
+
+    /* ===== Map overlay for the active vessel ===== */
+    .vessel-leader-svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .vo-line {
+      stroke: rgba(79, 228, 232, 0.75);
+      stroke-width: 1;
+    }
+
+    .vo-line.approx {
+      stroke-dasharray: 4 4;
+    }
+
+    .vo-ring {
+      fill: none;
+      stroke: rgba(79, 228, 232, 0.95);
+      stroke-width: 1.5;
+      animation: voDim 7s ease-in-out infinite;
+    }
+
+    @keyframes voDim {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .vessel-tag {
+      position: absolute;
+      z-index: 4;
+      pointer-events: none;
+      white-space: nowrap;
+      transform: translate(0, -50%);
+      font: 700 11px/1 var(--font-mono);
+      letter-spacing: 0.14em;
+      color: var(--cyan);
+      background: rgba(8, 14, 24, 0.88);
+      border: 1px solid var(--cyan-dim);
+      border-radius: 4px;
+      padding: 4px 8px;
+      box-shadow: 0 0 10px rgba(79, 228, 232, 0.15);
+      animation: voDim 7s ease-in-out infinite;
+    }
+
+    .vessel-tag.approx {
+      color: var(--text-dim);
+      border-style: dashed;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .vo-ring,
+      .vessel-tag {
+        animation: none;
+      }
+    }
+
   </style>
 </head>
 
@@ -3515,7 +3794,7 @@
         <img class="mark" src="Kerbalist.png" alt="Kerbalist">
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Astrodynamics Suite <div>v4.1</div></div>
+          <div class="sub">Astrodynamics Suite <div>v4.2</div></div>
         </div>
       </div>
       <div class="ut-clock">
@@ -3528,11 +3807,11 @@
         <div class="live-panel" id="livePanel">
           <h4>Sync UT with a running KSP2</h4>
           <div class="opt">
-            <div class="opt-title">① Local bridge (recommended)</div>
-            <div class="opt-desc">Run a small companion script (e.g. using the <b>kRPC2</b> mod) that reads live UT from
-              KSP2 and serves it on localhost. This page polls it every 2s. Works while flying — no manual saving
-              needed.</div>
-            <input type="text" id="bridgeUrl" value="http://localhost:5005/ut" placeholder="http://localhost:5005/ut">
+            <div class="opt-title">① KSP2 Telemetry Bridge (recommended)</div>
+            <div class="opt-desc">Connects to the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener"><b>Kerbalist Telemetry Bridge</b></a> mod running inside KSP2. UT, planet
+              and moon positions, and every vessel in the system come straight from the game while it runs. Works while
+              flying, no manual saving needed.</div>
+            <input type="text" id="bridgeUrl" value="ws://127.0.0.1:8765/ws" placeholder="ws://127.0.0.1:8765/ws">
             <button id="bridgeConnectBtn">Connect</button>
           </div>
           <div class="opt">
@@ -3605,7 +3884,7 @@
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
             style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.1</div>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.2</div>
           <div class="bug-report-btn" id="bugReportBtn" onclick="showBugReportModal()" title="Report a bug">Submit bug
             report</div>
           <div class="bmc-wrap" id="bmcWrap">
@@ -3791,6 +4070,25 @@
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
+        <h2>[4.2] - 2026-10-17 &mdash; Kerbalist v4.2 &middot; Astrodynamics Suite</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
+          <li><strong>Active vessel HUD</strong>: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.</li>
+          <li><strong>Vessel filter panel</strong>: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.</li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>Game orbits in live sync</strong>: While the bridge is live, body positions and orbit rings no longer use the stock orbit table. The app uses a fixed axis mapping instead of fitting against the stock orbits.</li>
+          <li><strong>Live status line</strong>: Reads &quot;synced &hellip; game orbits&quot; with the vessel count.</li>
+        </ul>
+        <h3>Known Issues</h3>
+        <ul>
+          <li>The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts may not match the bodies shown in live sync.</li>
+          <li>The active vessel is not drawn on the map yet (the bridge does not send its position relative to its body). The HUD still works.</li>
+          <li>The info panel shows stock orbital values in live sync.</li>
+        </ul>
+
         <h2>[4.1] - 2026-10-10 &mdash; Kerbalist v4.1 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
@@ -4412,7 +4710,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v4.1 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v4.2 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -4927,7 +5225,7 @@
         }
 
         issueBody += `## Environment\n`;
-        issueBody += `- **App Version:** v4.1\n`;
+        issueBody += `- **App Version:** v4.2\n`;
         issueBody += `- **Browser:** ${browserInfo}\n`;
         issueBody += `- **Reported:** ${timestamp}\n`;
 
@@ -5029,7 +5327,7 @@
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v4.1';
+    const VERSION = 'v4.2';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -5575,7 +5873,8 @@
         const mat = new THREE.LineBasicMaterial({ color: new THREE.Color(planet.color), transparent: true, opacity: 0.38 });
         return new THREE.Line(geo, mat);
       }
-      PLANETS.forEach(p => scene.add(buildOrbitLine(p)));
+      const planetRingLines = {};
+      PLANETS.forEach(p => { const l = buildOrbitLine(p); planetRingLines[p.name] = l; scene.add(l); });
 
       /* ---- Lighting for Photorealistic Shading ---- */
       const sunLight = new THREE.PointLight(0xfffaed, 2.5, 0, 0);
@@ -5633,6 +5932,9 @@
 
       function bodyWorldPositionAt(body, t) {
         if (!body) return new THREE.Vector3();
+        // Live bridge data is only for the current moment; forecasts stay on the analytic model.
+        const live = bridgeBodyScene(body.name);
+        if (live && t === UT) return live.clone();
         if (body.parent) {
           // moonLocalPosition already returns full world position (includes parent offset)
           return moonLocalPosition(body, t);
@@ -6477,6 +6779,8 @@
           }
         });
 
+        updateBridgeVisuals(); // telemetry bridge overrides positions when connected
+
         // Camera follows focused planet or moon
         if (focusedPlanet) {
           const focusedMesh = planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet];
@@ -7101,6 +7405,13 @@
       resetBtn.onclick = () => { UT = 0; };
       warpWrap.appendChild(resetBtn);
 
+      // Overlay shown over the warp row while live sync (bridge or save file) drives UT
+      const liveOverlay = document.createElement('div');
+      liveOverlay.className = 'live-overlay';
+      liveOverlay.textContent = 'LIVE SYNC';
+      warpWrap.appendChild(liveOverlay);
+      function setLiveOverlay(on) { liveOverlay.classList.toggle('show', !!on); }
+
       // --- Sidebar collapse/expand ---
       // sidebarEl already declared in mobile toggle section (line ~6950)
       const sidebarCollapsedRail = document.getElementById('sidebarCollapsedRail');
@@ -7419,6 +7730,8 @@
       }
 
       function stopLive() {
+        stopBridge();
+        setLiveOverlay(false);
         if (liveIntervalId) clearInterval(liveIntervalId);
         liveIntervalId = null;
         liveMode = null;
@@ -7441,29 +7754,15 @@
         return true;
       }
 
-      // --- Method 1: poll a local bridge (e.g. a kRPC2-backed script) ---
-      async function pollBridge(url) {
-        try {
-          const res = await fetch(url, { cache: 'no-store' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const data = await res.json();
-          const ut = typeof data.ut === 'number' ? data.ut : parseFloat(data.ut);
-          if (!syncUtNow(ut, 'bridge')) throw new Error('response had no numeric "ut" field');
-        } catch (err) {
-          setLiveStatus(`LIVE (bridge) — connection failed: ${err.message}. Is the companion script running?`, 'err');
-        }
-      }
-
+      // --- Method 1: KSP2 Telemetry Bridge (WebSocket, see part 337) ---
       bridgeConnectBtn.onclick = () => {
         if (liveMode === 'bridge') { stopLive(); return; }
         stopLive();
-        const url = bridgeUrlInput.value.trim();
-        if (!url) return;
         liveMode = 'bridge';
+        setLiveOverlay(true);
         bridgeConnectBtn.textContent = 'Disconnect';
         bridgeConnectBtn.classList.add('stop');
-        pollBridge(url);
-        liveIntervalId = setInterval(() => pollBridge(url), 2000);
+        startBridge(bridgeUrlInput.value.trim() || BRIDGE_WS_URL);
       };
 
       // --- Method 2: watch the local save file via the File System Access API ---
@@ -7512,6 +7811,7 @@
           saveFileHandle = handle;
           stopLive();
           liveMode = 'file';
+          setLiveOverlay(true);
           fileWatchBtn.textContent = 'Stop Watching';
           fileWatchBtn.classList.add('stop');
           readUtFromFile();
@@ -8020,16 +8320,32 @@
       function renderTransferResults() {
         const r = currentResult;
         if (!r) { document.getElementById('transferResults').innerHTML = '<div class="placeholder">No transfer computed.</div>'; return; }
-        const ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
-        const ejArrBurn = r.arrEj.dvBurn;
+        
         const moonInsertDv = r.moonInsertionDv || 0;
         const landingDv = r.landingDv || 0;
-        const totalDv = ejDepBurn + ejArrBurn;  // Main transfer Δv (heliocentric only)
-        const totalHelioDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
-        const phaseDiff = angNormPM180(r.currentPhase - r.requiredPhase);
-        const closeEnough = Math.abs(phaseDiff) < 2;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
         const selectedAssist = (selectedAssistIdx !== null && currentAssists[selectedAssistIdx]) ? currentAssists[selectedAssistIdx] : null;
+
+        // Determine which trajectory to display
+        let ejDepBurn, ejArrBurn, totalHelioDv, tofDisplay, assistNote;
+
+        if (selectedAssist) {
+          // Gravity assist trajectory
+          ejDepBurn = selectedAssist.solved.vInfDep;
+          ejArrBurn = selectedAssist.solved.vInfArr;
+          totalHelioDv = selectedAssist.solved.totalDv;
+          tofDisplay = selectedAssist.solved.totalTime;
+          assistNote = ` <span style="color: var(--cyan); font-size: 12px;">(via ${selectedAssist.planet.name} assist)</span>`;
+        } else {
+          // Direct transfer
+          ejDepBurn = Math.abs(r.dv1_helio) > 0 ? r.depEj.dvBurn : 0;
+          ejArrBurn = r.arrEj.dvBurn;
+          totalHelioDv = Math.abs(r.dv1_helio) + Math.abs(r.dv2_helio);
+          tofDisplay = r.tof;
+          assistNote = '';
+        }
+
+        const totalDv = ejDepBurn + ejArrBurn;
         const totalFlightTime = selectedAssist ? selectedAssist.solved.totalTime : r.tof;
         const ghostUT = UT + waitSec + totalFlightTime;
         const originName = r.originSelected.name;
@@ -8043,20 +8359,57 @@
 
         const isHudActive = (k) => (window.hudWidgets && window.hudWidgets.active && window.hudWidgets.active[k]) ? ' on' : '';
 
+        // For assist: show simplified phase/ejection, highlight the 2-leg nature
+        const phaseCard = selectedAssist 
+          ? `
+    <div class="card" data-card="phase">
+      <h3><span class="dot"></span>Phase Angle (direct reference)<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
+      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v">${angNormPM180(r.currentPhase - r.requiredPhase).toFixed(1)}°</span></div>
+      <div class="note">Showing direct transfer reference. Assist route uses 2-leg Lambert arcs from ${originName} → ${selectedAssist.planet.name} → ${destName}.</div>
+    </div>`
+          : `
+    <div class="card" data-card="phase">
+      <h3><span class="dot"></span>Phase Angle<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
+      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v ${Math.abs(angNormPM180(r.currentPhase - r.requiredPhase)) < 2 ? 'good' : ''}">${angNormPM180(r.currentPhase - r.requiredPhase).toFixed(1)}°</span></div>
+    </div>`;
+
+        const ejectionCard = selectedAssist
+          ? `
+    <div class="card" data-card="ejection">
+      <h3><span class="dot"></span>Ejection Angle (direct reference)<button class="hud-card-toggle${isHudActive('ejection')}" data-widget-type="ejection" onclick="window.toggleTransferWidget('ejection')" title="Toggle HUD widget">HUD</button></h3>
+      ${ejectionDiagramSvg(r)}
+      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(r).text}</span></div>
+      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
+      <div class="note">Showing direct transfer reference. The actual 2-leg assist trajectory will have different departure/arrival angles toward the assist planet instead.</div>
+    </div>`
+          : `
+    <div class="card" data-card="ejection">
+      <h3><span class="dot"></span>Ejection Angle (burn point)<button class="hud-card-toggle${isHudActive('ejection')}" data-widget-type="ejection" onclick="window.toggleTransferWidget('ejection')" title="Toggle HUD widget">HUD</button></h3>
+      ${ejectionDiagramSvg(r)}
+      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(r).text}</span></div>
+      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
+      <div class="note">Burn when your ship is this far from the planet's ${ejectionBurnPoint(r).refName} point, measured in the direction you orbit. Derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
+    </div>`;
+
         document.getElementById('transferResults').innerHTML = `
     ${parentNote}
       <div class="card">
-      <h3><span class="dot"></span>Δv Budget (from ${(PARK_ALT / 1000) | 0} km parking orbit)</h3>
+      <h3><span class="dot"></span>Δv Budget (from ${(PARK_ALT / 1000) | 0} km parking orbit)${assistNote}</h3>
       <div class="big-num">
-        <div>${totalDv.toFixed(0)}<small>m/s interplanetary transfer</small></div>
-        <div style="font-size: 16px; color: var(--text-dim); font-weight: 400; text-shadow: none; margin-top: 4px;">${totalHelioDv.toFixed(0)}<small style="font-size: 11px;">m/s heliocentric total</small></div>
+        <div>${totalDv.toFixed(0)}<small>m/s heliocentric transfer</small></div>
+        <div style="font-size: 16px; color: var(--text-dim); font-weight: 400; text-shadow: none; margin-top: 4px;">${totalHelioDv.toFixed(0)}<small style="font-size: 11px;">m/s total</small></div>
       </div>
-      <div class="stat-row"><span class="k">Ejection burn @ ${originName}</span><span class="v hi">${ejDepBurn.toFixed(0)} m/s</span></div>
-      <div class="stat-row"><span class="k">Capture burn @ ${parentPlanetName || destName}</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v hi">${ejDepBurn.toFixed(0)} m/s</span></div>
+      <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v hi">${ejArrBurn.toFixed(0)} m/s</span></div>
+      ${selectedAssist ? `<div class="stat-row"><span class="k">Δv Savings vs direct</span><span class="v good">-${selectedAssist.savings.toFixed(0)} m/s</span></div>` : ''}
       ${isMoonDest ? `<div class="stat-row"><span class="k">Moon orbit insertion @ ${destName}</span><span class="v hi">${moonInsertDv.toFixed(0)} m/s</span></div>` : ''}
       ${landingDv > 0 ? `<div class="stat-row"><span class="k">Landing @ ${destName}</span><span class="v hi">${landingDv.toFixed(0)} m/s</span></div>` : ''}
-      <div class="stat-row"><span class="k">Heliocentric v∞ (departure)</span><span class="v">${Math.abs(r.dv1_helio).toFixed(0)} m/s</span></div>
-      <div class="stat-row"><span class="k">Heliocentric v∞ (arrival)</span><span class="v">${Math.abs(r.dv2_helio).toFixed(0)} m/s</span></div>
       <div class="mission-time-row">
         <div class="mission-time-label">Mission time on target planet</div>
         <div class="mission-stepper" aria-label="Mission time on target planet in days">
@@ -8070,33 +8423,27 @@
         </div>
       </div>
       ${returnBudgetHtml(r)}
-      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km. ${isMoonDest ? `Moon insertion (~${moonInsertDv.toFixed(0)} m/s) and landing (~${landingDv.toFixed(0)} m/s) are reference values only - actual costs vary with arrival geometry. Add to interplanetary transfer for total mission budget.` : `Capture burn can be omitted for a flyby / aerocapture mission.`}</div>
+      <div class="note">Patched-conic, circular-coplanar approximation using each planet's semi-major axis. Parking orbit at ${(PARK_ALT / 1000) | 0} km.${selectedAssist ? ` Gravity assist uses Lambert arcs to compute the 2-leg trajectory; the savings shown are from comparing total v∞ values.` : ` Capture burn can be omitted for a flyby / aerocapture mission.`}</div>
     </div>
     <div class="card" data-card="window">
       <h3><span class="dot"></span>Next Transfer Window<button class="hud-card-toggle${isHudActive('window')}" data-widget-type="window" onclick="window.toggleTransferWidget('window')" title="Toggle HUD widget">HUD</button></h3>
       <div class="countdown ${r.waitSec === null ? 'past' : ''}">${r.waitSec === null ? 'Synodic period ≈ 0 (same period)' : (r.waitSec < 1 ? 'WINDOW OPEN NOW' : 'T‑minus ' + durationString(r.waitSec))}</div>
       ${r.waitSec !== null ? `<div class="stat-row"><span class="k">Window opens at UT</span><span class="v">${utToDateString(UT + r.waitSec)}</span></div>` : ''}
       <div class="stat-row"><span class="k">Arrival UT</span><span class="v">${r.waitSec !== null ? utToDateString(ghostUT) : '—'}</span></div>
+      ${selectedAssist ? `<div class="note">Assist route departure uses the same window as direct transfer. Total time includes both ${durationString(selectedAssist.solved.tof1)} (leg 1) and ${durationString(selectedAssist.solved.tof2)} (leg 2).</div>` : ''}
     </div>
-    <div class="card" data-card="phase">
-      <h3><span class="dot"></span>Phase Angle<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
-      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
-      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Difference</span><span class="v ${closeEnough ? 'good' : ''}">${phaseDiff.toFixed(1)}°</span></div>
-    </div>
-    <div class="card" data-card="ejection">
-      <h3><span class="dot"></span>Ejection Angle (burn point)<button class="hud-card-toggle${isHudActive('ejection')}" data-widget-type="ejection" onclick="window.toggleTransferWidget('ejection')" title="Toggle HUD widget">HUD</button></h3>
-      ${ejectionDiagramSvg(r)}
-      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(r).text}</span></div>
-      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
-      <div class="note">Burn when your ship is this far from the planet's ${ejectionBurnPoint(r).refName} point, measured in the direction you orbit. Derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
-    </div>
+    ${phaseCard}
+    ${ejectionCard}
     <div class="card" data-card="time">
-      <h3><span class="dot"></span>Transfer Time<button class="hud-card-toggle${isHudActive('time')}" data-widget-type="time" onclick="window.toggleTransferWidget('time')" title="Toggle HUD widget">HUD</button></h3>
-      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(r.tof)}</div>
-      <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
-      <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
+      <h3><span class="dot"></span>Transfer Time${assistNote}<button class="hud-card-toggle${isHudActive('time')}" data-widget-type="time" onclick="window.toggleTransferWidget('time')" title="Toggle HUD widget">HUD</button></h3>
+      <div class="big-num" style="color:var(--cyan);text-shadow:0 0 14px rgba(79,224,232,.3);">${durationString(tofDisplay)}</div>
+      ${selectedAssist ? `
+        <div class="stat-row"><span class="k">Leg 1: ${originName} → ${selectedAssist.planet.name}</span><span class="v cyan">${durationString(selectedAssist.solved.tof1)}</span></div>
+        <div class="stat-row"><span class="k">Leg 2: ${selectedAssist.planet.name} → ${destName}</span><span class="v cyan">${durationString(selectedAssist.solved.tof2)}</span></div>
+      ` : `
+        <div class="stat-row"><span class="k">Transfer orbit SMA</span><span class="v">${(r.at / 1e9).toFixed(3)} Gm</span></div>
+        <div class="stat-row"><span class="k">Transfer orbit type</span><span class="v">${r.outbound ? 'Outbound (ascending)' : 'Inbound (descending)'}</span></div>
+      `}
     </div>
     <div class="card" data-card="ghost" style="border-color:rgba(255,180,84,.22);">
       <h3><span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);"></span>Ghost Body — ${destName} at Arrival${selectedAssist ? ' (via assist)' : ''}<button class="hud-card-toggle${isHudActive('ghost')}" data-widget-type="ghost" onclick="window.toggleTransferWidget('ghost')" title="Toggle HUD widget">HUD</button></h3>
@@ -8167,7 +8514,6 @@
         renderTransferResults();
         renderAssistOptions();
       };
-
       function ejectionDiagramSvg(r) {
         const W = 195, H = 195, cx = W / 2, cy = H / 2;
         const OR = 62; // parking orbit radius in px
@@ -8384,6 +8730,631 @@
       document.getElementById('pkGenerate').onclick = generatePorkchop;
 
       /* =========================================================
+         13. BRIDGE FRAME FIT — pure maths, no DOM / THREE
+         The telemetry bridge reports KSP2 world vectors whose axis
+         convention is not documented. Rather than guess it, we fit
+         the best signed axis permutation against the analytic model
+         at runtime. A wrong guess shows a large error, so the fit
+         also tells us when the bridge data can't be trusted.
+         ========================================================= */
+      const BRIDGE_AXIS_PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+
+      // All 48 signed permutations (6 orderings x 8 sign patterns, including mirrors).
+      function bridgeAxisCandidates() {
+        const out = [];
+        for (const perm of BRIDGE_AXIS_PERMS) {
+          for (let s = 0; s < 8; s++) {
+            out.push({ perm, sign: [s & 1 ? -1 : 1, s & 2 ? -1 : 1, s & 4 ? -1 : 1] });
+          }
+        }
+        return out;
+      }
+
+      function applyBridgeAxisMap(map, v) {
+        const c = [v.x, v.y, v.z];
+        return {
+          x: map.sign[0] * c[map.perm[0]],
+          y: map.sign[1] * c[map.perm[1]],
+          z: map.sign[2] * c[map.perm[2]]
+        };
+      }
+
+      /**
+       * pairs: [{ bridge: {x, y, z}, expected: {x, y, z} }], both already in scene units.
+       * Returns { map, relError } for the best candidate, where
+       * relError = sqrt(sum |bridge - expected|^2 / sum |expected|^2). 0 is a perfect fit.
+       */
+      function chooseBridgeAxisMap(pairs) {
+        let best = null;
+        for (const cand of bridgeAxisCandidates()) {
+          let err = 0, mag = 0;
+          for (const p of pairs) {
+            const m = applyBridgeAxisMap(cand, p.bridge);
+            const dx = m.x - p.expected.x, dy = m.y - p.expected.y, dz = m.z - p.expected.z;
+            err += dx * dx + dy * dy + dz * dz;
+            mag += p.expected.x * p.expected.x + p.expected.y * p.expected.y + p.expected.z * p.expected.z;
+          }
+          const relError = mag > 0 ? Math.sqrt(err / mag) : Infinity;
+          if (!best || relError < best.relError) best = { map: cand, relError };
+        }
+        return best;
+      }
+
+      // Bridge frame (y up, x/z ecliptic) -> scene frame (y up, z flipped to right-handed).
+      // A prograde orbit stays prograde after the flip, which matches the app's convention.
+      const BRIDGE_TO_SCENE_MAP = { perm: [0, 1, 2], sign: [1, 1, -1] };
+
+      // Two-body orbit from a single state vector. r and v are {x,y,z} relative to the
+      // central body (metres, m/s); mu is the central body's gravitational parameter.
+      // Returns N points (metres) tracing the full ellipse in the same frame.
+      function bridgeOrbitLoop(r, v, mu, N) {
+        const rm = Math.hypot(r.x, r.y, r.z);
+        const v2 = v.x * v.x + v.y * v.y + v.z * v.z;
+        const h = { x: r.y * v.z - r.z * v.y, y: r.z * v.x - r.x * v.z, z: r.x * v.y - r.y * v.x };
+        const hm = Math.hypot(h.x, h.y, h.z);
+        const vxh = { x: v.y * h.z - v.z * h.y, y: v.z * h.x - v.x * h.z, z: v.x * h.y - v.y * h.x };
+        const ev = { x: vxh.x / mu - r.x / rm, y: vxh.y / mu - r.y / rm, z: vxh.z / mu - r.z / rm };
+        const e = Math.hypot(ev.x, ev.y, ev.z);
+        const a = 1 / (2 / rm - v2 / mu);
+        // Periapsis direction; for a circular orbit any in-plane direction works, so use the state itself.
+        const P = e > 1e-9 ? { x: ev.x / e, y: ev.y / e, z: ev.z / e } : { x: r.x / rm, y: r.y / rm, z: r.z / rm };
+        const hn = { x: h.x / hm, y: h.y / hm, z: h.z / hm };
+        // Q = hn x P: the in-plane direction 90 degrees ahead of periapsis.
+        const Q = { x: hn.y * P.z - hn.z * P.y, y: hn.z * P.x - hn.x * P.z, z: hn.x * P.y - hn.y * P.x };
+        const pts = [];
+        for (let i = 0; i <= N; i++) {
+          const nu = (i / N) * 2 * Math.PI;
+          const rr = a * (1 - e * e) / (1 + e * Math.cos(nu));
+          const c = Math.cos(nu), sn = Math.sin(nu);
+          pts.push({
+            x: rr * (c * P.x + sn * Q.x),
+            y: rr * (c * P.y + sn * Q.y),
+            z: rr * (c * P.z + sn * Q.z)
+          });
+        }
+        return pts;
+      }
+
+      // Apoapsis and periapsis altitudes (m above the surface) from the telemetry the bridge sends
+      // for the active vessel, since the bridge's own orbit field is null. altitude is above the
+      // surface, horizontal is the tangential speed, orbitalSpeed the total speed; R and mu are the
+      // parent body's radius and gravitational parameter.
+      function vesselApsides(altitude, horizontal, orbitalSpeed, R, mu) {
+        const r = R + altitude, v = orbitalSpeed;
+        if (!(r > 0) || !(mu > 0) || !(v > 0)) return null;
+        const inv_a = 2 / r - v * v / mu;
+        if (inv_a <= 0) return null;                  // unbound: no apoapsis
+        const a = 1 / inv_a;
+        const h = r * horizontal;
+        const e = Math.sqrt(Math.max(0, 1 + (h * h / mu) * (v * v / mu - 2 / r)));
+        return { ap: a * (1 + e) - R, pe: a * (1 - e) - R };
+      }
+
+      // Short tag for the map, e.g. "Superlight-Survey-Scan+Land" -> "SSSL", "Bloc_Duna_13" -> "BD13".
+      function vesselAcronym(name) {
+        const parts = String(name || '').split(/[^A-Za-z0-9]+/).filter(Boolean);
+        let out = '';
+        for (const p of parts) out += /^\d+$/.test(p) ? p : p[0].toUpperCase();
+        return out.slice(0, 6) || '?';
+      }
+      /* =========================================================
+         14. TELEMETRY BRIDGE CLIENT — KSP2 mod over WebSocket
+         With LIVE SYNC set to the bridge, body positions and orbit
+         rings come straight from the game's state vectors. The
+         stock orbit table is not used while the bridge is live.
+         ========================================================= */
+      const BRIDGE_WS_URL = 'ws://127.0.0.1:8765/ws';
+      const BRIDGE_STALE_MS = 2000;
+      const BRIDGE_RING_POINTS = 1440;
+
+      const bridgeLive = {
+        wanted: false, ws: null, retryTimer: null, retryMs: 1000, url: BRIDGE_WS_URL,
+        lastMessageAt: 0, lastStatusAt: 0,
+        staticRevision: -1, stateRevision: -1, ringsFor: null,
+        nameById: {}, parentByName: {}, starByName: {}, muByName: {}, radiusByName: {},
+        map: null,
+        sceneVec: {},        // body name -> THREE.Vector3 in scene units
+        stockRingGeo: {},    // line name -> original stock geometry, restored on disconnect
+        vessels: [],
+        activeVessel: null
+      };
+      let bridgeVisualsOn = false;
+
+      function bridgeFresh() {
+        return liveMode === 'bridge' && bridgeLive.lastMessageAt > 0 &&
+          (Date.now() - bridgeLive.lastMessageAt) < BRIDGE_STALE_MS;
+      }
+
+      function bridgeActive() {
+        return bridgeFresh() && !!bridgeLive.map && Object.keys(bridgeLive.sceneVec).length > 0;
+      }
+
+      function bridgeBodyScene(name) {
+        return bridgeActive() ? (bridgeLive.sceneVec[name] || null) : null;
+      }
+
+      // Bridge metres -> scene units, through the fixed bridge-to-scene map.
+      function bridgeToScene(raw) {
+        const m = applyBridgeAxisMap(bridgeLive.map || BRIDGE_TO_SCENE_MAP, { x: raw.x * SCALE, y: raw.y * SCALE, z: raw.z * SCALE });
+        return new THREE.Vector3(m.x, m.y, m.z);
+      }
+
+      function rebuildBridgeStatic(ss) {
+        bridgeLive.nameById = {};
+        bridgeLive.parentByName = {};
+        bridgeLive.starByName = {};
+        bridgeLive.muByName = {};
+        bridgeLive.radiusByName = {};
+        (ss.bodies || []).forEach(b => {
+          bridgeLive.nameById[b.id] = b.name;
+          bridgeLive.parentByName[b.name] = b.parent || null;
+          bridgeLive.starByName[b.name] = !!b.isStar;
+          bridgeLive.muByName[b.name] = b.gravitationalParameter;
+          bridgeLive.radiusByName[b.name] = b.radius;
+        });
+        bridgeLive.staticRevision = ss.staticRevision;
+      }
+
+      // Raw bridge state by body name: { position, velocity }.
+      function bridgeRawStates(ss) {
+        const raw = {};
+        (ss.states || []).forEach(st => {
+          const name = bridgeLive.nameById[st.id];
+          if (name && st.position) raw[name] = { position: st.position, velocity: st.velocity };
+        });
+        return raw;
+      }
+
+      // Place every body from its game position. Moons are stored relative to their parent,
+      // so they sit on top of the parent's scene position.
+      function computeBridgeScenePositions(ss) {
+        const raw = {};
+        Object.entries(bridgeRawStates(ss)).forEach(([n, s]) => { raw[n] = s.position; });
+        if (Object.keys(raw).length === 0) { bridgeLive.sceneVec = {}; return; }
+        bridgeLive.map = BRIDGE_TO_SCENE_MAP;
+        const vecs = {};
+        const place = (name, depth) => {
+          if (vecs[name]) return vecs[name];
+          if (!raw[name] || depth > 4) return null;
+          const base = new THREE.Vector3();
+          const parent = bridgeLive.parentByName[name];
+          if (parent && !bridgeLive.starByName[parent]) {
+            const pv = place(parent, depth + 1);
+            if (!pv) return null;
+            base.copy(pv);
+          }
+          vecs[name] = base.add(bridgeToScene(raw[name]));
+          return vecs[name];
+        };
+        Object.keys(raw).forEach(n => place(n, 0));
+        bridgeLive.sceneVec = vecs;
+      }
+
+      // Orbit rings from the game's own state vectors. Rebuilt once per body-set revision,
+      // since two-body orbits from a single state don't change between revisions.
+      function setRingGeometry(line, key, points) {
+        if (!line) return;
+        if (!bridgeLive.stockRingGeo[key]) bridgeLive.stockRingGeo[key] = line.geometry;
+        line.geometry = new THREE.BufferGeometry().setFromPoints(points);
+      }
+
+      function updateBridgeRings(ss) {
+        if (bridgeLive.ringsFor === ss.staticRevision) return;
+        const raw = bridgeRawStates(ss);
+        if (Object.keys(raw).length === 0) return;
+        PLANETS.forEach(p => {
+          const st = raw[p.name], mu = bridgeLive.muByName[p.parent || 'Kerbol'];
+          if (!st || !mu) return;
+          const loop = bridgeOrbitLoop(st.position, st.velocity, mu, BRIDGE_RING_POINTS);
+          setRingGeometry(planetRingLines[p.name], p.name, loop.map(q => bridgeToScene(q)));
+        });
+        MOONS.forEach(m => {
+          const st = raw[m.name], mu = bridgeLive.muByName[m.parent];
+          if (!st || !mu) return;
+          const loop = bridgeOrbitLoop(st.position, st.velocity, mu, BRIDGE_RING_POINTS);
+          setRingGeometry(moonOrbitLines[m.name], m.name, loop.map(q => bridgeToScene(q)));
+        });
+        bridgeLive.ringsFor = ss.staticRevision;
+      }
+
+      function restoreStockRings() {
+        Object.entries(bridgeLive.stockRingGeo).forEach(([key, geo]) => {
+          const line = planetRingLines[key] || moonOrbitLines[key];
+          if (line) line.geometry = geo;
+        });
+        bridgeLive.stockRingGeo = {};
+        bridgeLive.ringsFor = null;
+      }
+
+      function onBridgeSnapshot(snap) {
+        bridgeLive.lastMessageAt = Date.now();
+        bridgeLive.activeVessel = snap.vessel || null;
+        const ss = snap.solarSystem || {};
+        if (ss.staticRevision !== undefined && ss.staticRevision !== bridgeLive.staticRevision) rebuildBridgeStatic(ss);
+        const ut = snap.game && snap.game.universalTime;
+        if (typeof ut === 'number' && isFinite(ut)) UT = ut;
+        if (ss.stateRevision !== undefined && ss.stateRevision !== bridgeLive.stateRevision) {
+          bridgeLive.stateRevision = ss.stateRevision;
+          computeBridgeScenePositions(ss);
+        }
+        if (ss.states && ss.states.length) updateBridgeRings(ss);
+        bridgeLive.vessels = ss.vessels || [];
+        const now = Date.now();
+        if (now - bridgeLive.lastStatusAt > 1000) {
+          bridgeLive.lastStatusAt = now;
+          updateBridgeStatus();
+        }
+      }
+
+      function updateBridgeStatus() {
+        if (!bridgeLive.wanted || liveMode !== 'bridge') return;
+        if (Object.keys(bridgeLive.sceneVec).length === 0) {
+          setLiveStatus('LIVE (KSP2 bridge) — connected, waiting for body data…', null);
+        } else {
+          const n = bridgeLive.vessels.length;
+          setLiveStatus(`LIVE (KSP2 bridge) — synced ${utToDateString(UT)} · game orbits · ${n} vessel${n === 1 ? '' : 's'}`, 'ok');
+        }
+      }
+
+      function openBridgeSocket() {
+        if (!bridgeLive.wanted) return;
+        let ws;
+        try { ws = new WebSocket(bridgeLive.url); }
+        catch (err) { scheduleBridgeRetry(err.message); return; }
+        bridgeLive.ws = ws;
+        ws.onopen = () => {
+          bridgeLive.retryMs = 1000;
+          setLiveStatus('LIVE (KSP2 bridge) — connected, waiting for data…', null);
+        };
+        ws.onmessage = (ev) => {
+          try { onBridgeSnapshot(JSON.parse(ev.data)); }
+          catch (err) { console.warn('[bridge] bad snapshot', err); }
+        };
+        ws.onerror = () => {};
+        ws.onclose = () => {
+          bridgeLive.ws = null;
+          if (bridgeLive.wanted) scheduleBridgeRetry('connection closed');
+        };
+      }
+
+      function scheduleBridgeRetry(reason) {
+        if (!bridgeLive.wanted) return;
+        setLiveStatus(`LIVE (KSP2 bridge) — ${reason}. Retrying… Is KSP2 running with the Telemetry Bridge mod?`, 'err');
+        clearTimeout(bridgeLive.retryTimer);
+        const wait = bridgeLive.retryMs;
+        bridgeLive.retryMs = Math.min(bridgeLive.retryMs * 2, 5000);
+        bridgeLive.retryTimer = setTimeout(openBridgeSocket, wait);
+      }
+
+      function startBridge(url) {
+        stopBridge();
+        bridgeLive.wanted = true;
+        bridgeLive.url = url || BRIDGE_WS_URL;
+        bridgeLive.retryMs = 1000;
+        openBridgeSocket();
+      }
+
+      function stopBridge() {
+        bridgeLive.wanted = false;
+        clearTimeout(bridgeLive.retryTimer);
+        bridgeLive.retryTimer = null;
+        const ws = bridgeLive.ws;
+        bridgeLive.ws = null;
+        if (ws) { ws.onclose = null; ws.onmessage = null; try { ws.close(); } catch (_) {} }
+        bridgeLive.lastMessageAt = 0;
+        bridgeLive.staticRevision = -1;
+        bridgeLive.stateRevision = -1;
+        bridgeLive.map = null;
+        bridgeLive.sceneVec = {};
+        bridgeLive.vessels = [];
+        bridgeLive.activeVessel = null;
+        restoreStockRings();
+        if (bridgeVisualsOn) { bridgeVisualsOn = false; hideVesselLayer(); }
+      }
+
+      // Moves body meshes and moon orbit lines to the game positions (called every frame from updateMap).
+      function applyBridgeBodies() {
+        PLANETS.forEach(p => {
+          const v = bridgeBodyScene(p.name);
+          if (v && planetMeshes[p.name]) planetMeshes[p.name].position.copy(v);
+        });
+        MOONS.forEach(m => {
+          const v = bridgeBodyScene(m.name);
+          if (v && moonMeshes[m.name]) moonMeshes[m.name].position.copy(v);
+          const pv = bridgeBodyScene(m.parent);
+          if (pv && moonOrbitLines[m.name]) moonOrbitLines[m.name].position.copy(pv);
+        });
+      }
+
+      // Called once per frame from updateMap, after the analytic positions are set.
+      function updateBridgeVisuals() {
+        if (!bridgeActive()) {
+          if (bridgeVisualsOn) { bridgeVisualsOn = false; hideVesselLayer(); }
+          return;
+        }
+        bridgeVisualsOn = true;
+        applyBridgeBodies();
+        updateVesselLayer();
+        updateVesselHud();
+        updateVesselOverlay(bridgeLive.activeVessel);
+      }
+      /* =========================================================
+         15. VESSEL LAYER + ACTIVE-VESSEL HUD (telemetry bridge)
+         Every vessel the bridge reports, filterable by type, body,
+         name and status. The active vessel gets an animated HUD.
+         ========================================================= */
+      const VESSEL_FILTER_KEY = 'kerbalist_vessel_filter';
+      const vesselFilter = { types: {}, body: 'all', search: '', activeOnly: false, labels: true };
+      try { Object.assign(vesselFilter, JSON.parse(localStorage.getItem(VESSEL_FILTER_KEY) || '{}')); } catch (_) {}
+
+      const VESSEL_COLORS = { Ship: 0x4fe0e8, Probe: 0xffb454, Station: 0x7ee787, Base: 0x7ee787, Debris: 0x7688a6, Rover: 0xffd166, Plane: 0xb78cff };
+      const vesselGroup = new THREE.Group();
+      scene.add(vesselGroup);
+      const vesselMarkers = [];   // { mesh, label }
+
+      const vesselToggle = document.createElement('button');
+      vesselToggle.className = 'vessel-toggle';
+      vesselToggle.textContent = 'Vessels';
+      vesselToggle.title = 'Filter vessels shown on the map';
+
+      const vesselPanel = document.createElement('div');
+      vesselPanel.className = 'vessel-panel';
+      vesselPanel.innerHTML = `
+        <input type="search" class="vp-search" placeholder="Search name…">
+        <label class="vp-row">Body <select class="vp-body"><option value="all">All bodies</option></select></label>
+        <div class="vp-types"></div>
+        <label class="vp-check"><input type="checkbox" class="vp-active"> Active vessel only</label>
+        <label class="vp-check"><input type="checkbox" class="vp-labels"> Labels</label>
+        <div class="vp-count"></div>`;
+
+      // Keep clicks on these controls from also dragging the 3D camera.
+      [vesselToggle, vesselPanel].forEach(el =>
+        ['pointerdown', 'mousedown', 'touchstart', 'wheel'].forEach(ev => el.addEventListener(ev, e => e.stopPropagation())));
+
+      function saveVesselFilter() {
+        try { localStorage.setItem(VESSEL_FILTER_KEY, JSON.stringify(vesselFilter)); } catch (_) {}
+      }
+
+      vesselToggle.onclick = () => vesselPanel.classList.toggle('open');
+      vesselPanel.querySelector('.vp-search').addEventListener('input', e => {
+        vesselFilter.search = e.target.value.trim().toLowerCase();
+        saveVesselFilter();
+      });
+      vesselPanel.querySelector('.vp-body').addEventListener('change', e => {
+        vesselFilter.body = e.target.value;
+        saveVesselFilter();
+      });
+      vesselPanel.querySelector('.vp-active').addEventListener('change', e => {
+        vesselFilter.activeOnly = e.target.checked;
+        saveVesselFilter();
+      });
+      vesselPanel.querySelector('.vp-labels').addEventListener('change', e => {
+        vesselFilter.labels = e.target.checked;
+        saveVesselFilter();
+      });
+
+      function ensureVesselMarker(i) {
+        while (vesselMarkers.length <= i) {
+          const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, depthWrite: false })
+          );
+          vesselGroup.add(mesh);
+          const label = document.createElement('div');
+          label.className = 'vessel-label-3d';
+          labelCtr.appendChild(label);
+          vesselMarkers.push({ mesh, label });
+        }
+        return vesselMarkers[i];
+      }
+
+      // Vessel positions are reported relative to their body, so add the body's scene position.
+      function vesselScenePos(v) {
+        const base = bridgeBodyScene(v.body);
+        if (!base || !v.relativePosition || !bridgeLive.map) return null;
+        return base.clone().add(bridgeToScene(v.relativePosition));
+      }
+
+      function vesselPassesFilter(v, active) {
+        if (vesselFilter.activeOnly && !(active && v.id === active.id)) return false;
+        if (vesselFilter.body !== 'all' && v.body !== vesselFilter.body) return false;
+        if (vesselFilter.types[v.type] === false) return false;
+        if (vesselFilter.search && !(v.name || '').toLowerCase().includes(vesselFilter.search)) return false;
+        return true;
+      }
+
+      // Keep the type and body controls in step with what the bridge is reporting.
+      let vesselPanelSig = '';
+      function refreshVesselPanel(list) {
+        const types = [...new Set(list.map(v => v.type || 'Unknown'))].sort();
+        const bodies = [...new Set(list.map(v => v.body).filter(Boolean))].sort();
+        const sig = types.join('|') + '#' + bodies.join('|');
+        if (sig !== vesselPanelSig) {
+          vesselPanelSig = sig;
+          const typeBox = vesselPanel.querySelector('.vp-types');
+          typeBox.innerHTML = '';
+          types.forEach(t => {
+            const label = document.createElement('label');
+            label.className = 'vp-check';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.checked = vesselFilter.types[t] !== false;
+            cb.addEventListener('change', () => { vesselFilter.types[t] = cb.checked; saveVesselFilter(); });
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(' ' + t));
+            typeBox.appendChild(label);
+          });
+          const bodySel = vesselPanel.querySelector('.vp-body');
+          bodySel.innerHTML = '<option value="all">All bodies</option>' +
+            bodies.map(b => `<option value="${b}">${b}</option>`).join('');
+          bodySel.value = bodies.includes(vesselFilter.body) ? vesselFilter.body : 'all';
+          vesselFilter.body = bodySel.value;
+          vesselPanel.querySelector('.vp-search').value = vesselFilter.search;
+          vesselPanel.querySelector('.vp-active').checked = vesselFilter.activeOnly;
+          vesselPanel.querySelector('.vp-labels').checked = vesselFilter.labels;
+        }
+      }
+
+      function updateVesselLayer() {
+        const active = bridgeLive.activeVessel;
+        const list = bridgeLive.vessels.slice();
+        if (active && active.id && !list.some(v => v.id === active.id)) list.push(active);
+        refreshVesselPanel(list);
+
+        const size = camR * 0.0012;   // screen-stable marker size
+        let shown = 0;
+        list.forEach(v => {
+          if (!vesselPassesFilter(v, active)) return;
+          const pos = vesselScenePos(v);
+          if (!pos) return;
+          const m = ensureVesselMarker(shown++);
+          const isActive = !!(active && v.id === active.id);
+          m.mesh.visible = true;
+          m.mesh.position.copy(pos);
+          m.mesh.scale.setScalar(isActive ? size * 1.6 : size);
+          m.mesh.material.color.setHex(isActive ? 0xffffff : (VESSEL_COLORS[v.type] || 0xdbe7f5));
+          const s = worldToScreen(pos);
+          m.label.textContent = v.name || v.id;
+          m.label.classList.toggle('active', isActive);
+          m.label.style.left = s.x + 'px';
+          m.label.style.top = s.y + 'px';
+          m.label.style.display = (vesselFilter.labels && !s.behind) ? '' : 'none';
+        });
+        for (let j = shown; j < vesselMarkers.length; j++) {
+          vesselMarkers[j].mesh.visible = false;
+          vesselMarkers[j].label.style.display = 'none';
+        }
+        vesselToggle.textContent = `Vessels (${shown})`;
+        // Only offer the vessel filter when the bridge reports a vessel list (not just the active vessel).
+        vesselToggle.classList.toggle('show', bridgeLive.vessels.length > 0);
+        vesselPanel.querySelector('.vp-count').textContent = `${shown} of ${list.length} shown`;
+      }
+
+      function hideVesselLayer() {
+        vesselMarkers.forEach(m => { m.mesh.visible = false; m.label.style.display = 'none'; });
+        vesselToggle.classList.remove('show');
+        vesselPanel.classList.remove('open');
+        if (vesselHudEl) vesselHudEl.style.display = 'none';
+        hideVesselOverlay();
+      }
+
+      function fmtKm(m) {
+        if (typeof m !== 'number' || !isFinite(m)) return '—';
+        return Math.round(m / 1000).toLocaleString('en-GB') + ' km';
+      }
+
+      function situationOf(a) {
+        if (a.landed) return 'Landed';
+        if (a.splashed) return 'Splashed';
+        if (a.inAtmosphere) return 'In atmosphere';
+        return 'In space';
+      }
+
+      function escHtml(t) {
+        return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      // Apoapsis/periapsis: the game's own orbit when the bridge sends one, otherwise worked out from telemetry.
+      function vesselApsidesFor(a) {
+        if (a.orbit && typeof a.orbit.apoapsis === 'number' && typeof a.orbit.periapsis === 'number') {
+          return { ap: a.orbit.apoapsis, pe: a.orbit.periapsis };
+        }
+        return vesselApsides(a.altitude, a.horizontalSpeed, a.orbitalSpeed,
+          bridgeLive.radiusByName[a.body], bridgeLive.muByName[a.body]);
+      }
+
+      let hudSnapshot = null;
+      let vesselHudEl = null;
+      let vesselHudDismissedFor = null;
+
+      // Active-vessel panel is a HUD widget: pin, drag, resize and close work like the other widgets.
+      function updateVesselHud() {
+        const a = bridgeLive.activeVessel;
+        if (!a) {
+          if (vesselHudEl) vesselHudEl.style.display = 'none';
+          hudSnapshot = null;
+          return;
+        }
+        // Closing the widget dismisses it for this vessel only; a different vessel brings it back.
+        if (vesselHudEl && !vesselHudEl.isConnected) { vesselHudDismissedFor = a.id; vesselHudEl = null; }
+        if (vesselHudDismissedFor === a.id) return;
+        if (!vesselHudEl) {
+          vesselHudEl = window.createHudWidget ? window.createHudWidget('vesselHudWidget', 'vessel', 'Active Vessel') : null;
+          if (!vesselHudEl) return;
+          hudSnapshot = null;
+        }
+        vesselHudEl.style.display = '';
+        if (a === hudSnapshot) return;   // only touch the DOM when a new snapshot arrives
+        hudSnapshot = a;
+        const ap = vesselApsidesFor(a);
+        const fmtAp = (v) => (v && isFinite(v)) ? fmtKm(v) : '—';
+        const html = `
+          <div class="vh-head"><span class="vh-pulse"></span><span class="vh-label">Active vessel</span></div>
+          <div class="vh-name">${escHtml(a.name || a.id || 'Unnamed')}</div>
+          <div class="vh-grid">
+            <div><span>Body</span><b>${escHtml(a.body || '—')}</b></div>
+            <div><span>Situation</span><b>${escHtml(situationOf(a))}</b></div>
+            <div><span>Altitude</span><b>${fmtKm(a.altitude)}</b></div>
+            <div><span>Speed</span><b>${typeof a.orbitalSpeed === 'number' ? Math.round(a.orbitalSpeed).toLocaleString('en-GB') + ' m/s' : '—'}</b></div>
+            <div><span>Apoapsis</span><b>${ap ? fmtAp(ap.ap) : '—'}</b></div>
+            <div><span>Periapsis</span><b>${ap ? fmtAp(ap.pe) : '—'}</b></div>
+          </div>`;
+        window.updateHudContent('vesselHudWidget', html);
+      }
+
+      // Map overlay: an acronym tag for the active vessel with a leader line to it.
+      // The leader points at the exact vessel once the bridge sends its position (relativePosition);
+      // until then the tag is anchored to the parent body and marked approximate.
+      const vesselOverlay = { svg: null, line: null, ring: null, tag: null };
+      function ensureVesselOverlay() {
+        if (vesselOverlay.svg) return;
+        const NS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('class', 'vessel-leader-svg');
+        const line = document.createElementNS(NS, 'line');
+        line.setAttribute('class', 'vo-line');
+        const ring = document.createElementNS(NS, 'circle');
+        ring.setAttribute('class', 'vo-ring');
+        ring.setAttribute('r', '11');
+        svg.appendChild(line);
+        svg.appendChild(ring);
+        labelCtr.appendChild(svg);
+        const tag = document.createElement('div');
+        tag.className = 'vessel-tag';
+        labelCtr.appendChild(tag);
+        Object.assign(vesselOverlay, { svg, line, ring, tag });
+      }
+
+      function hideVesselOverlay() {
+        if (!vesselOverlay.svg) return;
+        vesselOverlay.svg.style.display = 'none';
+        vesselOverlay.tag.style.display = 'none';
+      }
+
+      function updateVesselOverlay(active) {
+        if (!active || !bridgeActive()) { hideVesselOverlay(); return; }
+        const exact = vesselScenePos(active);
+        const anchor = exact || bridgeBodyScene(active.body);
+        if (!anchor) { hideVesselOverlay(); return; }
+        const s = worldToScreen(anchor);
+        if (s.behind) { hideVesselOverlay(); return; }
+        ensureVesselOverlay();
+        const o = vesselOverlay;
+        const tx = s.x + 46, ty = s.y - 40;
+        o.svg.style.display = '';
+        o.tag.style.display = '';
+        o.line.setAttribute('x1', s.x); o.line.setAttribute('y1', s.y);
+        o.line.setAttribute('x2', tx);  o.line.setAttribute('y2', ty);
+        o.ring.setAttribute('cx', s.x); o.ring.setAttribute('cy', s.y);
+        o.ring.style.display = exact ? '' : 'none';
+        o.line.classList.toggle('approx', !exact);
+        o.tag.classList.toggle('approx', !exact);
+        o.tag.textContent = vesselAcronym(active.name || active.id);
+        o.tag.title = exact ? (active.name || '') : (`${active.name || ''} — position approximate: the bridge does not send the vessel's position yet`);
+        o.tag.style.left = tx + 'px';
+        o.tag.style.top = ty + 'px';
+      }
+      /* =========================================================
          9. MAIN ANIMATION LOOP
          ========================================================= */
       let lastHudUpdate = 0;
@@ -8393,7 +9364,8 @@
         requestAnimationFrame(loop);
         const dt = Math.min((now - lastFrameTime) / 1000, 0.2);
         lastFrameTime = now;
-        UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]); // live sync ticks in real time between corrections
+        // Bridge snapshots set UT directly. Otherwise live sync ticks in real time between corrections.
+        if (!bridgeFresh()) UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]);
         
         // Throttle UT display to avoid constant DOM writes
         if (now - lastHudUpdate > 250) {
@@ -8504,7 +9476,8 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       'ejection': { x: Math.max(500, W - 880), y: 65, w: 320, h: 320 },
       'phase':    { x: Math.max(720, W - 520), y: 300, w: 290, h: 235 },
       'window':   { x: Math.max(680, W - 700), y: Math.max(480, H - 350), w: 300, h: 145 },
-      'time':     { x: Math.max(680, W - 700), y: Math.max(620, H - 195), w: 300, h: 135 }
+      'time':     { x: Math.max(680, W - 700), y: Math.max(620, H - 195), w: 300, h: 135 },
+      'vessel':   { x: Math.max(900, W - 330), y: 150, w: 280, h: 200 }
     };
   }
 
@@ -9115,7 +10088,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 
         <div class="bug-report-info">
           <strong>📋 Auto-included:</strong><br>
-          • App Version: v4.1<br>
+          • App Version: v4.2<br>
           • Browser: <span id="bugBrowserInfo">Chrome</span><br>
           • Timestamp: <span id="bugTimestamp">--</span>
         </div>
