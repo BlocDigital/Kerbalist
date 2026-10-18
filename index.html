@@ -1209,7 +1209,8 @@
     .bug-report-popup {
       width: 600px;
       max-width: 95vw;
-      max-height: 92vh;   /* keep header + Submit button on screen; body scrolls */
+      max-height: 92vh;
+      /* keep header + Submit button on screen; body scrolls */
       background: var(--panel);
       border: 1px solid var(--border-bright);
       border-radius: 12px;
@@ -1443,7 +1444,7 @@
       line-height: 1.5;
     }
 
-        /* Bug report screenshot options (auto viewport capture + custom upload) */
+    /* Bug report screenshot options (auto viewport capture + custom upload) */
     .bug-shot-card {
       display: flex;
       flex-direction: column;
@@ -1455,7 +1456,7 @@
       transition: border-color .15s ease, box-shadow .15s ease, opacity .15s ease, background .15s ease;
     }
 
-    .bug-shot-card + .bug-shot-card {
+    .bug-shot-card+.bug-shot-card {
       margin-top: 8px;
     }
 
@@ -1534,7 +1535,9 @@
     }
 
     @keyframes bugShotSpin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .bug-shot-side {
@@ -1551,9 +1554,17 @@
       color: var(--text-dimmer);
     }
 
-    .bug-shot-status.ok { color: var(--green); }
-    .bug-shot-status.warn { color: var(--amber); }
-    .bug-shot-status.err { color: var(--red); }
+    .bug-shot-status.ok {
+      color: var(--green);
+    }
+
+    .bug-shot-status.warn {
+      color: var(--amber);
+    }
+
+    .bug-shot-status.err {
+      color: var(--red);
+    }
 
     .bug-shot-actions {
       display: flex;
@@ -1608,7 +1619,7 @@
       color: var(--red);
     }
 
-/* Bug report captcha — "Verify Signal" */
+    /* Bug report captcha — "Verify Signal" */
     .bug-captcha {
       display: flex;
       flex-direction: column;
@@ -1661,7 +1672,9 @@
     }
 
     @keyframes bugCaptchaSpin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .bug-captcha-input {
@@ -1706,11 +1719,27 @@
     }
 
     @keyframes bugCaptchaShake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-5px); }
-      40% { transform: translateX(5px); }
-      60% { transform: translateX(-3px); }
-      80% { transform: translateX(3px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-5px);
+      }
+
+      40% {
+        transform: translateX(5px);
+      }
+
+      60% {
+        transform: translateX(-3px);
+      }
+
+      80% {
+        transform: translateX(3px);
+      }
     }
 
     .bug-report-btn-submit:disabled {
@@ -2652,16 +2681,19 @@
       flex-shrink: 0;
       user-select: none;
     }
+
     .hud-card-toggle:hover {
       border-color: var(--cyan);
       color: var(--cyan);
     }
+
     .hud-card-toggle.on {
       background: var(--cyan);
       border-color: var(--cyan);
       color: #0a0f1c;
-      box-shadow: 0 0 8px rgba(79,224,232,.35);
+      box-shadow: 0 0 8px rgba(79, 224, 232, .35);
     }
+
     .hud-card-toggle.on:hover {
       background: transparent;
       color: var(--cyan);
@@ -2671,7 +2703,7 @@
     /* Smooth collapse/expand animation */
     .sidebar {
       transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  flex 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        flex 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     /* Collapsed rail — narrow strip between viewport and sidebar */
@@ -2721,6 +2753,7 @@
     body.sidebar-collapsed .rail-text-expand {
       display: block;
     }
+
     .rail-text-expand {
       display: none;
     }
@@ -2741,7 +2774,7 @@
     .legend,
     .hud-widget {
       transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                  left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body.sidebar-collapsed .shortcuts-bubble,
@@ -2771,6 +2804,7 @@
     .context-menu {
       transition: none;
     }
+
     body.sidebar-collapsed .bottom-left-bar,
     body.sidebar-collapsed .map-hud {
       left: 12px;
@@ -3244,527 +3278,320 @@
         font-size: 18px !important;
       }
     }
-/* HUD Widgets - Draggable, Pinnable Transfer Info Cards */
 
-#hudContainer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 100;
-}
+    /* HUD Widgets - Draggable, Pinnable Transfer Info Cards */
 
-.hud-widget {
-  position: absolute;
-  background: rgba(10, 16, 28, 0.45);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 10px 14px 12px;
-  min-width: 140px;
-  min-height: 90px;
-  cursor: move;
-  pointer-events: auto;
-  user-select: none;
-  font-family: var(--font-display, 'Rajdhani', sans-serif);
-  color: var(--text, #dbe7f5);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.hud-widget.pinned {
-  cursor: default;
-}
-
-.hud-widget:hover {
-  border-color: rgba(79, 224, 232, 0.4);
-  background: rgba(10, 16, 28, 0.65);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(79, 224, 232, 0.12);
-}
-
-.hud-widget.dragging {
-  opacity: 0.95;
-  border-color: var(--cyan, #4fe0e8);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(79, 224, 232, 0.25);
-}
-
-.hud-title {
-  font-family: var(--font-display, 'Rajdhani', sans-serif);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cyan, #4fe0e8);
-  margin: 0 0 8px 0;
-  padding-bottom: 5px;
-  border-bottom: 1px solid rgba(79, 224, 232, 0.18);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.hud-title::before {
-  content: '';
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--cyan, #4fe0e8);
-  box-shadow: 0 0 6px var(--cyan, #4fe0e8);
-  flex-shrink: 0;
-}
-
-.hud-title,
-.hud-content {
-  zoom: var(--hud-s, 1);
-  width: calc(100% / var(--hud-s, 1));
-}
-
-.hud-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.hud-content .stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  width: 100%;
-  padding: 3px 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
-  gap: 12px;
-}
-
-.hud-content .stat-row:last-child {
-  border-bottom: none;
-}
-
-.hud-content .stat-row .k {
-  font-family: var(--font-display, 'Rajdhani', sans-serif);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-dim, #7688a6);
-  white-space: nowrap;
-}
-
-.hud-content .stat-row .v {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text, #dbe7f5);
-  text-align: right;
-  white-space: nowrap;
-  letter-spacing: 0.02em;
-}
-
-.hud-content .stat-row .v.hi {
-  color: var(--cyan, #4fe0e8);
-}
-
-.hud-content .stat-row .v.warn {
-  color: var(--amber, #ffb454);
-}
-
-.hud-content .stat-row .v.good {
-  color: var(--green, #7ee787);
-}
-
-.hud-content .stat-row .v.bad {
-  color: var(--red, #ff6b6b);
-}
-
-.hud-content .countdown {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--green, #7ee787);
-  text-align: center;
-  letter-spacing: 0.04em;
-  padding: 4px 0 6px;
-  text-shadow: 0 0 10px rgba(126, 231, 135, 0.25);
-}
-
-.hud-content .countdown.past {
-  color: var(--text-dim, #7688a6);
-  text-shadow: none;
-}
-
-.hud-content .big-num {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--cyan, #4fe0e8);
-  text-align: center;
-  letter-spacing: 0.03em;
-  padding: 4px 0 6px;
-  text-shadow: 0 0 12px rgba(79, 224, 232, 0.3);
-}
-
-.hud-content .phase-gauge {
-  display: flex;
-  justify-content: center;
-  padding: 2px 0 6px;
-}
-
-.hud-content svg {
-  display: block;
-  margin: 0 auto;
-}
-
-.hud-buttons {
-  position: absolute;
-  top: 7px;
-  right: 8px;
-  display: flex;
-  gap: 5px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 10;
-}
-
-.hud-widget:hover .hud-buttons {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.hud-btn {
-  background: rgba(14, 24, 42, 0.85);
-  border: 1px solid rgba(79, 224, 232, 0.3);
-  color: var(--cyan, #4fe0e8);
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: bold;
-  transition: all 0.15s ease;
-  pointer-events: auto;
-}
-
-.hud-btn:hover {
-  background: rgba(79, 224, 232, 0.2);
-  border-color: var(--cyan, #4fe0e8);
-  color: #fff;
-}
-
-.hud-pin-btn.active {
-  background: rgba(126, 231, 135, 0.25);
-  border-color: var(--green, #7ee787);
-  color: var(--green, #7ee787);
-}
-
-.hud-close-btn:hover {
-  background: rgba(255, 107, 107, 0.25);
-  border-color: var(--red, #ff6b6b);
-  color: var(--red, #ff6b6b);
-}
-
-.hud-resize-handle {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 14px;
-  height: 14px;
-  background: linear-gradient(135deg, transparent 0%, rgba(79, 224, 232, 0.4) 100%);
-  cursor: nwse-resize;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: auto;
-  border-radius: 0 0 8px 0;
-}
-
-.hud-widget:hover .hud-resize-handle {
-  opacity: 1;
-}
-/* Stats Overlay - Very Faint Community Statistics */
-
-#statsOverlay {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(9, 15, 28, 0.15);
-  border: 1px solid rgba(100, 232, 248, 0.15);
-  border-radius: 4px;
-  padding: 12px 16px;
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
-  color: rgba(192, 208, 224, 0.4);
-  line-height: 1.6;
-  pointer-events: none;
-  z-index: 50;
-  backdrop-filter: blur(2px);
-  max-width: 200px;
-}
-
-.stats-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 3px 0;
-}
-
-.stats-label {
-  color: rgba(100, 232, 248, 0.25);
-  font-weight: normal;
-}
-
-.stats-value {
-  color: rgba(100, 232, 248, 0.35);
-  font-weight: bold;
-  text-align: right;
-}
-
-.stats-divider {
-  height: 1px;
-  background: rgba(100, 232, 248, 0.1);
-  margin: 6px 0;
-}
-
-#statsOverlay.loading::after {
-  content: '...';
-  animation: statsLoading 1.5s infinite;
-}
-
-@keyframes statsLoading {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
-/* Responsive: hide on very small screens */
-@media (max-width: 768px) {
-  #statsOverlay {
-    font-size: 10px;
-    padding: 8px 12px;
-    bottom: 10px;
-    left: 10px;
-  }
-}
-    /* ===== Telemetry bridge: vessel layer, filter panel, active-vessel HUD ===== */
-    .vessel-label-3d {
+    #hudContainer {
       position: absolute;
-      left: 0;
       top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      white-space: nowrap;
-      font: 600 10px/1 var(--font-mono);
-      color: var(--text-dim);
-      text-shadow: 0 0 4px #000;
-      padding: 2px 4px;
-      transform: translate(-50%, -150%);
+      z-index: 100;
     }
 
-    .vessel-label-3d.active {
-      color: var(--cyan);
-    }
-
-    .vessel-toggle {
+    .hud-widget {
       position: absolute;
-      left: 12px;
-      top: 12px;
-      z-index: 20;
-      display: none;
-      font: 600 12px var(--font-display);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      background: var(--panel);
-      border: 1px solid var(--cyan-dim);
-      border-radius: 6px;
-      padding: 6px 10px;
-      cursor: pointer;
-      backdrop-filter: blur(6px);
-    }
-
-    .vessel-toggle.show {
-      display: block;
-    }
-
-    .vessel-panel {
-      position: absolute;
-      left: 12px;
-      top: 46px;
-      z-index: 20;
-      width: 240px;
-      max-height: 60vh;
-      overflow: auto;
-      padding: 10px;
-      background: var(--panel2);
-      border: 1px solid var(--border-bright);
+      background: rgba(10, 16, 28, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid transparent;
       border-radius: 8px;
-      font: 12px var(--font-display);
-      color: var(--text);
-      opacity: 0;
-      transform: translateY(-6px);
-      pointer-events: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      padding: 10px 14px 12px;
+      min-width: 140px;
+      min-height: 90px;
+      cursor: move;
+      pointer-events: auto;
+      user-select: none;
+      font-family: var(--font-display, 'Rajdhani', sans-serif);
+      color: var(--text, #dbe7f5);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
-    .vessel-panel.open {
+    .hud-widget.pinned {
+      cursor: default;
+    }
+
+    .hud-widget:hover {
+      border-color: rgba(79, 224, 232, 0.4);
+      background: rgba(10, 16, 28, 0.65);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(79, 224, 232, 0.12);
+    }
+
+    .hud-widget.dragging {
+      opacity: 0.95;
+      border-color: var(--cyan, #4fe0e8);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(79, 224, 232, 0.25);
+    }
+
+    .hud-title {
+      font-family: var(--font-display, 'Rajdhani', sans-serif);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cyan, #4fe0e8);
+      margin: 0 0 8px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid rgba(79, 224, 232, 0.18);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-title::before {
+      content: '';
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--cyan, #4fe0e8);
+      box-shadow: 0 0 6px var(--cyan, #4fe0e8);
+      flex-shrink: 0;
+    }
+
+    .hud-title,
+    .hud-content {
+      zoom: var(--hud-s, 1);
+      width: calc(100% / var(--hud-s, 1));
+    }
+
+    .hud-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hud-content .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      width: 100%;
+      padding: 3px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+      gap: 12px;
+    }
+
+    .hud-content .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .hud-content .stat-row .k {
+      font-family: var(--font-display, 'Rajdhani', sans-serif);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-dim, #7688a6);
+      white-space: nowrap;
+    }
+
+    .hud-content .stat-row .v {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text, #dbe7f5);
+      text-align: right;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .hud-content .stat-row .v.hi {
+      color: var(--cyan, #4fe0e8);
+    }
+
+    .hud-content .stat-row .v.warn {
+      color: var(--amber, #ffb454);
+    }
+
+    .hud-content .stat-row .v.good {
+      color: var(--green, #7ee787);
+    }
+
+    .hud-content .stat-row .v.bad {
+      color: var(--red, #ff6b6b);
+    }
+
+    .hud-content .countdown {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--green, #7ee787);
+      text-align: center;
+      letter-spacing: 0.04em;
+      padding: 4px 0 6px;
+      text-shadow: 0 0 10px rgba(126, 231, 135, 0.25);
+    }
+
+    .hud-content .countdown.past {
+      color: var(--text-dim, #7688a6);
+      text-shadow: none;
+    }
+
+    .hud-content .big-num {
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--cyan, #4fe0e8);
+      text-align: center;
+      letter-spacing: 0.03em;
+      padding: 4px 0 6px;
+      text-shadow: 0 0 12px rgba(79, 224, 232, 0.3);
+    }
+
+    .hud-content .phase-gauge {
+      display: flex;
+      justify-content: center;
+      padding: 2px 0 6px;
+    }
+
+    .hud-content svg {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .hud-buttons {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      display: flex;
+      gap: 5px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+    }
+
+    .hud-widget:hover .hud-buttons {
       opacity: 1;
-      transform: none;
       pointer-events: auto;
     }
 
-    .vessel-panel .vp-search,
-    .vessel-panel .vp-body {
-      width: 100%;
-      margin-bottom: 8px;
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 4px 6px;
-      font: inherit;
-    }
-
-    .vessel-panel .vp-row {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--text-dim);
-    }
-
-    .vessel-panel .vp-check {
-      display: block;
-      margin: 4px 0;
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .vessel-panel .vp-count {
-      margin-top: 8px;
-      color: var(--text-dim);
-      font: 11px var(--font-mono);
-    }
-
-    .vh-panel {
-      font-family: var(--font-display, 'Rajdhani', sans-serif);
-    }
-
-    .vh-panel .vh-name {
+    .hud-btn {
+      background: rgba(14, 24, 42, 0.85);
+      border: 1px solid rgba(79, 224, 232, 0.3);
+      color: var(--cyan, #4fe0e8);
+      width: 22px;
+      height: 22px;
+      padding: 0;
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--cyan, #4fe0e8);
-      margin-bottom: 12px;
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .vh-panel .vh-pulse {
-      flex: 0 0 auto;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green, #7ee787);
-      animation: vhPulse 1.8s infinite;
-    }
-
-    .vh-panel .vh-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-      gap: 12px 18px;
-    }
-
-    .vh-panel .vh-grid > div {
-      min-width: 0;
-    }
-
-    .vh-panel .vh-grid span {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-dim, #7688a6);
-      margin-bottom: 4px;
-    }
-
-    .vh-panel .vh-grid b {
-      display: block;
-      font: 600 16px/1.2 var(--font-mono, monospace);
-      color: var(--text, #dbe7f5);
-      overflow-wrap: anywhere;
-    }
-
-    @keyframes vhPulse {
-      0% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0.6); }
-      70% { box-shadow: 0 0 0 8px rgba(126, 231, 135, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(126, 231, 135, 0); }
-    }
-
-    /* ===== Map overlay for the active vessel ===== */
-    .vessel-leader-svg {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      pointer-events: none;
-      z-index: 3;
-    }
-
-    .vo-line {
-      stroke: rgba(79, 228, 232, 0.75);
-      stroke-width: 1;
-    }
-
-    .vo-line.approx {
-      stroke-dasharray: 4 4;
-    }
-
-    .vo-ring {
-      fill: none;
-      stroke: rgba(79, 228, 232, 0.95);
-      stroke-width: 1.5;
-      animation: voDim 7s ease-in-out infinite;
-    }
-
-    @keyframes voDim {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-
-    .vessel-tag {
-      position: absolute;
-      z-index: 4;
-      pointer-events: none;
-      white-space: nowrap;
-      transform: translate(0, -50%);
-      font: 700 11px/1 var(--font-mono);
-      letter-spacing: 0.08em;
-      color: var(--cyan);
-      background: rgba(8, 14, 24, 0.88);
-      border: 1px solid var(--cyan-dim);
+      justify-content: center;
+      cursor: pointer;
       border-radius: 4px;
-      padding: 4px 8px;
-      box-shadow: 0 0 10px rgba(79, 228, 232, 0.15);
-      animation: voDim 7s ease-in-out infinite;
+      font-size: 11px;
+      font-weight: bold;
+      transition: all 0.15s ease;
+      pointer-events: auto;
     }
 
-    .vessel-tag.approx {
-      color: var(--text-dim);
-      border-style: dashed;
+    .hud-btn:hover {
+      background: rgba(79, 224, 232, 0.2);
+      border-color: var(--cyan, #4fe0e8);
+      color: #fff;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .vo-ring,
-      .vessel-tag {
-        animation: none;
+    .hud-pin-btn.active {
+      background: rgba(126, 231, 135, 0.25);
+      border-color: var(--green, #7ee787);
+      color: var(--green, #7ee787);
+    }
+
+    .hud-close-btn:hover {
+      background: rgba(255, 107, 107, 0.25);
+      border-color: var(--red, #ff6b6b);
+      color: var(--red, #ff6b6b);
+    }
+
+    .hud-resize-handle {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      background: linear-gradient(135deg, transparent 0%, rgba(79, 224, 232, 0.4) 100%);
+      cursor: nwse-resize;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: auto;
+      border-radius: 0 0 8px 0;
+    }
+
+    .hud-widget:hover .hud-resize-handle {
+      opacity: 1;
+    }
+
+    /* Stats Overlay - Very Faint Community Statistics */
+
+    #statsOverlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(9, 15, 28, 0.15);
+      border: 1px solid rgba(100, 232, 248, 0.15);
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: rgba(192, 208, 224, 0.4);
+      line-height: 1.6;
+      pointer-events: none;
+      z-index: 50;
+      backdrop-filter: blur(2px);
+      max-width: 200px;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 3px 0;
+    }
+
+    .stats-label {
+      color: rgba(100, 232, 248, 0.25);
+      font-weight: normal;
+    }
+
+    .stats-value {
+      color: rgba(100, 232, 248, 0.35);
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .stats-divider {
+      height: 1px;
+      background: rgba(100, 232, 248, 0.1);
+      margin: 6px 0;
+    }
+
+    #statsOverlay.loading::after {
+      content: '...';
+      animation: statsLoading 1.5s infinite;
+    }
+
+    @keyframes statsLoading {
+
+      0%,
+      100% {
+        opacity: 0.4;
+      }
+
+      50% {
+        opacity: 0.8;
       }
     }
 
+    /* Responsive: hide on very small screens */
+    @media (max-width: 768px) {
+      #statsOverlay {
+        font-size: 10px;
+        padding: 8px 12px;
+        bottom: 10px;
+        left: 10px;
+      }
+    }
   </style>
 </head>
 
@@ -3779,7 +3606,8 @@
         <img class="mark" src="Kerbalist.png" alt="Kerbalist">
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Astrodynamics Suite <div>v4.2</div></div>
+          <div class="sub">Astrodynamics Suite <div>v4.2</div>
+          </div>
         </div>
       </div>
       <div class="ut-clock">
@@ -3792,11 +3620,11 @@
         <div class="live-panel" id="livePanel">
           <h4>Sync UT with a running KSP2</h4>
           <div class="opt">
-            <div class="opt-title">① KSP2 Telemetry Bridge (recommended)</div>
-            <div class="opt-desc">Connects to the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener"><b>Kerbalist Telemetry Bridge</b></a> mod running inside KSP2. UT, planet
-              and moon positions, and every vessel in the system come straight from the game while it runs. Works while
-              flying, no manual saving needed.</div>
-            <input type="text" id="bridgeUrl" value="ws://127.0.0.1:8765/ws" placeholder="ws://127.0.0.1:8765/ws">
+            <div class="opt-title">① Local bridge (recommended)</div>
+            <div class="opt-desc">Run a small companion script (e.g. using the <b>kRPC2</b> mod) that reads live UT from
+              KSP2 and serves it on localhost. This page polls it every 2s. Works while flying — no manual saving
+              needed.</div>
+            <input type="text" id="bridgeUrl" value="http://localhost:5005/ut" placeholder="http://localhost:5005/ut">
             <button id="bridgeConnectBtn">Connect</button>
           </div>
           <div class="opt">
@@ -3891,7 +3719,8 @@
           <div class="lg-row"><span class="swatch-line dashed" style="color:var(--green)"></span>Transfer arc</div>
           <div class="lg-row"><span class="dot" style="background:var(--green)"></span>Departure ghost</div>
           <div class="lg-row"><span class="dot"
-              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival ghost</div>
+              style="background:rgba(255,180,84,.4);border:1px dashed #ffb454;border-radius:50%;"></span>Arrival ghost
+          </div>
           <div class="lg-row"><span class="dot" style="background:var(--violet)"></span>Gravity assist</div>
         </div>
 
@@ -3913,7 +3742,8 @@
       </div>
 
       <!-- Collapsed rail — sits between the viewport area and the sidebar -->
-      <div class="sidebar-collapsed-rail" id="sidebarCollapsedRail" title="Click to expand planner ([ or ])" role="button" tabindex="0">
+      <div class="sidebar-collapsed-rail" id="sidebarCollapsedRail" title="Click to expand planner ([ or ])"
+        role="button" tabindex="0">
         <span class="rail-text rail-text-collapse">Collapse</span>
         <span class="rail-text rail-text-expand">Expand</span>
       </div>
@@ -4051,9 +3881,9 @@
         <div id="warpControls" class="warp-controls"></div>
         <div id="timeControls" class="time-controls"></div>
 
-        </div>
       </div>
     </div>
+  </div>
   </div>
   <!-- Changelog Popup Modal -->
   <div class="changelog-overlay" id="changelogOverlay" onclick="if(event.target===this)hideChangelog()">
@@ -4067,29 +3897,43 @@
         <h2>[4.2] - 2026-10-17 &mdash; Kerbalist v4.2 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
-          <li><strong>Active vessel HUD</strong>: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.</li>
-          <li><strong>Vessel filter panel</strong>: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.</li>
+          <li><strong>Live sync from the <a
+                href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank"
+                rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and
+            orbit rings come from the game while it runs.</li>
+          <li><strong>Active vessel HUD</strong>: Appears on the map while a vessel is active, showing its name, body,
+            situation, altitude, speed, apoapsis and periapsis.</li>
+          <li><strong>Vessel filter panel</strong>: Search, body, type, active-only and label options. It appears only
+            when the bridge reports a vessel list.</li>
         </ul>
         <h3>Changed</h3>
         <ul>
-          <li><strong>Game orbits in live sync</strong>: While the bridge is live, body positions and orbit rings no longer use the stock orbit table. The app uses a fixed axis mapping instead of fitting against the stock orbits.</li>
-          <li><strong>Live status line</strong>: Reads &quot;synced &hellip; game orbits&quot; with the vessel count.</li>
+          <li><strong>Game orbits in live sync</strong>: While the bridge is live, body positions and orbit rings no
+            longer use the stock orbit table. The app uses a fixed axis mapping instead of fitting against the stock
+            orbits.</li>
+          <li><strong>Live status line</strong>: Reads &quot;synced &hellip; game orbits&quot; with the vessel count.
+          </li>
         </ul>
         <h3>Known Issues</h3>
         <ul>
-          <li>The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts may not match the bodies shown in live sync.</li>
-          <li>The active vessel is not drawn on the map yet (the bridge does not send its position relative to its body). The HUD still works.</li>
+          <li>The transfer planner, porkchop plot and assist arcs still use the stock orbit table, so their forecasts
+            may not match the bodies shown in live sync.</li>
+          <li>The active vessel is not drawn on the map yet (the bridge does not send its position relative to its
+            body). The HUD still works.</li>
           <li>The info panel shows stock orbital values in live sync.</li>
         </ul>
 
         <h2>[4.1] - 2026-10-10 &mdash; Kerbalist v4.1 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>HUD Widgets</strong>: Floating window, phase, ejection, time, and ghost transfer information panels. Drag to reposition, pin to keep visible, and toggle from the sidebar.</li>
-          <li><strong>Community Stats Overlay</strong>: See live community statistics (total Kerbalists, transfers planned, years flown, etc.) in the bottom-left corner.</li>
-          <li><strong>Firefox Performance</strong>: WebGL rendering and HUD updates optimized for Firefox 60fps stability.</li>
-          <li><strong>Astrodynamics Suite Branding</strong>: Updated header and title to reflect the application's focus.</li>
+          <li><strong>HUD Widgets</strong>: Floating window, phase, ejection, time, and ghost transfer information
+            panels. Drag to reposition, pin to keep visible, and toggle from the sidebar.</li>
+          <li><strong>Community Stats Overlay</strong>: See live community statistics (total Kerbalists, transfers
+            planned, years flown, etc.) in the bottom-left corner.</li>
+          <li><strong>Firefox Performance</strong>: WebGL rendering and HUD updates optimized for Firefox 60fps
+            stability.</li>
+          <li><strong>Astrodynamics Suite Branding</strong>: Updated header and title to reflect the application's
+            focus.</li>
         </ul>
         <h3>Changed</h3>
         <ul>
@@ -4106,49 +3950,76 @@
         <h2>[4.0] - 2026-10-03</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Verification code on bug reports</strong>: "Open GitHub Issue" unlocks after you type the 5 characters shown in the form.</li>
-          <li><strong>Automatic app screenshot</strong>: Opening the bug report form captures the whole app and copies it to the clipboard. Press Ctrl+V in the GitHub issue to attach it. You can retake it or remove it.</li>
-          <li><strong>Your own screenshot</strong>: Click, drag and drop, or paste an image instead (PNG, JPG, GIF or WebP, up to 5 MB). Dropping works anywhere on the form.</li>
-          <li><strong>Collapsible legend</strong>: The map legend is now a box with a minimize button, like Controls. Press L to toggle it. The zoom buttons sit above it.</li>
+          <li><strong>Verification code on bug reports</strong>: "Open GitHub Issue" unlocks after you type the 5
+            characters shown in the form.</li>
+          <li><strong>Automatic app screenshot</strong>: Opening the bug report form captures the whole app and copies
+            it to the clipboard. Press Ctrl+V in the GitHub issue to attach it. You can retake it or remove it.</li>
+          <li><strong>Your own screenshot</strong>: Click, drag and drop, or paste an image instead (PNG, JPG, GIF or
+            WebP, up to 5 MB). Dropping works anywhere on the form.</li>
+          <li><strong>Collapsible legend</strong>: The map legend is now a box with a minimize button, like Controls.
+            Press L to toggle it. The zoom buttons sit above it.</li>
         </ul>
         <h3>Changed</h3>
         <ul>
-          <li><strong>Transfer window timing</strong>: "Window opens at" is now worked out from the real orbit positions instead of average speeds. It no longer shifts as you get close (for Kerbin to Duna it used to move by about 5 days), the countdown no longer reaches zero a few days early, and the window stays open until the phase is off by 1° (about 2.5 days for Duna) before the countdown moves on to the next one.</li>
-          <li><strong>Required phase angle</strong>: Shows the real angle for the window instead of the circular-orbit value. For eccentric destinations like Duna it can differ by a degree or two.</li>
-          <li><strong>Exact transfer numbers</strong>: Flight time, ejection and capture Δv, v∞, transfer orbit size, arrival time and the burn angle now come from the same trajectory that is drawn on the map, using the cheapest flight time for the window. The old numbers assumed circular orbits and would have missed Duna by about a million km. Following the new ones reaches the planet.</li>
-          <li><strong>Ejection card</strong>: Now titled "Ejection Angle (burn point)". The diagram marks the reference point (RG for retrograde, PG for prograde) and the burn angle is measured from it. The orange exhaust lines on the burn marker are gone.</li>
-          <li><strong>Source layout</strong>: The code is now 43 small files in <code>src/parts</code> that <code>npm run build</code> joins into the single <code>index.html</code>, with physics tests and a GitHub check. Nothing changes for users.</li>
+          <li><strong>Transfer window timing</strong>: "Window opens at" is now worked out from the real orbit positions
+            instead of average speeds. It no longer shifts as you get close (for Kerbin to Duna it used to move by about
+            5 days), the countdown no longer reaches zero a few days early, and the window stays open until the phase is
+            off by 1° (about 2.5 days for Duna) before the countdown moves on to the next one.</li>
+          <li><strong>Required phase angle</strong>: Shows the real angle for the window instead of the circular-orbit
+            value. For eccentric destinations like Duna it can differ by a degree or two.</li>
+          <li><strong>Exact transfer numbers</strong>: Flight time, ejection and capture Δv, v∞, transfer orbit size,
+            arrival time and the burn angle now come from the same trajectory that is drawn on the map, using the
+            cheapest flight time for the window. The old numbers assumed circular orbits and would have missed Duna by
+            about a million km. Following the new ones reaches the planet.</li>
+          <li><strong>Ejection card</strong>: Now titled "Ejection Angle (burn point)". The diagram marks the reference
+            point (RG for retrograde, PG for prograde) and the burn angle is measured from it. The orange exhaust lines
+            on the burn marker are gone.</li>
+          <li><strong>Source layout</strong>: The code is now 43 small files in <code>src/parts</code> that
+            <code>npm run build</code> joins into the single <code>index.html</code>, with physics tests and a GitHub
+            check. Nothing changes for users.</li>
         </ul>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Ejection angle was on the wrong side</strong>: For an outbound transfer it said to burn ahead of prograde, which sends the ship out against the planet's motion. It now says how far ahead of retrograde to burn (outbound) or ahead of prograde (inbound), including any tilt in the departure direction.</li>
-          <li><strong>Bug report with a screenshot didn't open</strong>: The image was packed into the GitHub link, which made it too long. Screenshots now go through the clipboard.</li>
-          <li><strong>Dropped images opened in a new tab</strong>: Only the small drop box caught drops. Dropping now works anywhere on the form.</li>
-          <li><strong>JPG screenshots couldn't be copied</strong>: The clipboard only takes PNG, so uploads are converted first.</li>
-          <li><strong>Submit button off-screen on short windows</strong>: The bug report form now scrolls inside the window.</li>
+          <li><strong>Ejection angle was on the wrong side</strong>: For an outbound transfer it said to burn ahead of
+            prograde, which sends the ship out against the planet's motion. It now says how far ahead of retrograde to
+            burn (outbound) or ahead of prograde (inbound), including any tilt in the departure direction.</li>
+          <li><strong>Bug report with a screenshot didn't open</strong>: The image was packed into the GitHub link,
+            which made it too long. Screenshots now go through the clipboard.</li>
+          <li><strong>Dropped images opened in a new tab</strong>: Only the small drop box caught drops. Dropping now
+            works anywhere on the form.</li>
+          <li><strong>JPG screenshots couldn't be copied</strong>: The clipboard only takes PNG, so uploads are
+            converted first.</li>
+          <li><strong>Submit button off-screen on short windows</strong>: The bug report form now scrolls inside the
+            window.</li>
         </ul>
         <h3>Known Issues</h3>
         <ul>
-          <li>Transfers are flat (no orbital tilt). Duna and Eve are fine, but Moho (7°) and Eeloo (6°) won't intercept exactly.</li>
+          <li>Transfers are flat (no orbital tilt). Duna and Eve are fine, but Moho (7°) and Eeloo (6°) won't intercept
+            exactly.</li>
           <li>The return-trip estimate still uses the quick circular-orbit numbers.</li>
           <li>The map doesn't render on mobile browsers, and the kRPC2 bridge doesn't work yet (see 3.6.4).</li>
         </ul>
 
-                <h2>[3.7.0] - 2026-09-25</h2>
+        <h2>[3.7.0] - 2026-09-25</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Bug report button</strong>: A button in the bottom-left opens a form (title, description, optional screenshot) that opens a pre-filled GitHub issue.</li>
-          <li><strong>Origin and destination on the map</strong>: Dropdowns in the top-left, synced with the sidebar.</li>
+          <li><strong>Bug report button</strong>: A button in the bottom-left opens a form (title, description, optional
+            screenshot) that opens a pre-filled GitHub issue.</li>
+          <li><strong>Origin and destination on the map</strong>: Dropdowns in the top-left, synced with the sidebar.
+          </li>
         </ul>
         <h3>Changed</h3>
         <ul>
-          <li><strong>HUD layout</strong>: Controls top-right, camera readout middle-right, zoom buttons and legend bottom-right. Nothing sits behind the sidebar.</li>
+          <li><strong>HUD layout</strong>: Controls top-right, camera readout middle-right, zoom buttons and legend
+            bottom-right. Nothing sits behind the sidebar.</li>
         </ul>
 
-<h2>[3.6.6] - 2026-09-22</h2>
+        <h2>[3.6.6] - 2026-09-22</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Map view off-center</strong>: <code>.map-wrap</code> was <code>position: fixed</code> and covered the whole window, so the sidebar sat on top of the right part of the map and the Sun looked shifted right. It is a normal flex child again (<code>position: relative; flex: 1 1 auto; min-width: 0</code>).</li>
+          <li><strong>Map view off-center</strong>: <code>.map-wrap</code> was <code>position: fixed</code> and covered
+            the whole window, so the sidebar sat on top of the right part of the map and the Sun looked shifted right.
+            It is a normal flex child again (<code>position: relative; flex: 1 1 auto; min-width: 0</code>).</li>
         </ul>
 
         <h2>[3.6.5] - 2026-09-16</h2>
@@ -4166,7 +4037,8 @@
           <li><strong>UI Button Scaling &amp; Layout</strong>:
             <ul>
               <li>Reduced "Buy me a beer" and "Changelog" button sizes by 25%.</li>
-              <li>Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile layouts.</li>
+              <li>Placed "Set Time" and "Live Sync" buttons side-by-side on a single row across desktop and mobile
+                layouts.</li>
               <li>Relocated camera control buttons upward so they no longer overlap with the map legend.</li>
               <li>Scaled top-left origin/destination chips, top-right shortcuts bubble, and camera HUD size by +25%.
               </li>
@@ -4178,13 +4050,20 @@
         <h2>[3.6.4] - 2026-09-15</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Sidebar rendered below the map</strong>: A stray <code>&lt;/div&gt;</code> closed <code>.map-wrap</code> and <code>.main</code> too early, so the sidebar ended up outside <code>.main</code> and dropped below the map on desktop. It was an HTML nesting bug, not a CSS one.</li>
-          <li><strong>Orbits drifted after 1-2 years</strong>: The in-game year is 425 days, not 426. <code>YEAR_DAYS</code> is corrected and <code>m0Deg</code> is recalibrated for all six planets from in-game readings taken about 15 years apart (within 0.01° each). New m0Deg: Moho 124.90, Eve 314.44, Duna 348.60, Dres 110.74, Jool 334.08, Eeloo 158.80 (was 108.64 / 165.54 / 350.99 / 116.10 / 339.25 / 163.48).</li>
+          <li><strong>Sidebar rendered below the map</strong>: A stray <code>&lt;/div&gt;</code> closed
+            <code>.map-wrap</code> and <code>.main</code> too early, so the sidebar ended up outside <code>.main</code>
+            and dropped below the map on desktop. It was an HTML nesting bug, not a CSS one.</li>
+          <li><strong>Orbits drifted after 1-2 years</strong>: The in-game year is 425 days, not 426.
+            <code>YEAR_DAYS</code> is corrected and <code>m0Deg</code> is recalibrated for all six planets from in-game
+            readings taken about 15 years apart (within 0.01° each). New m0Deg: Moho 124.90, Eve 314.44, Duna 348.60,
+            Dres 110.74, Jool 334.08, Eeloo 158.80 (was 108.64 / 165.54 / 350.99 / 116.10 / 339.25 / 163.48).</li>
         </ul>
 
         <h3>Known Issues</h3>
         <ul>
-          <li><strong>LAN isn't modeled separately</strong>: Argument of periapsis and LAN are combined into one <code>orientDeg</code> and inclination is a plain tilt, which is only exact when LAN is 0. That leaves a small constant position error: largest for Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°).</li>
+          <li><strong>LAN isn't modeled separately</strong>: Argument of periapsis and LAN are combined into one
+            <code>orientDeg</code> and inclination is a plain tilt, which is only exact when LAN is 0. That leaves a
+            small constant position error: largest for Moho (7°) and Eeloo (6.15°), negligible for Jool (1.3°).</li>
           <li><strong>kRPC2 Dependency Mod Doesn't Work</strong>: The kRPC2 dependency mod on the KSP2 side does not
             work yet — the Python bridge (<code>kerbalist_bridge.py</code>) cannot connect to KSP2 because the required
             server-side mod is not functional.</li>
@@ -4223,7 +4102,9 @@
         <h2>[3.6] - 2026-09-13</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Mobile layout</strong>: On small screens a Map / Controls toggle switches between the 3D map and the sidebar. The map uses touch controls (1-finger rotate, 2-finger zoom and pan) and the sidebar has bigger tap targets.</li>
+          <li><strong>Mobile layout</strong>: On small screens a Map / Controls toggle switches between the 3D map and
+            the sidebar. The map uses touch controls (1-finger rotate, 2-finger zoom and pan) and the sidebar has bigger
+            tap targets.</li>
         </ul>
 
         <h2>[3.5.6] - 2026-09-13</h2>
@@ -4260,7 +4141,7 @@
             separate clamp.</li>
         </ul>
 
-<h2>[3.5.5] - 2026-09-12</h2>
+        <h2>[3.5.5] - 2026-09-12</h2>
         <h3>Fixed</h3>
         <ul>
           <li><strong>Moon Transfer Visualization Bug (Critical)</strong>: Fixed a coordinate double-counting bug where
@@ -4332,7 +4213,7 @@
             from double-click mouse settling.</li>
         </ul>
 
-<h2>[3.5.0] - 2026-09-06</h2>
+        <h2>[3.5.0] - 2026-09-06</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Full Label Interactivity</strong>: Planet and moon names are now fully interactive and much larger
@@ -4359,7 +4240,7 @@
             keeping them in view even as the system evolves.</li>
         </ul>
 
-<h2>[3.0 - 3.4 Consolidated] - 2026-09-06</h2>
+        <h2>[3.0 - 3.4 Consolidated] - 2026-09-06</h2>
         <h3>Major Changes</h3>
 
         <h4>Scaling &amp; Coordinate System (v3.0)</h4>
@@ -4414,7 +4295,10 @@
         <h2>[2.9] - 2026-09-06</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Epoch sync corrected again</strong>: 2.8 still treated mean anomaly as true anomaly and ignored each planet's argument of periapsis, which is wrong for eccentric orbits (Moho 0.2, Dres 0.145, Eeloo 0.26). m0Deg is now derived with the same math the app uses to draw positions, and all six planets match their in-game phase angles within 0.01°.</li>
+          <li><strong>Epoch sync corrected again</strong>: 2.8 still treated mean anomaly as true anomaly and ignored
+            each planet's argument of periapsis, which is wrong for eccentric orbits (Moho 0.2, Dres 0.145, Eeloo 0.26).
+            m0Deg is now derived with the same math the app uses to draw positions, and all six planets match their
+            in-game phase angles within 0.01°.</li>
           <li><strong>Full Kepler Inversion</strong>: m0Deg is now derived using the same math the app itself uses to
             render positions (<code>theta = trueAnomaly + orientDeg</code>, with true anomaly related to mean anomaly
             through the eccentric anomaly via Kepler&#x27;s equation). Verified numerically against the app&#x27;s own
@@ -4424,10 +4308,12 @@
             a real maneuver. The reference &quot;Landing @ Jool&quot; line (previously an arbitrary, misleadingly small
             ~2,400 m/s estimate) has been removed rather than guessed at.</li>
         </ul>
-<h2>[2.8] - 2026-09-06</h2>
+        <h2>[2.8] - 2026-09-06</h2>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Epoch sync corrected</strong>: 2.7 used 24-hour days instead of the 6-hour Kerbin day (21,600 s) and treated the Target panel's phase angles (target minus origin) as absolute angles. m0Deg is recalculated for all six planets; Eeloo's phase angle now matches the in-game -16.90°.</li>
+          <li><strong>Epoch sync corrected</strong>: 2.7 used 24-hour days instead of the 6-hour Kerbin day (21,600 s)
+            and treated the Target panel's phase angles (target minus origin) as absolute angles. m0Deg is recalculated
+            for all six planets; Eeloo's phase angle now matches the in-game -16.90°.</li>
           <li><strong>Recalculated m0Deg Values</strong>: All six planets recalculated using the correct 21,600s/day
             time base and proper phase-angle-relative-to-Kerbin interpretation, then verified against the in-game Target
             panel (Eeloo phase angle now matches -16.90° exactly at the reference UT).</li>
@@ -4436,7 +4322,7 @@
             identical. Landing estimate now scales from low-orbit velocity directly instead of a velocity difference.
           </li>
         </ul>
-<h2>[2.7] - 2026-09-05</h2>
+        <h2>[2.7] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Orbital Epoch Synchronization</strong>: Synchronized all planet orbital mean anomalies (m0Deg) to
@@ -4461,7 +4347,7 @@
           <li><strong>Transfer Window Accuracy</strong>: Transfer window calculations now align with actual in-game
             opportunities due to corrected orbital epochs.</li>
         </ul>
-<h2>[2.6] - 2026-09-05</h2>
+        <h2>[2.6] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>KSP2 Moon Gravitational Parameters</strong>: Added actual KSP2 gravitational parameters (mu
@@ -4493,7 +4379,8 @@
           <li><strong>Moon Orbital Mechanics</strong>: All moon insertion and landing calculations now use correct
             orbital velocity formulas based on accurate gravitational parameters rather than compensation multipliers.
           </li>
-          <li><strong>Physics and display separated</strong>: Calculations use the original KSP2 orbital data; map scaling only affects the 3D view.</li>
+          <li><strong>Physics and display separated</strong>: Calculations use the original KSP2 orbital data; map
+            scaling only affects the 3D view.</li>
         </ul>
         <h3>Technical Details</h3>
         <p><strong>Moon Gravitational Parameters (added to all moons):</strong></p>
@@ -4513,7 +4400,8 @@
         <h2>[2.5] - 2026-09-05</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Porkchop plot guide</strong>: A card above the plot explains the axes and colors, how to spot a good window, and how to click a cell to inspect it.</li>
+          <li><strong>Porkchop plot guide</strong>: A card above the plot explains the axes and colors, how to spot a
+            good window, and how to click a cell to inspect it.</li>
           <li><strong>Landing Δv Reference Estimates</strong>: Added &quot;Landing @ [destination]&quot; line item
             showing estimated powered descent cost for destination (planets and moons). Displayed as reference value
             only, depends on approach geometry.</li>
@@ -4559,7 +4447,7 @@
             deriving from escape velocity rather than orbital velocity, better reflecting actual circularization costs.
           </li>
         </ul>
-<h2>[2.4] - 2026-08-28</h2>
+        <h2>[2.4] - 2026-08-28</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Moon Transfer Δv Budgeting</strong>: Fixed moon destination transfers showing identical Δv budget
@@ -4573,7 +4461,7 @@
           <li><strong>Return Trip Moon Budgeting</strong>: Round-trip return-to-Kerbin calculations now include outbound
             moon orbit insertion cost for accurate mission budgeting.</li>
         </ul>
-<h2>[2.3] - 2026-08-27</h2>
+        <h2>[2.3] - 2026-08-27</h2>
         <h3>Added</h3>
         <ul>
           <li><strong>Return-to-Kerbin Δv Budgeting</strong>: Added mission time on target body controls to the Δv
@@ -4596,7 +4484,8 @@
         <h3>Changed</h3>
         <ul>
           <li><strong>Card order</strong>: The Ejection Angle card now sits directly below the Δv Budget card.</li>
-          <li><strong>UI scaling</strong>: Sidebar UI, fonts, controls, padding and borders are 30% larger and note text 20% larger; diagrams scale with them.</li>
+          <li><strong>UI scaling</strong>: Sidebar UI, fonts, controls, padding and borders are 30% larger and note text
+            20% larger; diagrams scale with them.</li>
           <li><strong>Dres Ring System &amp; Drast Orbit Integration</strong>: Re-centered Dres&#x27;s ring system
             directly along the orbit of Drast with multi-band ring texturing so Drast orbits embedded within the ring
             band.</li>
@@ -4635,7 +4524,10 @@
         </ul>
         <h3>Fixed</h3>
         <ul>
-          <li><strong>Gravity assist leg timing</strong>: Leg durations assumed the flyby planet sat exactly opposite the next body, which could force a near-parabolic, distorted arc when it didn't. Durations are now found by searching for real opposition, with a small offset to stay clear of the Lambert solver's singularity at 180°.</li>
+          <li><strong>Gravity assist leg timing</strong>: Leg durations assumed the flyby planet sat exactly opposite
+            the next body, which could force a near-parabolic, distorted arc when it didn't. Durations are now found by
+            searching for real opposition, with a small offset to stay clear of the Lambert solver's singularity at
+            180°.</li>
         </ul>
         <h2>[1.7.0] - 2026-08-07</h2>
         <h3>Changed</h3>
@@ -5740,9 +5632,9 @@
       updateCamera();
 
       /* ---- Renderer ---- */
-      const renderer = new THREE.WebGLRenderer({ 
-        canvas: canvas3d, 
-        antialias: true, 
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas3d,
+        antialias: true,
         logarithmicDepthBuffer: true,
         powerPreference: 'high-performance',
         precision: 'highp',
@@ -7727,8 +7619,6 @@
       }
 
       function stopLive() {
-        stopBridge();
-        setLiveOverlay(false);
         if (liveIntervalId) clearInterval(liveIntervalId);
         liveIntervalId = null;
         liveMode = null;
@@ -7962,8 +7852,10 @@
           if (!(energy < 0)) return null;                                   // must be a bound orbit
           const vi = [sol.v1[0] - so.vx, sol.v1[1] - so.vy], va = [sol.v2[0] - sd.vx, sol.v2[1] - sd.vy];
           const vInfDep = Math.hypot(vi[0], vi[1]), vInfArr = Math.hypot(va[0], va[1]);
-          return { tof, vInfDep, vInfArr, vi, va, vd: [sd.vx, sd.vy], a: -mu / (2 * energy),
-                   cost: ejectionBurn(vInfDep, o).dvBurn + ejectionBurn(vInfArr, d).dvBurn };
+          return {
+            tof, vInfDep, vInfArr, vi, va, vd: [sd.vx, sd.vy], a: -mu / (2 * energy),
+            cost: ejectionBurn(vInfDep, o).dvBurn + ejectionBurn(vInfArr, d).dvBurn
+          };
         };
         const N = 130, lo = 0.7, hi = 1.35, step = (hi - lo) / N;
         let best = null, bestK = -1; const grid = [];
@@ -8016,8 +7908,10 @@
         const tilt = angNormPM180(dir - (forward ? 0 : 180));
         const fromRef = ej + tilt;
         const refName = forward ? 'retrograde' : 'prograde';
-        return { ejAngle: ej, tilt, refName, refCCW, fromRef, burnCCW: refCCW + fromRef,
-                 text: Math.abs(fromRef).toFixed(1) + '\u00B0 ' + (fromRef >= 0 ? 'ahead of ' : 'behind ') + refName };
+        return {
+          ejAngle: ej, tilt, refName, refCCW, fromRef, burnCCW: refCCW + fromRef,
+          text: Math.abs(fromRef).toFixed(1) + '\u00B0 ' + (fromRef >= 0 ? 'ahead of ' : 'behind ') + refName
+        };
       }
 
       function computeTransfer(originName, destName, tRef = UT, exact = true) {
@@ -8317,7 +8211,7 @@
       function renderTransferResults() {
         const r = currentResult;
         if (!r) { document.getElementById('transferResults').innerHTML = '<div class="placeholder">No transfer computed.</div>'; return; }
-        
+
         const moonInsertDv = r.moonInsertionDv || 0;
         const landingDv = r.landingDv || 0;
         const waitSec = r.waitSec !== null ? Math.max(0, r.waitSec) : 0;
@@ -8357,7 +8251,7 @@
         const isHudActive = (k) => (window.hudWidgets && window.hudWidgets.active && window.hudWidgets.active[k]) ? ' on' : '';
 
         // For assist: show simplified phase/ejection, highlight the 2-leg nature
-        const phaseCard = selectedAssist 
+        const phaseCard = selectedAssist
           ? `
     <div class="card" data-card="phase">
       <h3><span class="dot"></span>Phase Angle (direct reference)<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
@@ -8727,644 +8621,18 @@
       document.getElementById('pkGenerate').onclick = generatePorkchop;
 
       /* =========================================================
-         13. BRIDGE FRAME FIT — pure maths, no DOM / THREE
-         The telemetry bridge reports KSP2 world vectors whose axis
-         convention is not documented. Rather than guess it, we fit
-         the best signed axis permutation against the analytic model
-         at runtime. A wrong guess shows a large error, so the fit
-         also tells us when the bridge data can't be trusted.
-         ========================================================= */
-      const BRIDGE_AXIS_PERMS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
-
-      // All 48 signed permutations (6 orderings x 8 sign patterns, including mirrors).
-      function bridgeAxisCandidates() {
-        const out = [];
-        for (const perm of BRIDGE_AXIS_PERMS) {
-          for (let s = 0; s < 8; s++) {
-            out.push({ perm, sign: [s & 1 ? -1 : 1, s & 2 ? -1 : 1, s & 4 ? -1 : 1] });
-          }
-        }
-        return out;
-      }
-
-      function applyBridgeAxisMap(map, v) {
-        const c = [v.x, v.y, v.z];
-        return {
-          x: map.sign[0] * c[map.perm[0]],
-          y: map.sign[1] * c[map.perm[1]],
-          z: map.sign[2] * c[map.perm[2]]
-        };
-      }
-
-      /**
-       * pairs: [{ bridge: {x, y, z}, expected: {x, y, z} }], both already in scene units.
-       * Returns { map, relError } for the best candidate, where
-       * relError = sqrt(sum |bridge - expected|^2 / sum |expected|^2). 0 is a perfect fit.
-       */
-      function chooseBridgeAxisMap(pairs) {
-        let best = null;
-        for (const cand of bridgeAxisCandidates()) {
-          let err = 0, mag = 0;
-          for (const p of pairs) {
-            const m = applyBridgeAxisMap(cand, p.bridge);
-            const dx = m.x - p.expected.x, dy = m.y - p.expected.y, dz = m.z - p.expected.z;
-            err += dx * dx + dy * dy + dz * dz;
-            mag += p.expected.x * p.expected.x + p.expected.y * p.expected.y + p.expected.z * p.expected.z;
-          }
-          const relError = mag > 0 ? Math.sqrt(err / mag) : Infinity;
-          if (!best || relError < best.relError) best = { map: cand, relError };
-        }
-        return best;
-      }
-
-      // Bridge frame (y up, x/z ecliptic) -> scene frame (y up, z flipped to right-handed).
-      // A prograde orbit stays prograde after the flip, which matches the app's convention.
-      const BRIDGE_TO_SCENE_MAP = { perm: [0, 1, 2], sign: [1, 1, -1] };
-
-      // Two-body orbit from a single state vector. r and v are {x,y,z} relative to the
-      // central body (metres, m/s); mu is the central body's gravitational parameter.
-      // Returns N points (metres) tracing the full ellipse in the same frame.
-      function bridgeOrbitLoop(r, v, mu, N) {
-        const rm = Math.hypot(r.x, r.y, r.z);
-        const v2 = v.x * v.x + v.y * v.y + v.z * v.z;
-        const h = { x: r.y * v.z - r.z * v.y, y: r.z * v.x - r.x * v.z, z: r.x * v.y - r.y * v.x };
-        const hm = Math.hypot(h.x, h.y, h.z);
-        const vxh = { x: v.y * h.z - v.z * h.y, y: v.z * h.x - v.x * h.z, z: v.x * h.y - v.y * h.x };
-        const ev = { x: vxh.x / mu - r.x / rm, y: vxh.y / mu - r.y / rm, z: vxh.z / mu - r.z / rm };
-        const e = Math.hypot(ev.x, ev.y, ev.z);
-        const a = 1 / (2 / rm - v2 / mu);
-        // Periapsis direction; for a circular orbit any in-plane direction works, so use the state itself.
-        const P = e > 1e-9 ? { x: ev.x / e, y: ev.y / e, z: ev.z / e } : { x: r.x / rm, y: r.y / rm, z: r.z / rm };
-        const hn = { x: h.x / hm, y: h.y / hm, z: h.z / hm };
-        // Q = hn x P: the in-plane direction 90 degrees ahead of periapsis.
-        const Q = { x: hn.y * P.z - hn.z * P.y, y: hn.z * P.x - hn.x * P.z, z: hn.x * P.y - hn.y * P.x };
-        const pts = [];
-        for (let i = 0; i <= N; i++) {
-          const nu = (i / N) * 2 * Math.PI;
-          const rr = a * (1 - e * e) / (1 + e * Math.cos(nu));
-          const c = Math.cos(nu), sn = Math.sin(nu);
-          pts.push({
-            x: rr * (c * P.x + sn * Q.x),
-            y: rr * (c * P.y + sn * Q.y),
-            z: rr * (c * P.z + sn * Q.z)
-          });
-        }
-        return pts;
-      }
-
-      // Apoapsis and periapsis altitudes (m above the surface) from the telemetry the bridge sends
-      // for the active vessel, since the bridge's own orbit field is null. altitude is above the
-      // surface, horizontal is the tangential speed, orbitalSpeed the total speed; R and mu are the
-      // parent body's radius and gravitational parameter.
-      function vesselApsides(altitude, horizontal, orbitalSpeed, R, mu) {
-        const r = R + altitude, v = orbitalSpeed;
-        if (!(r > 0) || !(mu > 0) || !(v > 0)) return null;
-        const inv_a = 2 / r - v * v / mu;
-        if (inv_a <= 0) return null;                  // unbound: no apoapsis
-        const a = 1 / inv_a;
-        const h = r * horizontal;
-        const e = Math.sqrt(Math.max(0, 1 + (h * h / mu) * (v * v / mu - 2 / r)));
-        return { ap: a * (1 + e) - R, pe: a * (1 - e) - R };
-      }
-
-      // Short tag for the map, e.g. "Superlight-Survey-Scan+Land" -> "SSSL", "Bloc_Duna_13" -> "BD13".
-      function vesselAcronym(name) {
-        const parts = String(name || '').split(/[^A-Za-z0-9]+/).filter(Boolean);
-        let out = '';
-        for (const p of parts) out += /^\d+$/.test(p) ? p : p[0].toUpperCase();
-        return out.slice(0, 6) || '?';
-      }
-      /* =========================================================
-         14. TELEMETRY BRIDGE CLIENT — KSP2 mod over WebSocket
-         With LIVE SYNC set to the bridge, body positions and orbit
-         rings come straight from the game's state vectors. The
-         stock orbit table is not used while the bridge is live.
-         ========================================================= */
-      const BRIDGE_WS_URL = 'ws://127.0.0.1:8765/ws';
-      const BRIDGE_STALE_MS = 2000;
-      const BRIDGE_RING_POINTS = 1440;
-
-      const bridgeLive = {
-        wanted: false, ws: null, retryTimer: null, retryMs: 1000, url: BRIDGE_WS_URL,
-        lastMessageAt: 0, lastStatusAt: 0,
-        staticRevision: -1, stateRevision: -1, ringsFor: null,
-        nameById: {}, parentByName: {}, starByName: {}, muByName: {}, radiusByName: {},
-        map: null,
-        sceneVec: {},        // body name -> THREE.Vector3 in scene units
-        stockRingGeo: {},    // line name -> original stock geometry, restored on disconnect
-        vessels: [],
-        activeVessel: null
-      };
-      let bridgeVisualsOn = false;
-
-      function bridgeFresh() {
-        return liveMode === 'bridge' && bridgeLive.lastMessageAt > 0 &&
-          (Date.now() - bridgeLive.lastMessageAt) < BRIDGE_STALE_MS;
-      }
-
-      function bridgeActive() {
-        return bridgeFresh() && !!bridgeLive.map && Object.keys(bridgeLive.sceneVec).length > 0;
-      }
-
-      function bridgeBodyScene(name) {
-        return bridgeActive() ? (bridgeLive.sceneVec[name] || null) : null;
-      }
-
-      // Bridge metres -> scene units, through the fixed bridge-to-scene map.
-      function bridgeToScene(raw) {
-        const m = applyBridgeAxisMap(bridgeLive.map || BRIDGE_TO_SCENE_MAP, { x: raw.x * SCALE, y: raw.y * SCALE, z: raw.z * SCALE });
-        return new THREE.Vector3(m.x, m.y, m.z);
-      }
-
-      function rebuildBridgeStatic(ss) {
-        bridgeLive.nameById = {};
-        bridgeLive.parentByName = {};
-        bridgeLive.starByName = {};
-        bridgeLive.muByName = {};
-        bridgeLive.radiusByName = {};
-        (ss.bodies || []).forEach(b => {
-          bridgeLive.nameById[b.id] = b.name;
-          bridgeLive.parentByName[b.name] = b.parent || null;
-          bridgeLive.starByName[b.name] = !!b.isStar;
-          bridgeLive.muByName[b.name] = b.gravitationalParameter;
-          bridgeLive.radiusByName[b.name] = b.radius;
-        });
-        bridgeLive.staticRevision = ss.staticRevision;
-      }
-
-      // Raw bridge state by body name: { position, velocity }.
-      function bridgeRawStates(ss) {
-        const raw = {};
-        (ss.states || []).forEach(st => {
-          const name = bridgeLive.nameById[st.id];
-          if (name && st.position) raw[name] = { position: st.position, velocity: st.velocity };
-        });
-        return raw;
-      }
-
-      // Place every body from its game position. Moons are stored relative to their parent,
-      // so they sit on top of the parent's scene position.
-      function computeBridgeScenePositions(ss) {
-        const raw = {};
-        Object.entries(bridgeRawStates(ss)).forEach(([n, s]) => { raw[n] = s.position; });
-        if (Object.keys(raw).length === 0) { bridgeLive.sceneVec = {}; return; }
-        bridgeLive.map = BRIDGE_TO_SCENE_MAP;
-        const vecs = {};
-        const place = (name, depth) => {
-          if (vecs[name]) return vecs[name];
-          if (!raw[name] || depth > 4) return null;
-          const base = new THREE.Vector3();
-          const parent = bridgeLive.parentByName[name];
-          if (parent && !bridgeLive.starByName[parent]) {
-            const pv = place(parent, depth + 1);
-            if (!pv) return null;
-            base.copy(pv);
-          }
-          vecs[name] = base.add(bridgeToScene(raw[name]));
-          return vecs[name];
-        };
-        Object.keys(raw).forEach(n => place(n, 0));
-        bridgeLive.sceneVec = vecs;
-      }
-
-      // Orbit rings from the game's own state vectors. Rebuilt once per body-set revision,
-      // since two-body orbits from a single state don't change between revisions.
-      function setRingGeometry(line, key, points) {
-        if (!line) return;
-        if (!bridgeLive.stockRingGeo[key]) bridgeLive.stockRingGeo[key] = line.geometry;
-        line.geometry = new THREE.BufferGeometry().setFromPoints(points);
-      }
-
-      function updateBridgeRings(ss) {
-        if (bridgeLive.ringsFor === ss.staticRevision) return;
-        const raw = bridgeRawStates(ss);
-        if (Object.keys(raw).length === 0) return;
-        PLANETS.forEach(p => {
-          const st = raw[p.name], mu = bridgeLive.muByName[p.parent || 'Kerbol'];
-          if (!st || !mu) return;
-          const loop = bridgeOrbitLoop(st.position, st.velocity, mu, BRIDGE_RING_POINTS);
-          setRingGeometry(planetRingLines[p.name], p.name, loop.map(q => bridgeToScene(q)));
-        });
-        MOONS.forEach(m => {
-          const st = raw[m.name], mu = bridgeLive.muByName[m.parent];
-          if (!st || !mu) return;
-          const loop = bridgeOrbitLoop(st.position, st.velocity, mu, BRIDGE_RING_POINTS);
-          setRingGeometry(moonOrbitLines[m.name], m.name, loop.map(q => bridgeToScene(q)));
-        });
-        bridgeLive.ringsFor = ss.staticRevision;
-      }
-
-      function restoreStockRings() {
-        Object.entries(bridgeLive.stockRingGeo).forEach(([key, geo]) => {
-          const line = planetRingLines[key] || moonOrbitLines[key];
-          if (line) line.geometry = geo;
-        });
-        bridgeLive.stockRingGeo = {};
-        bridgeLive.ringsFor = null;
-      }
-
-      function onBridgeSnapshot(snap) {
-        bridgeLive.lastMessageAt = Date.now();
-        bridgeLive.activeVessel = snap.vessel || null;
-        const ss = snap.solarSystem || {};
-        if (ss.staticRevision !== undefined && ss.staticRevision !== bridgeLive.staticRevision) rebuildBridgeStatic(ss);
-        const ut = snap.game && snap.game.universalTime;
-        if (typeof ut === 'number' && isFinite(ut)) UT = ut;
-        if (ss.stateRevision !== undefined && ss.stateRevision !== bridgeLive.stateRevision) {
-          bridgeLive.stateRevision = ss.stateRevision;
-          computeBridgeScenePositions(ss);
-        }
-        if (ss.states && ss.states.length) updateBridgeRings(ss);
-        bridgeLive.vessels = ss.vessels || [];
-        const now = Date.now();
-        if (now - bridgeLive.lastStatusAt > 1000) {
-          bridgeLive.lastStatusAt = now;
-          updateBridgeStatus();
-        }
-      }
-
-      function updateBridgeStatus() {
-        if (!bridgeLive.wanted || liveMode !== 'bridge') return;
-        if (Object.keys(bridgeLive.sceneVec).length === 0) {
-          setLiveStatus('LIVE (KSP2 bridge) — connected, waiting for body data…', null);
-        } else {
-          const n = bridgeLive.vessels.length;
-          setLiveStatus(`LIVE (KSP2 bridge) — synced ${utToDateString(UT)} · game orbits · ${n} vessel${n === 1 ? '' : 's'}`, 'ok');
-        }
-      }
-
-      function openBridgeSocket() {
-        if (!bridgeLive.wanted) return;
-        let ws;
-        try { ws = new WebSocket(bridgeLive.url); }
-        catch (err) { scheduleBridgeRetry(err.message); return; }
-        bridgeLive.ws = ws;
-        ws.onopen = () => {
-          bridgeLive.retryMs = 1000;
-          setLiveStatus('LIVE (KSP2 bridge) — connected, waiting for data…', null);
-        };
-        ws.onmessage = (ev) => {
-          try { onBridgeSnapshot(JSON.parse(ev.data)); }
-          catch (err) { console.warn('[bridge] bad snapshot', err); }
-        };
-        ws.onerror = () => {};
-        ws.onclose = () => {
-          bridgeLive.ws = null;
-          if (bridgeLive.wanted) scheduleBridgeRetry('connection closed');
-        };
-      }
-
-      function scheduleBridgeRetry(reason) {
-        if (!bridgeLive.wanted) return;
-        setLiveStatus(`LIVE (KSP2 bridge) — ${reason}. Retrying… Is KSP2 running with the Telemetry Bridge mod?`, 'err');
-        clearTimeout(bridgeLive.retryTimer);
-        const wait = bridgeLive.retryMs;
-        bridgeLive.retryMs = Math.min(bridgeLive.retryMs * 2, 5000);
-        bridgeLive.retryTimer = setTimeout(openBridgeSocket, wait);
-      }
-
-      function startBridge(url) {
-        stopBridge();
-        bridgeLive.wanted = true;
-        bridgeLive.url = url || BRIDGE_WS_URL;
-        bridgeLive.retryMs = 1000;
-        openBridgeSocket();
-      }
-
-      function stopBridge() {
-        bridgeLive.wanted = false;
-        clearTimeout(bridgeLive.retryTimer);
-        bridgeLive.retryTimer = null;
-        const ws = bridgeLive.ws;
-        bridgeLive.ws = null;
-        if (ws) { ws.onclose = null; ws.onmessage = null; try { ws.close(); } catch (_) {} }
-        bridgeLive.lastMessageAt = 0;
-        bridgeLive.staticRevision = -1;
-        bridgeLive.stateRevision = -1;
-        bridgeLive.map = null;
-        bridgeLive.sceneVec = {};
-        bridgeLive.vessels = [];
-        bridgeLive.activeVessel = null;
-        restoreStockRings();
-        if (bridgeVisualsOn) { bridgeVisualsOn = false; hideVesselLayer(); }
-      }
-
-      // Moves body meshes and moon orbit lines to the game positions (called every frame from updateMap).
-      function applyBridgeBodies() {
-        PLANETS.forEach(p => {
-          const v = bridgeBodyScene(p.name);
-          if (v && planetMeshes[p.name]) planetMeshes[p.name].position.copy(v);
-        });
-        MOONS.forEach(m => {
-          const v = bridgeBodyScene(m.name);
-          if (v && moonMeshes[m.name]) moonMeshes[m.name].position.copy(v);
-          const pv = bridgeBodyScene(m.parent);
-          if (pv && moonOrbitLines[m.name]) moonOrbitLines[m.name].position.copy(pv);
-        });
-      }
-
-      // Called once per frame from updateMap, after the analytic positions are set.
-      function updateBridgeVisuals() {
-        if (!bridgeActive()) {
-          if (bridgeVisualsOn) { bridgeVisualsOn = false; hideVesselLayer(); }
-          return;
-        }
-        bridgeVisualsOn = true;
-        applyBridgeBodies();
-        updateVesselLayer();
-        updateVesselHud();
-        updateVesselOverlay(bridgeLive.activeVessel);
-      }
-      /* =========================================================
-         15. VESSEL LAYER + ACTIVE-VESSEL HUD (telemetry bridge)
-         Every vessel the bridge reports, filterable by type, body,
-         name and status. The active vessel gets an animated HUD.
-         ========================================================= */
-      const VESSEL_FILTER_KEY = 'kerbalist_vessel_filter';
-      const vesselFilter = { types: {}, body: 'all', search: '', activeOnly: false, labels: true };
-      try { Object.assign(vesselFilter, JSON.parse(localStorage.getItem(VESSEL_FILTER_KEY) || '{}')); } catch (_) {}
-
-      const VESSEL_COLORS = { Ship: 0x4fe0e8, Probe: 0xffb454, Station: 0x7ee787, Base: 0x7ee787, Debris: 0x7688a6, Rover: 0xffd166, Plane: 0xb78cff };
-      const vesselGroup = new THREE.Group();
-      scene.add(vesselGroup);
-      const vesselMarkers = [];   // { mesh, label }
-
-      const vesselToggle = document.createElement('button');
-      vesselToggle.className = 'vessel-toggle';
-      vesselToggle.textContent = 'Vessels';
-      vesselToggle.title = 'Filter vessels shown on the map';
-
-      const vesselPanel = document.createElement('div');
-      vesselPanel.className = 'vessel-panel';
-      vesselPanel.innerHTML = `
-        <input type="search" class="vp-search" placeholder="Search name…">
-        <label class="vp-row">Body <select class="vp-body"><option value="all">All bodies</option></select></label>
-        <div class="vp-types"></div>
-        <label class="vp-check"><input type="checkbox" class="vp-active"> Active vessel only</label>
-        <label class="vp-check"><input type="checkbox" class="vp-labels"> Labels</label>
-        <div class="vp-count"></div>`;
-
-      // Keep clicks on these controls from also dragging the 3D camera.
-      [vesselToggle, vesselPanel].forEach(el =>
-        ['pointerdown', 'mousedown', 'touchstart', 'wheel'].forEach(ev => el.addEventListener(ev, e => e.stopPropagation())));
-
-      function saveVesselFilter() {
-        try { localStorage.setItem(VESSEL_FILTER_KEY, JSON.stringify(vesselFilter)); } catch (_) {}
-      }
-
-      vesselToggle.onclick = () => vesselPanel.classList.toggle('open');
-      vesselPanel.querySelector('.vp-search').addEventListener('input', e => {
-        vesselFilter.search = e.target.value.trim().toLowerCase();
-        saveVesselFilter();
-      });
-      vesselPanel.querySelector('.vp-body').addEventListener('change', e => {
-        vesselFilter.body = e.target.value;
-        saveVesselFilter();
-      });
-      vesselPanel.querySelector('.vp-active').addEventListener('change', e => {
-        vesselFilter.activeOnly = e.target.checked;
-        saveVesselFilter();
-      });
-      vesselPanel.querySelector('.vp-labels').addEventListener('change', e => {
-        vesselFilter.labels = e.target.checked;
-        saveVesselFilter();
-      });
-
-      function ensureVesselMarker(i) {
-        while (vesselMarkers.length <= i) {
-          const mesh = new THREE.Mesh(
-            new THREE.SphereGeometry(1, 8, 8),
-            new THREE.MeshBasicMaterial({ color: 0xffffff, depthWrite: false })
-          );
-          vesselGroup.add(mesh);
-          const label = document.createElement('div');
-          label.className = 'vessel-label-3d';
-          labelCtr.appendChild(label);
-          vesselMarkers.push({ mesh, label });
-        }
-        return vesselMarkers[i];
-      }
-
-      // Vessel positions are reported relative to their body, so add the body's scene position.
-      function vesselScenePos(v) {
-        const base = bridgeBodyScene(v.body);
-        if (!base || !v.relativePosition || !bridgeLive.map) return null;
-        return base.clone().add(bridgeToScene(v.relativePosition));
-      }
-
-      function vesselPassesFilter(v, active) {
-        if (vesselFilter.activeOnly && !(active && v.id === active.id)) return false;
-        if (vesselFilter.body !== 'all' && v.body !== vesselFilter.body) return false;
-        if (vesselFilter.types[v.type] === false) return false;
-        if (vesselFilter.search && !(v.name || '').toLowerCase().includes(vesselFilter.search)) return false;
-        return true;
-      }
-
-      // Keep the type and body controls in step with what the bridge is reporting.
-      let vesselPanelSig = '';
-      function refreshVesselPanel(list) {
-        const types = [...new Set(list.map(v => v.type || 'Unknown'))].sort();
-        const bodies = [...new Set(list.map(v => v.body).filter(Boolean))].sort();
-        const sig = types.join('|') + '#' + bodies.join('|');
-        if (sig !== vesselPanelSig) {
-          vesselPanelSig = sig;
-          const typeBox = vesselPanel.querySelector('.vp-types');
-          typeBox.innerHTML = '';
-          types.forEach(t => {
-            const label = document.createElement('label');
-            label.className = 'vp-check';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.checked = vesselFilter.types[t] !== false;
-            cb.addEventListener('change', () => { vesselFilter.types[t] = cb.checked; saveVesselFilter(); });
-            label.appendChild(cb);
-            label.appendChild(document.createTextNode(' ' + t));
-            typeBox.appendChild(label);
-          });
-          const bodySel = vesselPanel.querySelector('.vp-body');
-          bodySel.innerHTML = '<option value="all">All bodies</option>' +
-            bodies.map(b => `<option value="${b}">${b}</option>`).join('');
-          bodySel.value = bodies.includes(vesselFilter.body) ? vesselFilter.body : 'all';
-          vesselFilter.body = bodySel.value;
-          vesselPanel.querySelector('.vp-search').value = vesselFilter.search;
-          vesselPanel.querySelector('.vp-active').checked = vesselFilter.activeOnly;
-          vesselPanel.querySelector('.vp-labels').checked = vesselFilter.labels;
-        }
-      }
-
-      function updateVesselLayer() {
-        const active = bridgeLive.activeVessel;
-        const list = bridgeLive.vessels.slice();
-        if (active && active.id && !list.some(v => v.id === active.id)) list.push(active);
-        refreshVesselPanel(list);
-
-        const size = camR * 0.0012;   // screen-stable marker size
-        let shown = 0;
-        list.forEach(v => {
-          if (!vesselPassesFilter(v, active)) return;
-          const pos = vesselScenePos(v);
-          if (!pos) return;
-          const m = ensureVesselMarker(shown++);
-          const isActive = !!(active && v.id === active.id);
-          m.mesh.visible = true;
-          m.mesh.position.copy(pos);
-          m.mesh.scale.setScalar(isActive ? size * 1.6 : size);
-          m.mesh.material.color.setHex(isActive ? 0xffffff : (VESSEL_COLORS[v.type] || 0xdbe7f5));
-          const s = worldToScreen(pos);
-          m.label.textContent = v.name || v.id;
-          m.label.classList.toggle('active', isActive);
-          m.label.style.left = s.x + 'px';
-          m.label.style.top = s.y + 'px';
-          m.label.style.display = (vesselFilter.labels && !s.behind) ? '' : 'none';
-        });
-        for (let j = shown; j < vesselMarkers.length; j++) {
-          vesselMarkers[j].mesh.visible = false;
-          vesselMarkers[j].label.style.display = 'none';
-        }
-        vesselToggle.textContent = `Vessels (${shown})`;
-        // Only offer the vessel filter when the bridge reports a vessel list (not just the active vessel).
-        vesselToggle.classList.toggle('show', bridgeLive.vessels.length > 0);
-        vesselPanel.querySelector('.vp-count').textContent = `${shown} of ${list.length} shown`;
-      }
-
-      function hideVesselLayer() {
-        vesselMarkers.forEach(m => { m.mesh.visible = false; m.label.style.display = 'none'; });
-        vesselToggle.classList.remove('show');
-        vesselPanel.classList.remove('open');
-        if (vesselHudEl) vesselHudEl.style.display = 'none';
-        hideVesselOverlay();
-      }
-
-      function fmtKm(m) {
-        if (typeof m !== 'number' || !isFinite(m)) return '—';
-        return Math.round(m / 1000).toLocaleString('en-GB') + ' km';
-      }
-
-      function situationOf(a) {
-        if (a.landed) return 'Landed';
-        if (a.splashed) return 'Splashed';
-        if (a.inAtmosphere) return 'In atmosphere';
-        return 'In space';
-      }
-
-      function escHtml(t) {
-        return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      }
-
-      // Apoapsis/periapsis: the game's own orbit when the bridge sends one, otherwise worked out from telemetry.
-      function vesselApsidesFor(a) {
-        if (a.orbit && typeof a.orbit.apoapsis === 'number' && typeof a.orbit.periapsis === 'number') {
-          return { ap: a.orbit.apoapsis, pe: a.orbit.periapsis };
-        }
-        return vesselApsides(a.altitude, a.horizontalSpeed, a.orbitalSpeed,
-          bridgeLive.radiusByName[a.body], bridgeLive.muByName[a.body]);
-      }
-
-      let hudSnapshot = null;
-      let vesselHudEl = null;
-      let vesselHudDismissedFor = null;
-
-      // Active-vessel panel is a HUD widget: pin, drag, resize and close work like the other widgets.
-      function updateVesselHud() {
-        const a = bridgeLive.activeVessel;
-        if (!a) {
-          if (vesselHudEl) vesselHudEl.style.display = 'none';
-          hudSnapshot = null;
-          return;
-        }
-        // Closing the widget dismisses it for this vessel only; a different vessel brings it back.
-        if (vesselHudEl && !vesselHudEl.isConnected) { vesselHudDismissedFor = a.id; vesselHudEl = null; }
-        if (vesselHudDismissedFor === a.id) return;
-        if (!vesselHudEl) {
-          vesselHudEl = window.createHudWidget ? window.createHudWidget('vesselHudWidget', 'vessel', 'Active Vessel') : null;
-          if (!vesselHudEl) return;
-          hudSnapshot = null;
-        }
-        vesselHudEl.style.display = '';
-        if (a === hudSnapshot) return;   // only touch the DOM when a new snapshot arrives
-        hudSnapshot = a;
-        const ap = vesselApsidesFor(a);
-        const fmtAp = (v) => (v && isFinite(v)) ? fmtKm(v) : '—';
-        const html = `
-          <div class="vh-panel">
-          <div class="vh-name"><span class="vh-pulse"></span>${escHtml(a.name || a.id || 'Unnamed')}</div>
-          <div class="vh-grid">
-            <div><span>Body</span><b>${escHtml(a.body || '—')}</b></div>
-            <div><span>Situation</span><b>${escHtml(situationOf(a))}</b></div>
-            <div><span>Altitude</span><b>${fmtKm(a.altitude)}</b></div>
-            <div><span>Speed</span><b>${typeof a.orbitalSpeed === 'number' ? Math.round(a.orbitalSpeed).toLocaleString('en-GB') + ' m/s' : '—'}</b></div>
-            <div><span>Apoapsis</span><b>${ap ? fmtAp(ap.ap) : '—'}</b></div>
-            <div><span>Periapsis</span><b>${ap ? fmtAp(ap.pe) : '—'}</b></div>
-          </div>
-          </div>`;
-        window.updateHudContent('vesselHudWidget', html);
-      }
-
-      // Map overlay: an acronym tag for the active vessel with a leader line to it.
-      // The leader points at the exact vessel once the bridge sends its position (relativePosition);
-      // until then the tag is anchored to the parent body and marked approximate.
-      const vesselOverlay = { svg: null, line: null, ring: null, tag: null };
-      function ensureVesselOverlay() {
-        if (vesselOverlay.svg) return;
-        const NS = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(NS, 'svg');
-        svg.setAttribute('class', 'vessel-leader-svg');
-        const line = document.createElementNS(NS, 'line');
-        line.setAttribute('class', 'vo-line');
-        const ring = document.createElementNS(NS, 'circle');
-        ring.setAttribute('class', 'vo-ring');
-        ring.setAttribute('r', '14');
-        svg.appendChild(line);
-        svg.appendChild(ring);
-        labelCtr.appendChild(svg);
-        const tag = document.createElement('div');
-        tag.className = 'vessel-tag';
-        labelCtr.appendChild(tag);
-        Object.assign(vesselOverlay, { svg, line, ring, tag });
-      }
-
-      function hideVesselOverlay() {
-        if (!vesselOverlay.svg) return;
-        vesselOverlay.svg.style.display = 'none';
-        vesselOverlay.tag.style.display = 'none';
-      }
-
-      function updateVesselOverlay(active) {
-        if (!active || !bridgeActive()) { hideVesselOverlay(); return; }
-        const exact = vesselScenePos(active);
-        const anchor = exact || bridgeBodyScene(active.body);
-        if (!anchor) { hideVesselOverlay(); return; }
-        const s = worldToScreen(anchor);
-        if (s.behind) { hideVesselOverlay(); return; }
-        ensureVesselOverlay();
-        const o = vesselOverlay;
-        const tx = s.x + 46, ty = s.y - 40;
-        o.svg.style.display = '';
-        o.tag.style.display = '';
-        o.line.setAttribute('x1', s.x); o.line.setAttribute('y1', s.y);
-        o.line.setAttribute('x2', tx);  o.line.setAttribute('y2', ty);
-        o.ring.setAttribute('cx', s.x); o.ring.setAttribute('cy', s.y);
-        o.ring.style.display = exact ? '' : 'none';
-        o.line.classList.toggle('approx', !exact);
-        o.tag.classList.toggle('approx', !exact);
-        o.tag.textContent = active.name || active.id;
-        o.tag.title = exact ? (active.name || '') : (`${active.name || ''} — position approximate: the bridge does not send the vessel's position yet`);
-        o.tag.style.left = tx + 'px';
-        o.tag.style.top = ty + 'px';
-      }
-      /* =========================================================
          9. MAIN ANIMATION LOOP
          ========================================================= */
       let lastHudUpdate = 0;
       const HUD_UPDATE_INTERVAL = 100; // Update HUD every 100ms (~10fps) instead of every frame
-      
+
       function loop(now) {
         requestAnimationFrame(loop);
         const dt = Math.min((now - lastFrameTime) / 1000, 0.2);
         lastFrameTime = now;
         // Bridge snapshots set UT directly. Otherwise live sync ticks in real time between corrections.
         if (!bridgeFresh()) UT += dt * (liveMode ? 1 : WARP_LEVELS[warpIndex]);
-        
+
         // Throttle UT display to avoid constant DOM writes
         if (now - lastHudUpdate > 250) {
           document.getElementById('utValue').textContent = utToDateString(UT);
@@ -9459,100 +8727,100 @@
       requestAnimationFrame(loop);
 
     })(THREE);
-/* HUD Widget System - Core Functionality */
-window.hudWidgets = window.hudWidgets || {};
-window.hudWidgets.active = window.hudWidgets.active || {};
+    /* HUD Widget System - Core Functionality */
+    window.hudWidgets = window.hudWidgets || {};
+    window.hudWidgets.active = window.hudWidgets.active || {};
 
-(function() {
-  const hudContainer = document.getElementById('hudContainer');
-  if (!hudContainer) return;
-  function getDefaultPositions() {
-    const W = window.innerWidth || 1920;
-    const H = window.innerHeight || 1080;
-    return {
-      'ghost':    { x: 313, y: 972,  w: 289, h: 111 },
-      'ejection': { x: 5,   y: 192,  w: 368, h: 311 },
-      'phase':    { x: 3,   y: 945,  w: 295, h: 267 },
-      'window':   { x: 313, y: 1092, w: 331, h: 128 },
-      'time':     { x: 658, y: 1125, w: 327, h: 130 },
-      'vessel':   { x: 375, y: 108,  w: 290, h: 215 }
-    };
-  }
-
-  window.hudWidgets.positions = getDefaultPositions();
-
-  // Load from localStorage
-  function loadPositions() {
-    try {
-      const saved = localStorage.getItem('kerbalist_widget_positions');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        for (let k in parsed) {
-          if (parsed[k] && parsed[k].w && parsed[k].w < 280) parsed[k].w = 290;
-        }
-        window.hudWidgets.positions = { ...window.hudWidgets.positions, ...parsed };
+    (function () {
+      const hudContainer = document.getElementById('hudContainer');
+      if (!hudContainer) return;
+      function getDefaultPositions() {
+        const W = window.innerWidth || 1920;
+        const H = window.innerHeight || 1080;
+        return {
+          'ghost': { x: 313, y: 972, w: 289, h: 111 },
+          'ejection': { x: 5, y: 192, w: 368, h: 311 },
+          'phase': { x: 3, y: 945, w: 295, h: 267 },
+          'window': { x: 313, y: 1092, w: 331, h: 128 },
+          'time': { x: 658, y: 1125, w: 327, h: 130 },
+          'vessel': { x: 375, y: 108, w: 290, h: 215 }
+        };
       }
-    } catch (e) {}
-  }
 
-  // Save to localStorage
-  function savePositions() {
-    try {
-      localStorage.setItem('kerbalist_widget_positions', JSON.stringify(window.hudWidgets.positions));
-      const pinned = [];
-      for (let [type, wid] of Object.entries(window.hudWidgets.active)) {
-        const el = document.getElementById(wid);
-        if (el && el.classList.contains('pinned')) pinned.push(type);
+      window.hudWidgets.positions = getDefaultPositions();
+
+      // Load from localStorage
+      function loadPositions() {
+        try {
+          const saved = localStorage.getItem('kerbalist_widget_positions');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            for (let k in parsed) {
+              if (parsed[k] && parsed[k].w && parsed[k].w < 280) parsed[k].w = 290;
+            }
+            window.hudWidgets.positions = { ...window.hudWidgets.positions, ...parsed };
+          }
+        } catch (e) { }
       }
-      localStorage.setItem('kerbalist_widget_pinned', JSON.stringify(pinned));
-    } catch (e) {}
-  }
 
-  loadPositions();
+      // Save to localStorage
+      function savePositions() {
+        try {
+          localStorage.setItem('kerbalist_widget_positions', JSON.stringify(window.hudWidgets.positions));
+          const pinned = [];
+          for (let [type, wid] of Object.entries(window.hudWidgets.active)) {
+            const el = document.getElementById(wid);
+            if (el && el.classList.contains('pinned')) pinned.push(type);
+          }
+          localStorage.setItem('kerbalist_widget_pinned', JSON.stringify(pinned));
+        } catch (e) { }
+      }
 
-  // Puts every HUD element back at its default position and size, and clears the saved layout.
-  window.resetHudLayout = function() {
-    window.hudWidgets.positions = getDefaultPositions();
-    try { localStorage.removeItem('kerbalist_widget_positions'); } catch (e) {}
-    Object.entries(window.hudWidgets.active).forEach(([type, id]) => {
-      const el = document.getElementById(id);
-      const d = window.hudWidgets.positions[type];
-      if (!el || !d) return;
-      el.style.left = d.x + 'px';
-      el.style.top = d.y + 'px';
-      el.style.width = d.w + 'px';
-      el.style.height = d.h + 'px';
-    });
-  };
-  const resetHudBtn = document.getElementById('resetHudLayoutBtn');
-  if (resetHudBtn) resetHudBtn.addEventListener('click', window.resetHudLayout);
+      loadPositions();
 
-  // Create widget
-  // Padding and border add to the outer size when box-sizing is content-box, so resize must subtract them.
-  function boxExtra(el) {
-    const cs = getComputedStyle(el);
-    if (cs.boxSizing === 'border-box') return { w: 0, h: 0 };
-    return {
-      w: parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth),
-      h: parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)
-    };
-  }
+      // Puts every HUD element back at its default position and size, and clears the saved layout.
+      window.resetHudLayout = function () {
+        window.hudWidgets.positions = getDefaultPositions();
+        try { localStorage.removeItem('kerbalist_widget_positions'); } catch (e) { }
+        Object.entries(window.hudWidgets.active).forEach(([type, id]) => {
+          const el = document.getElementById(id);
+          const d = window.hudWidgets.positions[type];
+          if (!el || !d) return;
+          el.style.left = d.x + 'px';
+          el.style.top = d.y + 'px';
+          el.style.width = d.w + 'px';
+          el.style.height = d.h + 'px';
+        });
+      };
+      const resetHudBtn = document.getElementById('resetHudLayoutBtn');
+      if (resetHudBtn) resetHudBtn.addEventListener('click', window.resetHudLayout);
 
-  window.createHudWidget = function(id, type, title) {
-    const existing = document.getElementById(id);
-    if (existing) return existing;
+      // Create widget
+      // Padding and border add to the outer size when box-sizing is content-box, so resize must subtract them.
+      function boxExtra(el) {
+        const cs = getComputedStyle(el);
+        if (cs.boxSizing === 'border-box') return { w: 0, h: 0 };
+        return {
+          w: parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth),
+          h: parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth)
+        };
+      }
 
-    const defs = getDefaultPositions();
-    const pos = window.hudWidgets.positions[type] || defs[type] || { x: 100, y: 100, w: 290, h: 180 };
-    
-    const widget = document.createElement('div');
-    widget.id = id;
-    widget.className = 'hud-widget';
-    widget.style.left = pos.x + 'px';
-    widget.style.top = pos.y + 'px';
-    widget.style.width = pos.w + 'px';
-    widget.style.height = pos.h + 'px';
-    widget.innerHTML = `
+      window.createHudWidget = function (id, type, title) {
+        const existing = document.getElementById(id);
+        if (existing) return existing;
+
+        const defs = getDefaultPositions();
+        const pos = window.hudWidgets.positions[type] || defs[type] || { x: 100, y: 100, w: 290, h: 180 };
+
+        const widget = document.createElement('div');
+        widget.id = id;
+        widget.className = 'hud-widget';
+        widget.style.left = pos.x + 'px';
+        widget.style.top = pos.y + 'px';
+        widget.style.width = pos.w + 'px';
+        widget.style.height = pos.h + 'px';
+        widget.innerHTML = `
       <div class="hud-title">${title}</div>
       <div class="hud-content"></div>
       <div class="hud-buttons">
@@ -9562,429 +8830,429 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       <div class="hud-resize-handle"></div>
     `;
 
-    // Content scales with the box: the factor is the box size relative to the widget's default size.
-    const refSize = defs[type] || pos;
-    const applyHudScale = () => {
-      // Text grows with both dimensions (geometric mean), then shrinks until the content fits the box height.
-      const clamp = (v) => Math.min(3, Math.max(0.3, v));
-      let f = clamp(Math.sqrt((widget.offsetWidth / refSize.w) * (widget.offsetHeight / refSize.h)));
-      const content = widget.querySelector('.hud-content');
-      const title = widget.querySelector('.hud-title');
-      const cs = getComputedStyle(widget);
-      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
-      for (let i = 0; i < 10 && content; i++) {
-        widget.style.setProperty('--hud-s', f.toFixed(3));
-        const needed = (title ? title.getBoundingClientRect().height : 0) + content.getBoundingClientRect().height;
-        const room = widget.getBoundingClientRect().height - padY;
-        if (needed <= room || f <= 0.3) break;
-        f = clamp(f * 0.94);
-      }
-      widget.style.setProperty('--hud-s', f.toFixed(3));
-    };
-    if (window.ResizeObserver) new ResizeObserver(applyHudScale).observe(widget);
-    applyHudScale();
-
-    // Restore pinned state if previously saved
-    try {
-      const pinned = JSON.parse(localStorage.getItem('kerbalist_widget_pinned') || '[]');
-      if (pinned.includes(type)) {
-        widget.classList.add('pinned');
-        const pinBtn = widget.querySelector('.hud-pin-btn');
-        if (pinBtn) pinBtn.classList.add('active');
-      }
-    } catch (e) {}
-
-    hudContainer.appendChild(widget);
-    attachWidgetHandlers(widget, type);
-    window.hudWidgets.active[type] = id;
-    return widget;
-  };
-
-  // Close widget
-  window.closeHudWidget = function(id) {
-    const widget = document.getElementById(id);
-    if (widget) {
-      widget.remove();
-      // Find type and clear from active
-      for (let [type, wid] of Object.entries(window.hudWidgets.active)) {
-        if (wid === id) {
-          delete window.hudWidgets.active[type];
-          if (window.updateButtonStateForType) {
-            window.updateButtonStateForType(type);
+        // Content scales with the box: the factor is the box size relative to the widget's default size.
+        const refSize = defs[type] || pos;
+        const applyHudScale = () => {
+          // Text grows with both dimensions (geometric mean), then shrinks until the content fits the box height.
+          const clamp = (v) => Math.min(3, Math.max(0.3, v));
+          let f = clamp(Math.sqrt((widget.offsetWidth / refSize.w) * (widget.offsetHeight / refSize.h)));
+          const content = widget.querySelector('.hud-content');
+          const title = widget.querySelector('.hud-title');
+          const cs = getComputedStyle(widget);
+          const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+          for (let i = 0; i < 10 && content; i++) {
+            widget.style.setProperty('--hud-s', f.toFixed(3));
+            const needed = (title ? title.getBoundingClientRect().height : 0) + content.getBoundingClientRect().height;
+            const room = widget.getBoundingClientRect().height - padY;
+            if (needed <= room || f <= 0.3) break;
+            f = clamp(f * 0.94);
           }
-          break;
-        }
-      }
-      savePositions();
-      if (window.saveActiveWidgets) {
-        window.saveActiveWidgets();
-      }
-    }
-  };
-
-  // Attach drag/resize/pin handlers
-  function attachWidgetHandlers(widget, type) {
-    let isDragging = false;
-    let isResizing = false;
-    let startX, startY, startLeft, startTop, startWidth, startHeight;
-    const pinBtn = widget.querySelector('.hud-pin-btn');
-    const closeBtn = widget.querySelector('.hud-close-btn');
-    const resizeHandle = widget.querySelector('.hud-resize-handle');
-
-    // Drag handler
-    widget.addEventListener('mousedown', (e) => {
-      if (e.target.closest('.hud-buttons') || e.target.closest('.hud-resize-handle')) return;
-      if (widget.classList.contains('pinned')) return;
-
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      startLeft = widget.offsetLeft;
-      startTop = widget.offsetTop;
-      widget.classList.add('dragging');
-      e.preventDefault();
-    });
-
-    // Resize handler
-    if (resizeHandle) {
-      resizeHandle.addEventListener('mousedown', (e) => {
-        if (widget.classList.contains('pinned')) return;
-        isResizing = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = widget.offsetWidth;
-        startHeight = widget.offsetHeight;
-        e.preventDefault();
-        e.stopPropagation();
-      });
-    }
-
-    // Mouse move
-    document.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        widget.style.left = (startLeft + dx) + 'px';
-        widget.style.top = (startTop + dy) + 'px';
-      } else if (isResizing) {
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        const extra = boxExtra(widget);
-        widget.style.width = Math.max(140, startWidth + dx - extra.w) + 'px';
-        widget.style.height = Math.max(90, startHeight + dy - extra.h) + 'px';
-      }
-    });
-
-    // Mouse up
-    document.addEventListener('mouseup', () => {
-      if (isDragging || isResizing) {
-        widget.classList.remove('dragging');
-        isDragging = false;
-        isResizing = false;
-        // Save position
-        window.hudWidgets.positions[type] = {
-          x: parseInt(widget.style.left),
-          y: parseInt(widget.style.top),
-          w: parseInt(widget.style.width),
-          h: parseInt(widget.style.height)
+          widget.style.setProperty('--hud-s', f.toFixed(3));
         };
-        savePositions();
-      }
-    });
+        if (window.ResizeObserver) new ResizeObserver(applyHudScale).observe(widget);
+        applyHudScale();
 
-    // Pin button
-    if (pinBtn) {
-      pinBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        widget.classList.toggle('pinned');
-        pinBtn.classList.toggle('active');
-        savePositions();
-      });
-    }
+        // Restore pinned state if previously saved
+        try {
+          const pinned = JSON.parse(localStorage.getItem('kerbalist_widget_pinned') || '[]');
+          if (pinned.includes(type)) {
+            widget.classList.add('pinned');
+            const pinBtn = widget.querySelector('.hud-pin-btn');
+            if (pinBtn) pinBtn.classList.add('active');
+          }
+        } catch (e) { }
 
-    // Close button
-    if (closeBtn) {
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        window.closeHudWidget(widget.id);
-      });
-    }
-  }
+        hudContainer.appendChild(widget);
+        attachWidgetHandlers(widget, type);
+        window.hudWidgets.active[type] = id;
+        return widget;
+      };
 
-  // Update widget content
-  window.updateHudContent = function(id, content) {
-    const widget = document.getElementById(id);
-    if (widget) {
-      const contentDiv = widget.querySelector('.hud-content');
-      if (contentDiv) {
-        contentDiv.innerHTML = content;
-      }
-    }
-  };
-})();
-/* HUD Transfer Widgets - Integration with Transfer Results */
-(function() {
-  const transferResults = document.getElementById('transferResults');
-  if (!transferResults) return;
-
-  const widgetConfig = {
-    'window': { title: 'Next Transfer Window', selector: '[data-card="window"]' },
-    'phase': { title: 'Phase Angle', selector: '[data-card="phase"]' },
-    'ejection': { title: 'Ejection Angle', selector: '[data-card="ejection"]' },
-    'time': { title: 'Transfer Time', selector: '[data-card="time"]' },
-    'ghost': { title: 'Ghost Body', selector: '[data-card="ghost"]' }
-  };
-
-  window.saveActiveWidgets = function() {
-    try {
-      const active = Object.keys(window.hudWidgets.active);
-      localStorage.setItem('kerbalist_active_widgets', JSON.stringify(active));
-    } catch (e) {}
-  };
-
-  // Restore active widgets on load
-  let restored = false;
-  function restoreActiveWidgets() {
-    if (restored) return;
-    const cards = document.querySelectorAll('[data-card]');
-    if (!cards || cards.length === 0) return;
-    restored = true;
-
-    let toActivate = ['ghost']; // Default: ghost body active next to status
-    try {
-      const saved = localStorage.getItem('kerbalist_active_widgets');
-      if (saved !== null) {
-        toActivate = JSON.parse(saved);
-      }
-    } catch (e) {}
-
-    if (Array.isArray(toActivate)) {
-      toActivate.forEach(type => {
-        if (widgetConfig[type] && !window.hudWidgets.active[type]) {
-          window.toggleTransferWidget(type);
+      // Close widget
+      window.closeHudWidget = function (id) {
+        const widget = document.getElementById(id);
+        if (widget) {
+          widget.remove();
+          // Find type and clear from active
+          for (let [type, wid] of Object.entries(window.hudWidgets.active)) {
+            if (wid === id) {
+              delete window.hudWidgets.active[type];
+              if (window.updateButtonStateForType) {
+                window.updateButtonStateForType(type);
+              }
+              break;
+            }
+          }
+          savePositions();
+          if (window.saveActiveWidgets) {
+            window.saveActiveWidgets();
+          }
         }
+      };
+
+      // Attach drag/resize/pin handlers
+      function attachWidgetHandlers(widget, type) {
+        let isDragging = false;
+        let isResizing = false;
+        let startX, startY, startLeft, startTop, startWidth, startHeight;
+        const pinBtn = widget.querySelector('.hud-pin-btn');
+        const closeBtn = widget.querySelector('.hud-close-btn');
+        const resizeHandle = widget.querySelector('.hud-resize-handle');
+
+        // Drag handler
+        widget.addEventListener('mousedown', (e) => {
+          if (e.target.closest('.hud-buttons') || e.target.closest('.hud-resize-handle')) return;
+          if (widget.classList.contains('pinned')) return;
+
+          isDragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          startLeft = widget.offsetLeft;
+          startTop = widget.offsetTop;
+          widget.classList.add('dragging');
+          e.preventDefault();
+        });
+
+        // Resize handler
+        if (resizeHandle) {
+          resizeHandle.addEventListener('mousedown', (e) => {
+            if (widget.classList.contains('pinned')) return;
+            isResizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = widget.offsetWidth;
+            startHeight = widget.offsetHeight;
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        }
+
+        // Mouse move
+        document.addEventListener('mousemove', (e) => {
+          if (isDragging) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            widget.style.left = (startLeft + dx) + 'px';
+            widget.style.top = (startTop + dy) + 'px';
+          } else if (isResizing) {
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            const extra = boxExtra(widget);
+            widget.style.width = Math.max(140, startWidth + dx - extra.w) + 'px';
+            widget.style.height = Math.max(90, startHeight + dy - extra.h) + 'px';
+          }
+        });
+
+        // Mouse up
+        document.addEventListener('mouseup', () => {
+          if (isDragging || isResizing) {
+            widget.classList.remove('dragging');
+            isDragging = false;
+            isResizing = false;
+            // Save position
+            window.hudWidgets.positions[type] = {
+              x: parseInt(widget.style.left),
+              y: parseInt(widget.style.top),
+              w: parseInt(widget.style.width),
+              h: parseInt(widget.style.height)
+            };
+            savePositions();
+          }
+        });
+
+        // Pin button
+        if (pinBtn) {
+          pinBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            widget.classList.toggle('pinned');
+            pinBtn.classList.toggle('active');
+            savePositions();
+          });
+        }
+
+        // Close button
+        if (closeBtn) {
+          closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.closeHudWidget(widget.id);
+          });
+        }
+      }
+
+      // Update widget content
+      window.updateHudContent = function (id, content) {
+        const widget = document.getElementById(id);
+        if (widget) {
+          const contentDiv = widget.querySelector('.hud-content');
+          if (contentDiv) {
+            contentDiv.innerHTML = content;
+          }
+        }
+      };
+    })();
+    /* HUD Transfer Widgets - Integration with Transfer Results */
+    (function () {
+      const transferResults = document.getElementById('transferResults');
+      if (!transferResults) return;
+
+      const widgetConfig = {
+        'window': { title: 'Next Transfer Window', selector: '[data-card="window"]' },
+        'phase': { title: 'Phase Angle', selector: '[data-card="phase"]' },
+        'ejection': { title: 'Ejection Angle', selector: '[data-card="ejection"]' },
+        'time': { title: 'Transfer Time', selector: '[data-card="time"]' },
+        'ghost': { title: 'Ghost Body', selector: '[data-card="ghost"]' }
+      };
+
+      window.saveActiveWidgets = function () {
+        try {
+          const active = Object.keys(window.hudWidgets.active);
+          localStorage.setItem('kerbalist_active_widgets', JSON.stringify(active));
+        } catch (e) { }
+      };
+
+      // Restore active widgets on load
+      let restored = false;
+      function restoreActiveWidgets() {
+        if (restored) return;
+        const cards = document.querySelectorAll('[data-card]');
+        if (!cards || cards.length === 0) return;
+        restored = true;
+
+        let toActivate = ['ghost']; // Default: ghost body active next to status
+        try {
+          const saved = localStorage.getItem('kerbalist_active_widgets');
+          if (saved !== null) {
+            toActivate = JSON.parse(saved);
+          }
+        } catch (e) { }
+
+        if (Array.isArray(toActivate)) {
+          toActivate.forEach(type => {
+            if (widgetConfig[type] && !window.hudWidgets.active[type]) {
+              window.toggleTransferWidget(type);
+            }
+          });
+        }
+      }
+
+      // Debounce widget updates to prevent rapid firing
+      let updateTimer = null;
+      function debounceUpdateWidgets() {
+        clearTimeout(updateTimer);
+        updateTimer = setTimeout(() => {
+          restoreActiveWidgets();
+          updateAllWidgets();
+        }, 150);
+      }
+
+      // Watch for transfer results changes (content only, not button state)
+      const observer = new MutationObserver(() => {
+        debounceUpdateWidgets();
       });
-    }
-  }
 
-  // Debounce widget updates to prevent rapid firing
-  let updateTimer = null;
-  function debounceUpdateWidgets() {
-    clearTimeout(updateTimer);
-    updateTimer = setTimeout(() => {
-      restoreActiveWidgets();
-      updateAllWidgets();
-    }, 150);
-  }
+      observer.observe(transferResults, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
 
-  // Watch for transfer results changes (content only, not button state)
-  const observer = new MutationObserver(() => {
-    debounceUpdateWidgets();
-  });
-
-  observer.observe(transferResults, {
-    childList: true,
-    subtree: true,
-    characterData: true
-  });
-
-  function updateAllWidgets() {
-    for (let [type, widgetId] of Object.entries(window.hudWidgets.active)) {
-      if (widgetId) {
-        updateTransferWidgetContent(type);
+      function updateAllWidgets() {
+        for (let [type, widgetId] of Object.entries(window.hudWidgets.active)) {
+          if (widgetId) {
+            updateTransferWidgetContent(type);
+          }
+        }
       }
-    }
-  }
 
-  function updateTransferWidgetContent(type) {
-    const config = widgetConfig[type];
-    const card = document.querySelector(config.selector);
-    if (!card) return;
+      function updateTransferWidgetContent(type) {
+        const config = widgetConfig[type];
+        const card = document.querySelector(config.selector);
+        if (!card) return;
 
-    const content = extractCardContent(card);
-    const widgetId = `transfer-${type}`;
-    window.updateHudContent(widgetId, content);
-  }
-
-  function extractCardContent(card) {
-    const clone = card.cloneNode(true);
-    // Remove title and wrapper elements
-    const title = clone.querySelector('h3');
-    if (title) title.remove();
-    const wrapper = clone.querySelector('.wrapper');
-    if (wrapper) wrapper.remove();
-    // Remove button if present
-    const btn = clone.querySelector('.hud-pin-card-btn, .hud-card-toggle');
-    if (btn) btn.remove();
-    // Remove note
-    const note = clone.querySelector('.note');
-    if (note) note.remove();
-
-    return clone.innerHTML;
-  }
-
-  // Create widget on toggle
-  window.toggleTransferWidget = function(type) {
-    if (window.hudWidgets.active[type]) {
-      // Close it
-      window.closeHudWidget(`transfer-${type}`);
-    } else {
-      // Open it
-      const config = widgetConfig[type];
-      const widget = window.createHudWidget(`transfer-${type}`, type, config.title);
-      if (widget) {
-        updateTransferWidgetContent(type);
+        const content = extractCardContent(card);
+        const widgetId = `transfer-${type}`;
+        window.updateHudContent(widgetId, content);
       }
-    }
-    // Update button state only after widget action completes
-    window.updateButtonStateForType(type);
-    window.saveActiveWidgets();
-  };
 
-  // Update card header toggle state
-  window.updateButtonStateForType = function(type) {
-    const btn = document.querySelector(`.hud-card-toggle[data-widget-type="${type}"]`);
-    if (btn) {
-      if (window.hudWidgets.active[type]) {
-        btn.classList.add('on');
-      } else {
-        btn.classList.remove('on');
+      function extractCardContent(card) {
+        const clone = card.cloneNode(true);
+        // Remove title and wrapper elements
+        const title = clone.querySelector('h3');
+        if (title) title.remove();
+        const wrapper = clone.querySelector('.wrapper');
+        if (wrapper) wrapper.remove();
+        // Remove button if present
+        const btn = clone.querySelector('.hud-pin-card-btn, .hud-card-toggle');
+        if (btn) btn.remove();
+        // Remove note
+        const note = clone.querySelector('.note');
+        if (note) note.remove();
+
+        return clone.innerHTML;
       }
-    }
-  };
 
-  // Export config for sidebar
-  window.hudTransferWidgetConfig = widgetConfig;
-})();
-/* Community Statistics Overlay */
-(function() {
-  // Create stats overlay element
-  const statsOverlay = document.createElement('div');
-  statsOverlay.id = 'statsOverlay';
-  statsOverlay.className = 'loading';
-  statsOverlay.innerHTML = `
+      // Create widget on toggle
+      window.toggleTransferWidget = function (type) {
+        if (window.hudWidgets.active[type]) {
+          // Close it
+          window.closeHudWidget(`transfer-${type}`);
+        } else {
+          // Open it
+          const config = widgetConfig[type];
+          const widget = window.createHudWidget(`transfer-${type}`, type, config.title);
+          if (widget) {
+            updateTransferWidgetContent(type);
+          }
+        }
+        // Update button state only after widget action completes
+        window.updateButtonStateForType(type);
+        window.saveActiveWidgets();
+      };
+
+      // Update card header toggle state
+      window.updateButtonStateForType = function (type) {
+        const btn = document.querySelector(`.hud-card-toggle[data-widget-type="${type}"]`);
+        if (btn) {
+          if (window.hudWidgets.active[type]) {
+            btn.classList.add('on');
+          } else {
+            btn.classList.remove('on');
+          }
+        }
+      };
+
+      // Export config for sidebar
+      window.hudTransferWidgetConfig = widgetConfig;
+    })();
+    /* Community Statistics Overlay */
+    (function () {
+      // Create stats overlay element
+      const statsOverlay = document.createElement('div');
+      statsOverlay.id = 'statsOverlay';
+      statsOverlay.className = 'loading';
+      statsOverlay.innerHTML = `
     <div class="stats-row">
       <span class="stats-label">Community Stats</span>
     </div>
   `;
 
-  // Wait for DOM to be ready before inserting
-  function insertStatsOverlay() {
-    const hudContainer = document.getElementById('hudContainer');
-    if (hudContainer) {
-      hudContainer.appendChild(statsOverlay);
-    } else {
-      setTimeout(insertStatsOverlay, 100);
-    }
-  }
-  insertStatsOverlay();
+      // Wait for DOM to be ready before inserting
+      function insertStatsOverlay() {
+        const hudContainer = document.getElementById('hudContainer');
+        if (hudContainer) {
+          hudContainer.appendChild(statsOverlay);
+        } else {
+          setTimeout(insertStatsOverlay, 100);
+        }
+      }
+      insertStatsOverlay();
 
-  // Fetch stats from the main Kerbalist site
-  async function fetchStats() {
-    try {
-      // Try to fetch from stats API
-      const response = await fetch('https://blockdigital.github.io/Kerbalist/api/stats.json', {
-        mode: 'cors',
-        cache: 'no-cache'
-      });
+      // Fetch stats from the main Kerbalist site
+      async function fetchStats() {
+        try {
+          // Try to fetch from stats API
+          const response = await fetch('https://blockdigital.github.io/Kerbalist/api/stats.json', {
+            mode: 'cors',
+            cache: 'no-cache'
+          });
 
-      if (!response.ok) throw new Error('API not available');
-      
-      const data = await response.json();
-      displayStats(data);
-    } catch (error) {
-      // Silently fail if stats unavailable (no console error)
-      statsOverlay.classList.remove('loading');
-      statsOverlay.style.display = 'none';
-    }
-  }
+          if (!response.ok) throw new Error('API not available');
 
-  function displayStats(data) {
-    statsOverlay.classList.remove('loading');
-    statsOverlay.innerHTML = '';
+          const data = await response.json();
+          displayStats(data);
+        } catch (error) {
+          // Silently fail if stats unavailable (no console error)
+          statsOverlay.classList.remove('loading');
+          statsOverlay.style.display = 'none';
+        }
+      }
 
-    // Format large numbers
-    const fmt = (n) => {
-      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return n.toString();
-    };
+      function displayStats(data) {
+        statsOverlay.classList.remove('loading');
+        statsOverlay.innerHTML = '';
 
-    // Build stats display
-    let html = '';
+        // Format large numbers
+        const fmt = (n) => {
+          if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+          if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+          return n.toString();
+        };
 
-    // Kerbalists (total unique users)
-    if (data.kerbalists !== undefined) {
-      html += `
+        // Build stats display
+        let html = '';
+
+        // Kerbalists (total unique users)
+        if (data.kerbalists !== undefined) {
+          html += `
         <div class="stats-row">
           <span class="stats-label">Kerbalists</span>
           <span class="stats-value">${fmt(data.kerbalists)}</span>
         </div>
       `;
-    }
+        }
 
-    // Planned transfers
-    if (data.transfers !== undefined) {
-      html += `
+        // Planned transfers
+        if (data.transfers !== undefined) {
+          html += `
         <div class="stats-row">
           <span class="stats-label">Transfers</span>
           <span class="stats-value">${fmt(data.transfers)}</span>
         </div>
       `;
-    }
+        }
 
-    // Total years flown (across all transfers)
-    if (data.totalYearsFlown !== undefined) {
-      const years = (data.totalYearsFlown / 365.25).toFixed(2);
-      html += `
+        // Total years flown (across all transfers)
+        if (data.totalYearsFlown !== undefined) {
+          const years = (data.totalYearsFlown / 365.25).toFixed(2);
+          html += `
         <div class="stats-row">
           <span class="stats-label">Years Flown</span>
           <span class="stats-value">${fmt(years)}</span>
         </div>
       `;
-    }
+        }
 
-    // Assist maneuvers performed
-    if (data.assistManeuvers !== undefined) {
-      html += `
+        // Assist maneuvers performed
+        if (data.assistManeuvers !== undefined) {
+          html += `
         <div class="stats-row">
           <span class="stats-label">Assist Maneuvers</span>
           <span class="stats-value">${fmt(data.assistManeuvers)}</span>
         </div>
       `;
-    }
+        }
 
-    // Total ΔV executed
-    if (data.totalDeltaV !== undefined) {
-      html += `
+        // Total ΔV executed
+        if (data.totalDeltaV !== undefined) {
+          html += `
         <div class="stats-row">
           <span class="stats-label">Total ΔV</span>
           <span class="stats-value">${fmt(data.totalDeltaV)} m/s</span>
         </div>
       `;
-    }
+        }
 
-    // Successful landings
-    if (data.successfulLandings !== undefined) {
-      html += `
+        // Successful landings
+        if (data.successfulLandings !== undefined) {
+          html += `
         <div class="stats-row">
           <span class="stats-label">Landings</span>
           <span class="stats-value">${fmt(data.successfulLandings)}</span>
         </div>
       `;
-    }
+        }
 
-    if (html) {
-      statsOverlay.innerHTML = html;
-    } else {
-      statsOverlay.style.display = 'none';
-    }
-  }
+        if (html) {
+          statsOverlay.innerHTML = html;
+        } else {
+          statsOverlay.style.display = 'none';
+        }
+      }
 
-  // Fetch stats on load, then periodically refresh
-  fetchStats();
-  setInterval(fetchStats, 5 * 60 * 1000); // Refresh every 5 minutes
-})();
+      // Fetch stats on load, then periodically refresh
+      fetchStats();
+      setInterval(fetchStats, 5 * 60 * 1000); // Refresh every 5 minutes
+    })();
   </script>
   <!-- Kerbol Calendar Modal -->
   <div class="cal-modal" id="calModal">
@@ -10088,8 +9356,10 @@ window.hudWidgets.active = window.hudWidgets.active || {};
               <div class="bug-shot-side">
                 <div class="bug-shot-status" id="bugShotAutoStatus">Capturing full app view…</div>
                 <div class="bug-shot-actions">
-                  <button type="button" class="bug-shot-btn" id="bugShotRetakeBtn" onclick="startAutoShot(true)">Retake</button>
-                  <button type="button" class="bug-shot-btn danger" id="bugShotRemoveBtn" onclick="removeAutoShot()">Remove</button>
+                  <button type="button" class="bug-shot-btn" id="bugShotRetakeBtn"
+                    onclick="startAutoShot(true)">Retake</button>
+                  <button type="button" class="bug-shot-btn danger" id="bugShotRemoveBtn"
+                    onclick="removeAutoShot()">Remove</button>
                 </div>
               </div>
             </div>
@@ -10114,7 +9384,8 @@ window.hudWidgets.active = window.hudWidgets.active || {};
               </div>
             </div>
           </div>
-          <div class="bug-report-file-info" id="bugShotNote">Option 2 replaces Option 1 · PNG, JPG, GIF, WebP · max 5MB</div>
+          <div class="bug-report-file-info" id="bugShotNote">Option 2 replaces Option 1 · PNG, JPG, GIF, WebP · max 5MB
+          </div>
         </div>
 
         <div class="bug-report-field">
@@ -10143,7 +9414,8 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       </div>
       <div class="bug-report-actions">
         <button class="bug-report-btn-cancel" onclick="hideBugReportModal()">Cancel</button>
-        <button class="bug-report-btn-submit" id="bugSubmitBtn" onclick="submitBugReport()" disabled>Open GitHub Issue</button>
+        <button class="bug-report-btn-submit" id="bugSubmitBtn" onclick="submitBugReport()" disabled>Open GitHub
+          Issue</button>
       </div>
     </div>
   </div>
