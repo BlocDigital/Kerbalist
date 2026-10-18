@@ -17,7 +17,7 @@
 ### Changed
 - **Game orbits in live sync**: Body positions and orbit rings come from the game's state vectors. The stock orbit table is no longer used for them.
 - **HUD scaling**: HUD elements scale with their box size. Widgets can be resized smaller, down to 140 by 90 pixels, and the vessel panel adds or removes columns as it's resized.
-- **Default HUD layout**: Updated to the layout used in the 4.3 screenshots.
+- **Default HUD layout**: Updated default HUD layout.
 - **Live sync panel**: Larger, with a solid background and bigger text.
 - **KSP2 Telemetry Bridge**: The mod is now version 1.2.0. It starts through a Unity startup hook as well as the mod loader's hook.
 
