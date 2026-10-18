@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node tools/build.mjs",
     "verify": "node tools/build.mjs --verify",
-    "test": "node --test test/pin.test.mjs test/bridge-frame.test.mjs test/bridge-orbit.test.mjs test/bridge-vessel.test.mjs",
+    "test": "node --test test/pin.test.mjs test/bridge-frame.test.mjs test/bridge-orbit.test.mjs test/bridge-vessel.test.mjs test/time-display.test.mjs",
     "check": "node tools/build.mjs --syntax && node --test test/pin.test.mjs && node tools/build.mjs --verify",
     "report": "node tools/build.mjs --report",
     "index": "node tools/build.mjs --index"
