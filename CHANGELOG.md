@@ -17,7 +17,7 @@
 ### Changed
 - **Game orbits in live sync**: Body positions and orbit rings come from the game's state vectors. The stock orbit table is no longer used for them.
 - **HUD scaling**: HUD elements scale with their box size. Widgets can be resized smaller, down to 140 by 90 pixels, and the vessel panel adds or removes columns as it's resized.
-- **Default HUD layout**: Updated default HUD layout.
+- **Default HUD layout**: Updated to the layout used in the 4.3 screenshots.
 - **Live sync panel**: Larger, with a solid background and bigger text.
 - **KSP2 Telemetry Bridge**: The mod is now version 1.2.0. It starts through a Unity startup hook as well as the mod loader's hook.
 
@@ -36,7 +36,7 @@
 ## [4.2] - 2026-10-17
 
 ### Added
-- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
+- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
 - **Active vessel HUD**: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.
 - **Vessel filter panel**: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.
 
