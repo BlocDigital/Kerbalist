@@ -1,4 +1,4 @@
-# Kerbalist v4.2
+# Kerbalist v4.3
 
 Astrodynamics Suite for Kerbal Space Program 2 Redux
 
@@ -33,6 +33,7 @@ While live sync is on, the time buttons show a LIVE SYNC overlay, because the ga
 
 ## Version History
 
+- **v4.3** (2026-10-18): Active vessel HUD element, vessel tag, Settings tab with HUD layout reset, live sync overlay, game orbits in live sync, HUD scaling
 - **v4.2** (2026-10-17): Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0), active vessel HUD
 - **v4.1** (2026-10-07): HUD Widgets — pin transfer info cards to the map
 - **v4.0** (2026-10-03): Exact transfer numbers, bug report system
