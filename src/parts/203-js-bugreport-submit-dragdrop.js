@@ -57,7 +57,7 @@
         }
 
         issueBody += `## Environment\n`;
-        issueBody += `- **App Version:** v4.3.1\n`;
+        issueBody += `- **App Version:** v4.4\n`;
         issueBody += `- **Browser:** ${browserInfo}\n`;
         issueBody += `- **Reported:** ${timestamp}\n`;
 

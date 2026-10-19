@@ -1,6 +1,6 @@
 {
   "name": "kerbalist",
-  "version": "4.3.1",
+  "version": "4.4.0",
   "private": true,
   "type": "module",
   "description": "Kerbalist - KSP2 interplanetary transfer planner. index.html is generated from src/parts.",
