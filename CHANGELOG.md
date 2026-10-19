@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.4] - 2026-10-18
+
+### Added
+- **Active vessel orbit**: The vessel's orbit is drawn as a line around its parent body, from the game's own state. The line updates within about a second of a burn.
+- **Vessel marker on the orbit**: The active vessel's marker now sits on its real position, so the map tag points at the vessel itself.
+
+### Fixed
+- **Apoapsis and periapsis**: Use the game's values through the KSP2 Telemetry Bridge 1.3.2 (altitudes above the surface).
+- **Game calendar**: The time display, the calendar picker and the Epoch button use the game's calendar start, so the same moment shows the same date as in the game.
+- **Halo of small bodies**: The faint halo around Moho and other small bodies keeps a minimum on-screen size, so it no longer disappears when zoomed out.
+
+
 ## [4.3.1] - 2026-10-18
 
 ### Fixed
@@ -36,7 +48,7 @@
 ## [4.2] - 2026-10-17
 
 ### Added
-- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
+- **Live sync from the [KSP2 Telemetry Bridge](https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/)**: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.
 - **Active vessel HUD**: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.
 - **Vessel filter panel**: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.
 

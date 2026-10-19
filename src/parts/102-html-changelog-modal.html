@@ -7,6 +7,19 @@
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
+        <h2>[4.4] - 2026-10-18 &mdash; Kerbalist v4.4 &middot; Astrodynamics Suite</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Active vessel orbit</strong>: The vessel's orbit is drawn as a line around its parent body, from the game's own state. The line updates within about a second of a burn.</li>
+          <li><strong>Vessel marker on the orbit</strong>: The active vessel's marker now sits on its real position, so the map tag points at the vessel itself.</li>
+        </ul>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Apoapsis and periapsis</strong>: Use the game's values through the KSP2 Telemetry Bridge 1.3.2 (altitudes above the surface).</li>
+          <li><strong>Game calendar</strong>: The time display, the calendar picker and the Epoch button use the game's calendar start, so the same moment shows the same date as in the game.</li>
+          <li><strong>Halo of small bodies</strong>: The faint halo around Moho and other small bodies keeps a minimum on-screen size, so it no longer disappears when zoomed out.</li>
+        </ul>
+
         <h2>[4.3.1] - 2026-10-18 &mdash; Kerbalist v4.3.1 &middot; Astrodynamics Suite</h2>
         <h3>Fixed</h3>
         <ul>
@@ -46,7 +59,7 @@
         <h2>[4.2] - 2026-10-17 &mdash; Kerbalist v4.2 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
-          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/tag/v1.0" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
+          <li><strong>Live sync from the <a href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/" target="_blank" rel="noopener">KSP2 Telemetry Bridge</a></strong>: With LIVE SYNC set to the bridge, body positions and orbit rings come from the game while it runs.</li>
           <li><strong>Active vessel HUD</strong>: Appears on the map while a vessel is active, showing its name, body, situation, altitude, speed, apoapsis and periapsis.</li>
           <li><strong>Vessel filter panel</strong>: Search, body, type, active-only and label options. It appears only when the bridge reports a vessel list.</li>
         </ul>
@@ -683,7 +696,7 @@
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v4.3.1 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v4.4 &middot; CHANGELOG.md</div>
     </div>
   </div>
 

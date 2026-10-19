@@ -230,7 +230,7 @@
       // Called once per frame from updateMap, after the analytic positions are set.
       function updateBridgeVisuals() {
         if (!bridgeActive()) {
-          if (bridgeVisualsOn) { bridgeVisualsOn = false; hideVesselLayer(); }
+          if (bridgeVisualsOn) { bridgeVisualsOn = false; hideVesselLayer(); hideVesselOrbit(); }
           return;
         }
         bridgeVisualsOn = true;
@@ -238,4 +238,5 @@
         updateVesselLayer();
         updateVesselHud();
         updateVesselOverlay(bridgeLive.activeVessel);
+        updateVesselOrbit(bridgeLive.activeVessel);
       }

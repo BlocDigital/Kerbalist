@@ -68,11 +68,49 @@
         return vesselMarkers[i];
       }
 
-      // Vessel positions are reported relative to their body, so add the body's scene position.
+      // Vessel positions are relative to their body, so add the body's scene position. The active vessel's
+      // position comes from its orbit state (localPosition); other vessels use relativePosition if sent.
       function vesselScenePos(v) {
+        if (!bridgeLive.map) return null;
+        if (v.orbit && v.orbit.localPosition) {
+          const parent = bridgeBodyScene(v.orbit.referenceBody || v.body);
+          return parent ? parent.clone().add(bridgeToScene(v.orbit.localPosition)) : null;
+        }
         const base = bridgeBodyScene(v.body);
-        if (!base || !v.relativePosition || !bridgeLive.map) return null;
+        if (!base || !v.relativePosition) return null;
         return base.clone().add(bridgeToScene(v.relativePosition));
+      }
+
+      // Active vessel orbit, drawn from the game's state vector (localPosition, relativeVelocity).
+      const vesselOrbitLine = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({ color: 0x4fe0e8, transparent: true, opacity: 0.85 })
+      );
+      vesselOrbitLine.visible = false;
+      scene.add(vesselOrbitLine);
+      let vesselOrbitAt = 0;
+
+      function hideVesselOrbit() {
+        vesselOrbitLine.visible = false;
+      }
+
+      function updateVesselOrbit(a) {
+        const o = a && a.orbit;
+        const center = o && o.localPosition && o.relativeVelocity && o.referenceBody ? bridgeBodyScene(o.referenceBody) : null;
+        const mu = o ? bridgeLive.muByName[o.referenceBody] : 0;
+        if (!center || !mu || !bridgeLive.map) { hideVesselOrbit(); return; }
+        vesselOrbitLine.position.copy(center);
+        // Rebuild at most once a second. The orbit changes slowly, and burns show up on the next rebuild.
+        const now = Date.now();
+        if (vesselOrbitLine.visible && now - vesselOrbitAt < 1000) return;
+        vesselOrbitAt = now;
+        const r = o.localPosition, v = o.relativeVelocity;
+        const rm = Math.hypot(r.x, r.y, r.z), v2 = v.x * v.x + v.y * v.y + v.z * v.z;
+        if (v2 / 2 - mu / rm >= 0) { hideVesselOrbit(); return; }  // escape trajectory: no closed ellipse to draw
+        const pts = bridgeOrbitLoop(r, v, mu, 720).map(q => bridgeToScene(q));
+        vesselOrbitLine.geometry.dispose();
+        vesselOrbitLine.geometry = new THREE.BufferGeometry().setFromPoints(pts);
+        vesselOrbitLine.visible = true;
       }
 
       function vesselPassesFilter(v, active) {
