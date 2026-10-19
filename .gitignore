@@ -3,3 +3,16 @@ dist/
 *.log
 .DS_Store
 __pycache__/
+
+# Local development and build tools
+AGENTS.md
+DEVELOPING.md
+kerbalist-changes-summary.py
+package.json
+state.json
+api/
+src/
+test/
+tools/
+.vs/
+.github/
