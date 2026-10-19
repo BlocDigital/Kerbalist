@@ -202,6 +202,61 @@
       background: #164048;
     }
 
+
+    /* ---------- TUTORIAL BUTTON ---------- */
+    .tutorial-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 4px;
+      padding: 7px 16px 7px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(79, 224, 232, .45);
+      background: linear-gradient(135deg, rgba(31, 93, 99, .55), rgba(15, 24, 48, .85));
+      color: var(--text);
+      cursor: pointer;
+      overflow: hidden;
+      font-family: var(--font-display);
+      box-shadow: inset 0 0 0 1px rgba(79, 224, 232, .08), 0 0 18px rgba(79, 224, 232, .18);
+      transition: transform .2s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+    .tutorial-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(79, 224, 232, .28) 50%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform .7s ease;
+      pointer-events: none;
+    }
+    .tutorial-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--cyan);
+      box-shadow: inset 0 0 0 1px rgba(79, 224, 232, .15), 0 0 26px rgba(79, 224, 232, .35);
+    }
+    .tutorial-btn:hover::before { transform: translateX(120%); }
+    .tutorial-btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .tb-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: var(--cyan);
+      color: #06131a;
+      font-size: 11px;
+      padding-left: 2px;
+      animation: tbPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes tbPulse {
+      0%, 100% { box-shadow: 0 0 6px rgba(79, 224, 232, .5); }
+      50% { box-shadow: 0 0 18px rgba(79, 224, 232, .9); }
+    }
+    .tb-text { display: flex; flex-direction: column; line-height: 1.05; text-align: left; }
+    .tb-title { font-weight: 700; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: #f2f6fb; }
+    .tb-sub { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); margin-top: 2px; }
     /* === KERBOL CALENDAR MODAL === */
     .cal-modal {
       display: none;
@@ -3782,6 +3837,10 @@
           <div class="sub">Astrodynamics Suite <div>v4.4</div></div>
         </div>
       </div>
+      <button class="tutorial-btn" type="button" onclick="openTutorial()" title="Watch the animated tutorial">
+        <span class="tb-icon">&#9654;</span>
+        <span class="tb-text"><span class="tb-title">Tutorial</span><span class="tb-sub">Watch how it works</span></span>
+      </button>
       <div class="ut-clock">
         <div><span class="label">UT</span><br><span class="value" id="utValue">T+0y,0d,00:00:00</span></div>
       </div>
@@ -4055,6 +4114,561 @@
       </div>
     </div>
   </div>
+<!-- 103-html-tutorial.html : animated tutorial modal opened by the header TUTORIAL button -->
+<style>
+#tutorial-modal{position:fixed;inset:0;z-index:10000;background:rgba(3,7,14,.84);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center}
+#tutorial-modal.open{display:flex;animation:tutFade .35s ease}
+@keyframes tutFade{from{opacity:0}to{opacity:1}}
+#tutorial-box{position:relative;width:min(92vw,calc(92vh*16/9));aspect-ratio:16/9;border:1px solid rgba(79,224,232,.35);border-radius:12px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 60px rgba(79,224,232,.12);background:#050912}
+#tutorial-frame{width:100%;height:100%;border:0;display:block;background:#050912}
+#tutorial-close{position:absolute;top:10px;right:10px;z-index:2;background:rgba(9,16,30,.88);color:var(--text-dim,#9fb3cc);border:1px solid #2a3c58;border-radius:6px;padding:5px 11px;font:600 12px var(--font-mono,monospace);letter-spacing:.06em;cursor:pointer}
+#tutorial-close:hover{color:var(--cyan,#4fe0e8);border-color:var(--cyan,#4fe0e8)}
+</style>
+<div id="tutorial-modal" role="dialog" aria-modal="true" aria-label="Kerbalist tutorial">
+  <div id="tutorial-box">
+    <button id="tutorial-close" type="button">Close &#x2715;</button>
+    <iframe id="tutorial-frame" title="Kerbalist tutorial"></iframe>
+  </div>
+</div>
+<script>
+(function(){
+  var modal=document.getElementById('tutorial-modal');
+  var frame=document.getElementById('tutorial-frame');
+  function openTutorial(){
+    if(!frame.dataset.loaded){
+      var src=document.getElementById('tutorial-src');
+      frame.srcdoc=src.textContent.split('<'+String.fromCharCode(92)+'/script>').join('<'+'/script>');
+      frame.dataset.loaded='1';
+    }
+    modal.classList.add('open');
+  }
+  function closeTutorial(){modal.classList.remove('open');}
+  window.openTutorial=openTutorial;
+  document.getElementById('tutorial-close').addEventListener('click',closeTutorial);
+  modal.addEventListener('click',function(e){if(e.target===modal)closeTutorial();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&modal.classList.contains('open'))closeTutorial();
+  });
+})();
+</script>
+<!-- Embedded tutorial source. Its closing script tags are written as <\/script> and restored above. -->
+<script type="text/plain" id="tutorial-src">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kerbalist - Animated Explainer</title>
+<style>
+:root{--bg:#050912;--line:#1b2a40;--text:#c9d6e6;--mute:#5d7089;--cyan:#38e1f0;--orange:#ffab3d;--green:#7cf0a4;--violet:#a58bff;--red:#ff4d5e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;color:var(--text)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%);background:var(--bg);overflow:hidden;border-radius:8px}
+#nebula{position:absolute;inset:-10%;background:radial-gradient(circle at 30% 40%,rgba(56,225,240,.18),transparent 40%),radial-gradient(circle at 75% 60%,rgba(165,139,255,.16),transparent 42%),radial-gradient(circle at 55% 20%,rgba(255,171,61,.10),transparent 35%);animation:drift 22s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(-3%,-2%) scale(1)}to{transform:translate(3%,2%) scale(1.06)}}
+#bg{position:absolute;inset:0}
+
+#side{position:absolute;left:0;top:0;bottom:0;width:200px;padding:22px 14px;border-right:1px solid #15223a;background:rgba(5,9,18,.72);backdrop-filter:blur(6px);z-index:5;display:flex;flex-direction:column;gap:8px}
+#side .lbl{font-size:10px;letter-spacing:.24em;color:var(--mute);margin-bottom:6px}
+.thumb{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid #17263d;border-radius:8px;cursor:pointer;opacity:.28;transition:opacity .4s,border-color .4s,background .4s,transform .4s;font-size:12px}
+.thumb .n{color:var(--mute);font-size:11px;width:20px}
+.thumb .sw{width:6px;height:24px;border-radius:3px;background:var(--acc);box-shadow:0 0 12px var(--acc)}
+.thumb.done{opacity:.85;animation:slideIn .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes slideIn{from{opacity:0;transform:translateX(-28px) scale(.96)}to{opacity:.85;transform:none}}
+.thumb.active{opacity:1;border-color:var(--cyan);background:rgba(56,225,240,.08);transform:translateX(4px)}
+.thumb:hover{opacity:1;border-color:#2a4368}
+
+.scene{position:absolute;left:200px;top:0;right:0;bottom:0;opacity:0;filter:blur(14px);transform:scale(1.05);transition:opacity 1s ease,filter 1s ease,transform 1.2s cubic-bezier(.2,.7,.1,1);pointer-events:none}
+.scene.on{opacity:1;filter:blur(0);transform:none;pointer-events:auto}
+.scene.out{opacity:0;filter:blur(10px);transform:scale(.97)}
+.zoom{position:absolute;inset:0}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:18px;padding-bottom:40px}
+
+.reveal{opacity:0;transform:translateY(26px) scale(.97);filter:blur(8px);transition:opacity .9s ease,transform 1s cubic-bezier(.2,.8,.2,1),filter .9s ease}
+.reveal.in{opacity:1;transform:none;filter:blur(0)}
+.float{animation:float 7s ease-in-out infinite}
+@keyframes float{50%{translate:0 -7px}}
+
+.glass{position:relative;background:linear-gradient(160deg,rgba(18,30,52,.88),rgba(9,16,30,.92));border:1px solid rgba(56,225,240,.16);border-radius:12px;padding:18px 22px;box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 40px rgba(56,225,240,.07);overflow:hidden}
+.glass::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%);transform:translateX(-120%);pointer-events:none}
+.scene.on .glass::after{animation:sheen 3.6s ease-in-out 1s infinite}
+@keyframes sheen{0%{transform:translateX(-120%)}60%,100%{transform:translateX(120%)}}
+
+.h{font-size:11px;letter-spacing:.24em;color:var(--cyan);text-transform:uppercase}
+.title{font-size:42px;letter-spacing:.16em;font-weight:700;background:linear-gradient(90deg,#eef4ff,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #15223a;font-size:15px}
+.row:last-child{border-bottom:0}
+.row .k{color:#8ea1b8}
+.row .v{color:var(--cyan);font-weight:600;text-shadow:0 0 14px rgba(56,225,240,.35)}
+.big{font-size:52px;font-weight:700;color:var(--orange);line-height:1;text-shadow:0 0 26px rgba(255,171,61,.4)}
+.bar{height:6px;background:#15223a;border-radius:3px;overflow:hidden;margin:-4px 0 6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width 1.4s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 10px rgba(56,225,240,.6)}
+.chip{display:flex;align-items:center;gap:14px;font-size:14px}
+.key{min-width:150px;text-align:center;padding:6px 10px;border:1px solid #2a3c58;border-radius:5px;background:linear-gradient(180deg,#0f1d33,#0a1324);color:#dfe9f5;box-shadow:0 4px 0 #060c18}
+.desc{color:var(--mute)}
+.btn{padding:14px 40px;border:1px solid var(--cyan);border-radius:8px;color:var(--cyan);letter-spacing:.2em;font-weight:700;background:linear-gradient(180deg,rgba(56,225,240,.22),rgba(56,225,240,.05))}
+.scene.on .btn.pulse{animation:pulse 2.2s ease-in-out .8s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(56,225,240,.45)}50%{box-shadow:0 0 30px 8px rgba(56,225,240,.25)}}
+.pill{padding:8px 16px;border:1px solid #24405f;border-radius:20px;color:var(--cyan);font-size:13px;background:rgba(56,225,240,.06)}
+.countdown{font-size:42px;font-weight:700;color:var(--cyan);letter-spacing:.04em;text-shadow:0 0 26px rgba(56,225,240,.5)}
+.spin{animation:spin 26s linear infinite;transform-origin:50% 50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.swap{animation:spin 3s linear infinite;transform-origin:50% 50%;display:inline-block}
+.needle{transform-origin:110px 110px;transition:transform 1.8s cubic-bezier(.3,.8,.2,1)}
+.flow{stroke-dasharray:100;stroke-dashoffset:100}
+.scene.on .flow{animation:draw 2.6s .4s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.ring{transform-origin:center;transform-box:fill-box;animation:ringpulse 2.4s ease-in-out infinite}
+@keyframes ringpulse{50%{transform:scale(1.35);opacity:.2}}
+.step{font-size:13px;line-height:1.6;color:#b8c8dc}
+.step b{color:#eef4ff;font-weight:600}
+
+#cap{position:absolute;left:200px;right:0;bottom:84px;text-align:center;font-size:14px;color:#9fb3cc;letter-spacing:.04em;transition:opacity .5s;z-index:4}
+#hud{position:absolute;left:200px;right:0;bottom:0;height:72px;display:flex;align-items:center;justify-content:center;gap:12px;z-index:5}
+.ctl{background:rgba(9,16,30,.8);border:1px solid #2a3c58;color:#9fb3cc;font:inherit;font-size:12px;padding:7px 14px;border-radius:6px;cursor:pointer;transition:border-color .3s,color .3s}
+.ctl:hover{border-color:var(--cyan);color:var(--cyan)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="nebula"></div>
+  <canvas id="bg" width="1280" height="720"></canvas>
+
+  <aside id="side">
+    <div class="lbl">CONTENTS</div>
+    <div id="thumbs" style="display:flex;flex-direction:column;gap:8px"></div>
+  </aside>
+
+  <!-- 1. Title -->
+  <section class="scene" data-i="0"><div class="zoom center">
+    <svg width="170" height="170" viewBox="0 0 170 170" class="float">
+      <defs>
+        <radialGradient id="g1" cx=".35" cy=".35"><stop offset="0" stop-color="#7fb8ff" stop-opacity=".9"/><stop offset="1" stop-color="#0b2a5c" stop-opacity="0"/></radialGradient>
+        <radialGradient id="glow" cx=".5" cy=".5"><stop offset="0" stop-color="#38e1f0" stop-opacity=".35"/><stop offset="1" stop-color="#38e1f0" stop-opacity="0"/></radialGradient>
+      </defs>
+      <circle cx="85" cy="85" r="84" fill="url(#glow)"/>
+      <circle cx="85" cy="85" r="78" fill="none" stroke="#1b2a40" stroke-width="2"/>
+      <g class="spin"><ellipse cx="85" cy="85" rx="66" ry="26" fill="none" stroke="#38e1f0" stroke-opacity=".5" stroke-width="2"/><circle cx="151" cy="85" r="5" fill="#ffab3d"/></g>
+      <circle cx="85" cy="85" r="30" fill="#1f6fd6"/><circle cx="85" cy="85" r="30" fill="url(#g1)"/>
+    </svg>
+    <div class="title reveal">KERBALIST</div>
+    <div class="h reveal">Astrodynamics Suite</div>
+    <div class="reveal" style="font-size:12px;color:var(--mute);letter-spacing:.2em">V4.4</div>
+    <div class="reveal" style="font-size:16px;color:#9fb3cc;margin-top:8px">Less Math. More Exploration.</div>
+  </div></section>
+
+  <!-- 2. Map -->
+  <section class="scene" data-i="1"><div class="zoom">
+    <canvas id="map" width="1080" height="720" style="position:absolute;inset:0"></canvas>
+    <div class="reveal" style="position:absolute;left:36px;top:36px"><div class="h">Interactive map</div><div style="font-size:22px;color:#eef4ff;margin-top:8px;letter-spacing:.06em">Every orbit, in view</div></div>
+  </div></section>
+
+  <!-- 3. Controls -->
+  <section class="scene" data-i="2"><div class="zoom center">
+    <div class="h reveal">Controls</div>
+    <div class="glass float" style="display:grid;grid-template-columns:1fr 1fr;gap:14px 36px;padding:26px 30px">
+      <div class="chip reveal"><span class="key">Drag</span><span class="desc">Rotate orbit</span></div>
+      <div class="chip reveal"><span class="key">Shift+Drag</span><span class="desc">Pan view</span></div>
+      <div class="chip reveal"><span class="key">Scroll</span><span class="desc">Zoom in / out</span></div>
+      <div class="chip reveal"><span class="key">Double Click</span><span class="desc">Center view</span></div>
+      <div class="chip reveal"><span class="key">[ ]</span><span class="desc">Collapse / expand planner</span></div>
+      <div class="chip reveal"><span class="key">R</span><span class="desc">Reset view</span></div>
+      <div class="chip reveal"><span class="key">K</span><span class="desc">Toggle controls</span></div>
+      <div class="chip reveal"><span class="key">L</span><span class="desc">Toggle legend</span></div>
+      <div class="chip reveal"><span class="key">Click planet</span><span class="desc">Body info</span></div>
+      <div class="chip reveal"><span class="key">Right-click</span><span class="desc">Context menu</span></div>
+    </div>
+  </div></section>
+
+  <!-- 4. Route -->
+  <section class="scene" data-i="3"><div class="zoom center">
+    <div class="h reveal">Choose your route</div>
+    <div style="display:flex;align-items:center;gap:26px">
+      <div class="glass reveal" style="width:250px"><div class="h" style="color:var(--mute)">Origin</div><div style="font-size:22px;margin-top:10px;color:#eef4ff">Beyl</div></div>
+      <div class="reveal" style="width:46px;height:46px;border:1px solid #2a3c58;border-radius:50%;display:grid;place-items:center;color:var(--cyan);font-size:22px"><span class="swap">&#8644;</span></div>
+      <div class="glass reveal" style="width:250px"><div class="h" style="color:var(--mute)">Destination</div><div style="font-size:22px;margin-top:10px;color:#eef4ff">Duna</div></div>
+    </div>
+    <div class="btn pulse reveal" style="margin-top:16px">PLAN TRANSFER</div>
+  </div></section>
+
+  <!-- 5. Delta-V -->
+  <section class="scene" data-i="4"><div class="zoom center">
+    <div class="glass float" style="width:780px">
+      <div class="h reveal">&Delta;v budget · from 100 km parking orbit</div>
+      <div class="reveal" style="margin-top:14px;display:flex;align-items:baseline;gap:14px">
+        <span class="big" data-count="2017" data-dec="0">0</span><span style="font-size:18px;color:#8ea1b8">m/s heliocentric transfer</span>
+      </div>
+      <div class="reveal" style="font-size:14px;color:#8ea1b8;margin-top:6px">2636 m/s total</div>
+      <div style="margin-top:14px">
+        <div class="row reveal"><span class="k">Heliocentric v&infin; (departure)</span><span class="v" data-count="1080" data-dec="0" data-suffix=" m/s">0</span></div>
+        <div class="bar reveal"><i data-bar="61"></i></div>
+        <div class="row reveal"><span class="k">Heliocentric v&infin; (arrival)</span><span class="v" data-count="937" data-dec="0" data-suffix=" m/s">0</span></div>
+        <div class="bar reveal"><i data-bar="53" data-delay="200"></i></div>
+        <div class="row reveal"><span class="k">Landing @ Duna</span><span class="v" data-count="340" data-dec="0" data-suffix=" m/s">0</span></div>
+        <div class="bar reveal"><i data-bar="19" data-delay="400"></i></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 6. Return trip -->
+  <section class="scene" data-i="5"><div class="zoom center">
+    <div class="glass float" style="width:780px">
+      <div class="h reveal">Return trip · Duna to Kerbin</div>
+      <div style="margin-top:10px">
+        <div class="row reveal"><span class="k">Return window wait</span><span class="v" style="color:var(--orange)">1y 52d 02h 45m</span></div>
+        <div class="row reveal"><span class="k">Return ejection burn @ Duna</span><span class="v" data-count="608" data-dec="0" data-suffix=" m/s">0</span></div>
+        <div class="row reveal"><span class="k">Kerbin capture burn</span><span class="v" data-count="1060" data-dec="0" data-suffix=" m/s">0</span></div>
+        <div class="row reveal"><span class="k">Return &Delta;v budget</span><span class="v" data-count="1669" data-dec="0" data-suffix=" m/s">0</span></div>
+        <div class="row reveal" style="margin-top:6px;padding-top:14px;border-top:1px solid #24405f"><span class="k" style="color:#eef4ff">Round-trip &Delta;v budget</span><span class="big" style="font-size:30px" data-count="3686" data-dec="0" data-suffix=" m/s">0</span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 7. Phase angle -->
+  <section class="scene" data-i="6"><div class="zoom center">
+    <div class="glass float" style="width:660px;display:flex;gap:40px;align-items:center">
+      <svg width="220" height="220" viewBox="0 0 220 220" class="reveal">
+        <circle cx="110" cy="110" r="100" fill="rgba(56,225,240,.06)" stroke="#24405f" stroke-width="1.5"/>
+        <line x1="110" y1="110" x2="110" y2="20" stroke="#38e1f0" stroke-width="2.5" class="needle" data-rot="-59.8" style="filter:drop-shadow(0 0 6px #38e1f0)"/>
+        <line x1="110" y1="110" x2="110" y2="20" stroke="#ffab3d" stroke-width="2.5" stroke-dasharray="5 5" class="needle" data-rot="-149"/>
+        <circle cx="110" cy="110" r="4" fill="#eef4ff"/>
+      </svg>
+      <div style="flex:1">
+        <div class="h reveal">Phase angle</div>
+        <div style="margin-top:10px">
+          <div class="row reveal"><span class="k">Current phase angle</span><span class="v" data-count="59.8" data-dec="1" data-pre="-" data-suffix="&deg;">0</span></div>
+          <div class="row reveal"><span class="k">Required phase angle</span><span class="v" style="color:var(--orange)" data-count="149.0" data-dec="1" data-pre="-" data-suffix="&deg;">0</span></div>
+          <div class="row reveal"><span class="k">Difference</span><span class="v" data-count="89.2" data-dec="1" data-suffix="&deg;">0</span></div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 8. Transfer time -->
+  <section class="scene" data-i="7"><div class="zoom center">
+    <div class="glass reveal" style="width:620px;text-align:center">
+      <div class="h">Transfer time</div>
+      <div style="font-size:34px;font-weight:700;color:var(--cyan);margin:12px 0;text-shadow:0 0 22px rgba(56,225,240,.45)">1y 288d 03h 38m</div>
+      <div class="row"><span class="k">Transfer orbit SMA</span><span class="v">32.570 Gm</span></div>
+      <div class="row"><span class="k">Transfer orbit type</span><span class="v">Inbound (descending)</span></div>
+    </div>
+    <div class="glass reveal float" style="width:620px;text-align:center">
+      <div class="h">Next transfer window</div>
+      <div class="countdown" style="margin:12px 0">T-minus 2y 234d 02h 31m</div>
+      <div style="font-size:14px;color:#8ea1b8">Window opens at UT T+53y,32d,01:36:31</div>
+    </div>
+  </div></section>
+
+  <!-- 9. Gravity assists -->
+  <section class="scene" data-i="8"><div class="zoom center" style="flex-direction:row;gap:28px;padding:0 40px 40px 40px;justify-content:center">
+    <div class="glass float" style="width:360px">
+      <div class="h reveal">Gravity assist routes</div>
+      <div class="reveal" style="margin-top:14px;padding:14px;border:1px solid var(--violet);border-radius:10px;background:rgba(165,139,255,.08);box-shadow:0 0 24px rgba(165,139,255,.25)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="color:var(--violet);font-weight:700;font-size:15px">Duna flyby</div>
+            <div style="font-size:12px;color:#8ea1b8;margin-top:6px;line-height:1.5">3y 344d 01h 24m total<br>(+2y 397d 00h 16m longer)</div>
+          </div>
+          <div style="color:var(--green);font-weight:700;font-size:14px;text-shadow:0 0 14px rgba(124,240,164,.5)" data-count="2208" data-dec="0" data-pre="Save " data-suffix=" m/s">0</div>
+        </div>
+      </div>
+      <div class="row reveal" style="margin-top:14px"><span class="k">Direct transfer &Delta;v</span><span class="v" data-count="8190" data-dec="0" data-suffix=" m/s">0</span></div>
+      <div class="reveal" style="font-size:11px;color:var(--mute);line-height:1.6;margin-top:10px">Estimated from two Lambert arcs compared with the direct Hohmann transfer. Treat the savings as a rough guide, not a flight plan.</div>
+    </div>
+    <div class="glass float" style="width:520px">
+      <div class="h reveal">Moho &rarr; Duna flyby &rarr; Dres</div>
+      <svg width="480" height="250" viewBox="0 0 480 250" style="margin-top:10px;overflow:visible">
+        <defs><linearGradient id="fg" x1="0" x2="1"><stop offset="0" stop-color="#7d6bd6"/><stop offset="1" stop-color="#a58bff"/></linearGradient></defs>
+        <path class="flow" pathLength="100" d="M40 190 C 130 30, 200 230, 260 120 S 380 40, 440 70" fill="none" stroke="url(#fg)" stroke-width="3" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(165,139,255,.7))"/>
+        <circle cx="40" cy="190" r="8" fill="#5d7089"/>
+        <text x="28" y="222" fill="#9fb3cc" font-size="12" font-family="ui-monospace,monospace">Moho</text>
+        <circle class="ring" cx="260" cy="120" r="14" fill="none" stroke="#a58bff" stroke-width="1.5"/>
+        <circle cx="260" cy="120" r="7" fill="#a58bff"/>
+        <text x="228" y="152" fill="#c9b8ff" font-size="12" font-family="ui-monospace,monospace">Duna flyby</text>
+        <circle cx="440" cy="70" r="7" fill="#38e1f0"/>
+        <text x="418" y="56" fill="#9fb3cc" font-size="12" font-family="ui-monospace,monospace">Dres</text>
+      </svg>
+      <div class="reveal" style="display:flex;justify-content:space-between;font-size:12px;color:#8ea1b8;margin-top:6px">
+        <span>Moho &rarr; Duna · 1y 125d 05h 53m</span>
+        <span>Duna &rarr; Dres · 2y 218d 01h 30m</span>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 10. Porkchop -->
+  <section class="scene" data-i="9"><div class="zoom center" style="flex-direction:row;gap:26px;padding:0 40px 40px 40px;justify-content:center">
+    <div class="glass float" style="width:330px">
+      <div class="h reveal">How to use the porkchop plot</div>
+      <div style="margin-top:12px">
+        <div class="step reveal"><b>What it shows:</b> transfer opportunities between two bodies. Each cell is a launch date and flight time, colored by the &Delta;v required.</div>
+        <div class="step reveal" style="margin-top:8px"><b>X-axis:</b> departure date (left = earlier). <b>Y-axis:</b> time of flight (top = shorter).</div>
+        <div class="step reveal" style="margin-top:8px"><b>Colors:</b> blue and green = efficient, red = expensive.</div>
+        <div class="step reveal" style="margin-top:10px"><b>How to plan:</b><br>1. Generate the plot<br>2. Find a blue/green valley<br>3. Click a cell for exact timing<br>4. Check Next Transfer Window</div>
+      </div>
+    </div>
+    <div class="glass float" style="width:520px">
+      <div class="h reveal">Porkchop plot</div>
+      <canvas id="pork" width="460" height="340" class="reveal" style="margin-top:12px;border-radius:6px;display:block"></canvas>
+      <div class="reveal" style="height:8px;border-radius:4px;margin-top:12px;background:linear-gradient(90deg,#2d6bff,#38e1f0,#7cf0a4,#ffd166,#ffab3d,#ff4d5e)"></div>
+      <div class="reveal" style="display:flex;justify-content:space-between;font-size:11px;color:var(--mute);margin-top:6px"><span>low &Delta;v</span><span>high &Delta;v</span></div>
+    </div>
+  </div></section>
+
+  <!-- 11. Outro -->
+  <section class="scene" data-i="10"><div class="zoom center">
+    <div class="title reveal">KERBALIST</div>
+    <div class="h reveal" style="margin-bottom:10px">Astrodynamics Suite</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:760px">
+      <span class="pill reveal">Gravity assist routes</span>
+      <span class="pill reveal">Porkchop plots</span>
+      <span class="pill reveal">Pinnable HUD widgets</span>
+      <span class="pill reveal">Body info</span>
+      <span class="pill reveal">Live sync</span>
+    </div>
+    <div class="reveal" style="font-size:18px;color:#eef4ff;margin-top:22px;letter-spacing:.06em">Less Math. More Exploration.</div>
+  </div></section>
+
+  <div id="cap"></div>
+  <div id="hud">
+    <button class="ctl" id="prev">&larr; Prev</button>
+    <button class="ctl" id="pp">Pause</button>
+    <button class="ctl" id="next">Next &rarr;</button>
+    <button class="ctl" id="rp">Replay</button>
+  </div>
+</div>
+
+<script>
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+
+/* ---- Starfield background ---- */
+const bg=document.getElementById('bg'),bx=bg.getContext('2d');
+const stars=Array.from({length:180},()=>({x:Math.random()*1280,y:Math.random()*720,z:Math.random()*.9+.1,p:Math.random()*6.28}));
+function bgFrame(t){
+  bx.clearRect(0,0,1280,720);
+  for(const s of stars){
+    s.x-=s.z*.12; if(s.x<0){s.x=1280;s.y=Math.random()*720;}
+    bx.globalAlpha=(.35+.35*Math.sin(t/900+s.p))*s.z;
+    bx.fillStyle='#bfe9ff';bx.fillRect(s.x,s.y,s.z*2.2,s.z*2.2);
+  }
+  bx.globalAlpha=1;requestAnimationFrame(bgFrame);
+}
+requestAnimationFrame(bgFrame);
+
+/* ---- Scene data ---- */
+const scenes=[...document.querySelectorAll('.scene')];
+const N=scenes.length;
+const SL=[
+ {t:'Intro',a:'#38e1f0'},{t:'Live map',a:'#4f9bd9'},{t:'Controls',a:'#a58bff'},{t:'Choose a route',a:'#38e1f0'},
+ {t:'Δv budget',a:'#ffab3d'},{t:'Return trip',a:'#ffab3d'},{t:'Phase angle',a:'#7cf0a4'},{t:'Transfer time',a:'#38e1f0'},
+ {t:'Gravity assists',a:'#a58bff'},{t:'Porkchop plot',a:'#7cf0a4'},{t:'Summary',a:'#38e1f0'}
+];
+const DUR=[6500,8000,8000,8000,9000,8500,8000,8500,9000,9500,7000];
+const CAPS=[
+ 'Kerbalist turns Kerbal Space Program transfers into clear, plannable numbers.',
+ 'The map shows planets, moons and the transfer arc in one view.',
+ 'Navigate the system with simple mouse and keyboard controls.',
+ 'Pick an origin and destination, then plan the transfer.',
+ 'The heliocentric budget is built from departure, arrival and landing burns.',
+ 'The return leg has its own window, burns and round-trip total.',
+ 'Phase angle shows how far the planets are from the required alignment.',
+ 'Transfer time and the countdown to the next window at a glance.',
+ 'Gravity assists can save significant Δv by flying past an intermediate body.',
+ 'The porkchop plot reveals the cheapest launch dates and flight times.',
+ 'Everything you need to fly efficiently.'
+];
+
+/* ---- Thumbnails ---- */
+const thumbsEl=document.getElementById('thumbs');
+const thumbs=SL.map((s,i)=>{
+  const d=document.createElement('div');d.className='thumb';d.style.setProperty('--acc',s.a);
+  d.innerHTML=`<span class="n">${String(i+1).padStart(2,'0')}</span><span class="sw"></span><span>${s.t}</span>`;
+  d.onclick=()=>jump(i);thumbsEl.appendChild(d);return d;
+});
+
+const cap=document.getElementById('cap');
+let cur=0,token=0,paused=false,timers=[],mapStart=0,porkStart=0;
+const later=(f,ms)=>timers.push(setTimeout(f,ms));
+const clearT=()=>{timers.forEach(clearTimeout);timers=[];};
+
+function countUp(e){
+  const to=+e.dataset.count,dec=+(e.dataset.dec||0),suf=e.dataset.suffix||'',pre=e.dataset.pre||'';
+  const dur=1500,t0=performance.now();
+  const f=t=>{const p=Math.min(1,(t-t0)/dur),k=1-Math.pow(1-p,3);
+    e.innerHTML=pre+(to*k).toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g,',')+suf;
+    if(p<1)requestAnimationFrame(f);};
+  requestAnimationFrame(f);
+}
+
+function activate(i){
+  clearT();cur=i;
+  scenes.forEach((s,k)=>{
+    if(k===i){s.classList.add('on');s.classList.remove('out');}
+    else if(s.classList.contains('on')){s.classList.remove('on');s.classList.add('out');}
+    else s.classList.remove('out');
+  });
+  thumbs.forEach((t,k)=>t.classList.toggle('active',k===i));
+  cap.style.opacity=0;later(()=>{cap.textContent=CAPS[i];cap.style.opacity=1;},350);
+  const sc=scenes[i];
+  sc.querySelectorAll('.reveal').forEach(e=>e.classList.remove('in'));
+  sc.querySelectorAll('[data-bar]').forEach(e=>e.style.width='0%');
+  sc.querySelectorAll('[data-rot]').forEach(e=>e.style.transform='rotate(0deg)');
+  let t=350;
+  sc.querySelectorAll('.reveal').forEach(e=>{later(()=>e.classList.add('in'),t);t+=260;});
+  sc.querySelectorAll('[data-bar]').forEach(e=>later(()=>e.style.width=e.dataset.bar+'%',700+(+(e.dataset.delay||0))));
+  sc.querySelectorAll('[data-rot]').forEach(e=>later(()=>e.style.transform=`rotate(${e.dataset.rot}deg)`,500));
+  sc.querySelectorAll('[data-count]').forEach(e=>later(()=>countUp(e),600+(+(e.dataset.delay||0))));
+  if(i===1)mapStart=performance.now();
+  if(i===9)porkStart=performance.now();
+}
+
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function wait(ms,my){
+  let left=ms;
+  while(left>0){
+    if(my!==token)return false;
+    await sleep(100);
+    if(!paused)left-=100;
+  }
+  return my===token;
+}
+
+async function run(from){
+  const my=++token;
+  for(let i=from;i<N;i++){
+    if(my!==token)return;
+    activate(i);
+    const ok=await wait(DUR[i],my);
+    if(!ok)return;
+    thumbs[i].classList.add('done');
+  }
+  paused=true;document.getElementById('pp').textContent='Play';
+}
+function jump(i){paused=false;document.getElementById('pp').textContent='Pause';run(i);}
+
+document.getElementById('pp').onclick=e=>{paused=!paused;e.target.textContent=paused?'Play':'Pause';};
+document.getElementById('prev').onclick=()=>jump(Math.max(0,cur-1));
+document.getElementById('next').onclick=()=>jump(Math.min(N-1,cur+1));
+document.getElementById('rp').onclick=()=>jump(0);
+
+/* ---- Map canvas (scene 2) ---- */
+const cv=document.getElementById('map'),g=cv.getContext('2d');
+const C={x:540,y:370},K=0.8;
+const bodies=[
+ {n:'Moho',r:70,s:.9,c:'#8a7d6b',sz:4,ph:.4},
+ {n:'Eve',r:115,s:.55,c:'#9b6fd1',sz:9,ph:2.2},
+ {n:'Kerbin',r:170,s:.35,c:'#4f9bd9',sz:9,ph:4.0},
+ {n:'Duna',r:240,s:.27,c:'#d8653a',sz:7,ph:1.0},
+ {n:'Dres',r:300,s:.18,c:'#8d8d8d',sz:6,ph:5.0},
+ {n:'Jool',r:350,s:.13,c:'#5ec88a',sz:14,ph:3.1}
+];
+const angle=(b,el)=>b.ph+el*b.s*.08;
+const pos=(r,a)=>({x:C.x+r*Math.cos(a),y:C.y+r*K*Math.sin(a)});
+
+function mapFrame(now){
+  if(scenes[1].classList.contains('on')){
+    const el=(now-mapStart)/1000;
+    g.clearRect(0,0,cv.width,cv.height);
+    bodies.forEach((b,i)=>{
+      const a=Math.min(1,Math.max(0,(el-.2-i*.3)/.7));
+      if(a<=0)return;
+      g.globalAlpha=a*.55;g.strokeStyle='#2a4368';g.lineWidth=1;
+      g.beginPath();g.ellipse(C.x,C.y,b.r,b.r*K,0,0,Math.PI*2);g.stroke();
+    });
+    const sun=g.createRadialGradient(C.x,C.y,0,C.x,C.y,60);
+    sun.addColorStop(0,'rgba(255,243,176,1)');sun.addColorStop(.4,'rgba(255,179,71,.85)');sun.addColorStop(1,'rgba(255,179,71,0)');
+    g.globalAlpha=Math.min(1,el*1.5);g.fillStyle=sun;g.beginPath();g.arc(C.x,C.y,60,0,Math.PI*2);g.fill();
+    g.fillStyle='#ffd27a';g.beginPath();g.arc(C.x,C.y,18,0,Math.PI*2);g.fill();
+
+    const duna=bodies[3],dA=angle(duna,el);
+    const p=Math.min(1,Math.max(0,(el-3.2)/2.6));
+    if(p>0){
+      const aArr=dA+0.35, a0=aArr-1.6;
+      g.globalAlpha=1;g.setLineDash([7,7]);g.strokeStyle='#7cf0a4';g.lineWidth=2;
+      g.shadowColor='rgba(124,240,164,.7)';g.shadowBlur=12;
+      g.beginPath();
+      for(let s=0;s<=p;s+=.01){
+        const q=pos(170+70*s,a0+1.6*s);
+        s===0?g.moveTo(q.x,q.y):g.lineTo(q.x,q.y);
+      }
+      g.stroke();g.setLineDash([]);g.shadowBlur=0;
+      const st=pos(170,a0);
+      g.fillStyle='#7cf0a4';g.beginPath();g.arc(st.x,st.y,6,0,Math.PI*2);g.fill();
+      g.fillStyle='#9fb3cc';g.font='14px ui-monospace,monospace';g.fillText('Departure',st.x+12,st.y+4);
+    }
+    bodies.forEach((b,i)=>{
+      const a=Math.min(1,Math.max(0,(el-.6-i*.3)/.6));
+      if(a<=0)return;
+      const q=pos(b.r,angle(b,el));
+      g.globalAlpha=a;
+      g.fillStyle=b.c;g.beginPath();g.arc(q.x,q.y,b.sz,0,Math.PI*2);g.fill();
+      g.fillStyle='#c9d6e6';g.font='16px ui-monospace,monospace';
+      g.fillText(b.n,q.x+b.sz+7,q.y+5);
+    });
+    if(p>=1){
+      const q=pos(240,dA+0.35);
+      g.globalAlpha=1;g.strokeStyle='rgba(255,171,61,.9)';g.lineWidth=1.5;
+      g.beginPath();g.arc(q.x,q.y,15,0,Math.PI*2);g.stroke();
+      g.fillStyle='#ffab3d';g.font='13px ui-monospace,monospace';g.fillText('Arrival',q.x+20,q.y+4);
+    }
+    g.globalAlpha=1;
+  }
+  requestAnimationFrame(mapFrame);
+}
+requestAnimationFrame(mapFrame);
+
+/* ---- Porkchop heatmap (scene 10) ---- */
+const pk=document.getElementById('pork'),pg=pk.getContext('2d');
+const NX=40,NY=30,CW=440,CH=320,OX=10,OY=10;
+const ramp=[[45,107,255],[56,225,240],[124,240,164],[255,209,102],[255,171,61],[255,77,94]];
+function col(t){
+  t=Math.max(0,Math.min(1,t))*(ramp.length-1);
+  const i=Math.floor(t),f=t-i,a=ramp[i],b=ramp[Math.min(i+1,ramp.length-1)];
+  return `rgb(${a.map((v,k)=>Math.round(v+(b[k]-v)*f)).join(',')})`;
+}
+const cells=[];
+for(let j=0;j<NY;j++)for(let i=0;i<NX;i++){
+  const x=i/(NX-1),y=j/(NY-1);
+  const v=Math.pow((x-.38)**2*2.1+(y-.42)**2*1.5,.75)*.95+.06*Math.sin(x*6)*Math.cos(y*4)+.15*x*x+.06*(1-y)*x;
+  cells.push({i,j,v});
+}
+const vmin=Math.min(...cells.map(c=>c.v)),vmax=Math.max(...cells.map(c=>c.v));
+cells.forEach(c=>c.t=(c.v-vmin)/(vmax-vmin));
+const best=cells.reduce((a,b)=>b.v<a.v?b:a);
+
+function porkFrame(now){
+  if(scenes[9].classList.contains('on')){
+    const el=(now-porkStart)/1000;
+    pg.clearRect(0,0,pk.width,pk.height);
+    const cw=CW/NX,ch=CH/NY;
+    for(const c of cells){
+      const d=Math.hypot(c.i-best.i,(c.j-best.j)*1.3)/Math.max(NX,NY);
+      const a=Math.min(1,Math.max(0,(el-.4-d*2.2)/.5));
+      if(a<=0)continue;
+      pg.globalAlpha=a;pg.fillStyle=col(c.t);
+      pg.fillRect(OX+c.i*cw,OY+c.j*ch,cw+.5,ch+.5);
+    }
+    pg.globalAlpha=1;
+    if(el>3){
+      const bx2=OX+(best.i+.5)*cw,by2=OY+(best.j+.5)*ch;
+      const ph=(el-3)%1.6;
+      pg.strokeStyle='#ffffff';pg.lineWidth=2;
+      pg.globalAlpha=Math.max(0,1-ph/1.6);
+      pg.beginPath();pg.arc(bx2,by2,8+ph*14,0,6.283);pg.stroke();
+      pg.globalAlpha=1;pg.fillStyle='#ffffff';pg.beginPath();pg.arc(bx2,by2,4,0,6.283);pg.fill();
+      pg.font='12px ui-monospace,monospace';pg.fillText('Optimal',bx2+10,by2-10);
+    }
+  }
+  requestAnimationFrame(porkFrame);
+}
+requestAnimationFrame(porkFrame);
+
+run(0);
+<\/script>
+</body>
+</html>
+</script>
   <!-- Changelog Popup Modal -->
   <div class="changelog-overlay" id="changelogOverlay" onclick="if(event.target===this)hideChangelog()">
     <div class="changelog-popup">
