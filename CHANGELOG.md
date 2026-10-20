@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.5] - 2026-10-19
+
+### Added
+- **Interactive Tutorial Modal**: Added an interactive multi-step visual tutorial accessible via the header TUTORIAL button, covering map navigation, camera controls, ejection geometry, and transfer planning with animated vector diagrams.
+- **Spaceship camera lock button**: Added a dedicated spaceship button above the map zoom controls to quickly lock and track the camera on the active vessel.
+- **Double-click vessel label to focus**: Double-clicking a vessel's 3D label on the map now locks the camera directly to that vessel.
+- **Click-to-unlock Focus HUD**: Clicking the "⊙ Focus" readout in the camera HUD immediately releases camera focus lock.
+- **Double-click map to unlock**: Double-clicking on empty map space unlocks camera focus.
+
+### Fixed
+- **Camera focus conflicts**: Fixed an issue where locking onto a spaceship prevented selecting or centering on other planets or moons.
+- **HUD widget scaling & text wrapping**: Fixed an issue where SVG diagrams expanded excessively and labels shrank during widget resizing, and improved multi-column wrapping for small widget sizes.
+- **HUD widget overflow clipping**: Prevented widget title borders from extending outside boxes when scaled down vertically.
+
+
 ## [4.4] - 2026-10-18
 
 ### Added
