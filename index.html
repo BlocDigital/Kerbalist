@@ -1009,11 +1009,23 @@
       color: var(--text-dim);
       font-size: 15px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
     }
 
     .zoom-controls button:hover {
       color: var(--cyan);
       border-color: var(--border-bright);
+    }
+
+    .zoom-controls button.active {
+      color: var(--cyan);
+      border-color: var(--cyan);
+      background: rgba(79, 224, 232, 0.2);
+      box-shadow: 0 0 10px rgba(79, 224, 232, 0.4);
     }
 
     /* Context Menu (Right-Click) */
@@ -1239,8 +1251,18 @@
       font-weight: 600;
     }
 
+    .cam-hud-row.hud-focus {
+      cursor: pointer;
+      border-radius: 3px;
+      transition: background 0.15s ease;
+    }
+
+    .cam-hud-row.hud-focus:hover {
+      background: rgba(79, 224, 232, 0.15);
+    }
+
     .cam-hud-row.hud-focus .hud-val {
-      color: rgba(79, 224, 232, .70);
+      color: rgba(79, 224, 232, .85);
     }
 
     /* Bug Report Modal Popup */
@@ -3328,6 +3350,8 @@
   color: var(--text, #dbe7f5);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  --u: 14px;
 }
 
 .hud-widget.pinned {
@@ -3349,7 +3373,7 @@
 .hud-title {
   font-family: var(--font-display, 'Rajdhani', sans-serif);
   font-weight: 700;
-  font-size: 13px;
+  font-size: calc(var(--u) * 0.9);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--cyan, #4fe0e8);
@@ -3358,6 +3382,7 @@
   border-bottom: 1px solid rgba(79, 224, 232, 0.18);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -3372,25 +3397,31 @@
   flex-shrink: 0;
 }
 
-.hud-title,
-.hud-content {
-  zoom: var(--hud-s, 1);
-  width: calc(100% / var(--hud-s, 1));
-}
-
-.hud-content {
+.hud-inner {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
+.hud-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
 .hud-content .stat-row {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   padding: 3px 0;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
-  gap: 12px;
+  gap: 1px;
 }
 
 .hud-content .stat-row:last-child {
@@ -3399,22 +3430,27 @@
 
 .hud-content .stat-row .k {
   font-family: var(--font-display, 'Rajdhani', sans-serif);
-  font-size: 13px;
+  font-size: calc(var(--u) * 0.72);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-dim, #7688a6);
-  white-space: nowrap;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.3;
 }
 
 .hud-content .stat-row .v {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 13px;
+  font-size: calc(var(--u) * 0.95);
   font-weight: 500;
   color: var(--text, #dbe7f5);
-  text-align: right;
-  white-space: nowrap;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
   letter-spacing: 0.02em;
+  line-height: 1.4;
 }
 
 .hud-content .stat-row .v.hi {
@@ -3435,7 +3471,7 @@
 
 .hud-content .countdown {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 17px;
+  font-size: calc(var(--u) * 1.3);
   font-weight: 700;
   color: var(--green, #7ee787);
   text-align: center;
@@ -3451,7 +3487,7 @@
 
 .hud-content .big-num {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 22px;
+  font-size: calc(var(--u) * 1.7);
   font-weight: 700;
   color: var(--cyan, #4fe0e8);
   text-align: center;
@@ -3461,14 +3497,39 @@
 }
 
 .hud-content .phase-gauge {
-  display: flex;
-  justify-content: center;
-  padding: 2px 0 6px;
+  padding: 2px 0;
 }
 
-.hud-content svg {
+/* Diagrams: the element that holds the diagram takes the space the text leaves, and the diagram
+   fills that space in proportion (it never pushes the text out). */
+.hud-content > svg,
+.hud-content > .phase-gauge {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.hud-content > svg {
   display: block;
-  margin: 0 auto;
+  height: auto;
+  max-height: 100%;
+}
+
+.hud-content .phase-gauge > svg {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+}
+
+/* The ejection diagram is sized from the text size, so it grows and shrinks with the text (12 text units wide) */
+.hud-widget[data-type="ejection"] .hud-content > svg {
+  flex: 0 0 auto;
+  width: calc(var(--u) * 12);
+  max-width: 100%;
 }
 
 .hud-buttons {
@@ -3609,13 +3670,14 @@
       position: absolute;
       left: 0;
       top: 0;
-      pointer-events: none;
+      pointer-events: auto;
       white-space: nowrap;
       font: 600 10px/1 var(--font-mono);
       color: var(--text-dim);
       text-shadow: 0 0 4px #000;
       padding: 2px 4px;
       transform: translate(-50%, -150%);
+      cursor: default;
     }
 
     .vessel-label-3d.active {
@@ -3716,6 +3778,8 @@
       white-space: normal;
       overflow-wrap: anywhere;
     }
+
+
 
     .vh-panel .vh-pulse {
       flex: 0 0 auto;
@@ -3905,6 +3969,7 @@
               zoom)</span></div>
         </div>
         <div class="zoom-controls">
+          <button id="vesselFocusBtn" title="Lock camera to active vessel" aria-label="Lock camera to active vessel"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events:none"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></button>
           <button id="zoomIn">+</button>
           <button id="zoomOut">−</button>
           <button id="zoomReset">⤾</button>
@@ -3928,7 +3993,7 @@
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
             style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.4</div>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.5</div>
           <div class="bug-report-btn" id="bugReportBtn" onclick="showBugReportModal()" title="Report a bug">Submit bug
             report</div>
           <div class="bmc-wrap" id="bmcWrap">
@@ -4678,6 +4743,22 @@ run(0);
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
+        <h2>[4.5] - 2026-10-19 &mdash; Kerbalist v4.5 &middot; Astrodynamics Suite</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Interactive Tutorial Modal</strong>: Added an interactive multi-step visual tutorial accessible via the header TUTORIAL button, covering map navigation, camera controls, ejection geometry, and transfer planning with animated vector diagrams.</li>
+          <li><strong>Spaceship camera lock button</strong>: Added a dedicated spaceship button above the map zoom controls to quickly lock and track the camera on the active vessel.</li>
+          <li><strong>Double-click vessel label to focus</strong>: Double-clicking a vessel's 3D label on the map now locks the camera directly to that vessel.</li>
+          <li><strong>Click-to-unlock Focus HUD</strong>: Clicking the "⊙ Focus" readout in the camera HUD immediately releases camera focus lock.</li>
+          <li><strong>Double-click map to unlock</strong>: Double-clicking on empty map space unlocks camera focus.</li>
+        </ul>
+        <h3>Fixed</h3>
+        <ul>
+          <li><strong>Camera focus conflicts</strong>: Fixed an issue where locking onto a spaceship prevented selecting or centering on other planets or moons.</li>
+          <li><strong>HUD widget scaling &amp; text wrapping</strong>: Fixed an issue where SVG diagrams expanded excessively and labels shrank during widget resizing, and improved multi-column wrapping for small widget sizes.</li>
+          <li><strong>HUD widget overflow clipping</strong>: Prevented widget title borders from extending outside boxes when scaled down vertically.</li>
+        </ul>
+
         <h2>[4.4] - 2026-10-18 &mdash; Kerbalist v4.4 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
@@ -5882,7 +5963,7 @@ run(0);
         }
 
         issueBody += `## Environment\n`;
-        issueBody += `- **App Version:** v4.4\n`;
+        issueBody += `- **App Version:** v4.5\n`;
         issueBody += `- **Browser:** ${browserInfo}\n`;
         issueBody += `- **Reported:** ${timestamp}\n`;
 
@@ -5984,7 +6065,7 @@ run(0);
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v4.4';
+    const VERSION = 'v4.5';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -6372,6 +6453,7 @@ run(0);
       const CAM_MIN = 0.0036, CAM_MAX = 2400;
       let camR = 620, camTheta = 0.15, camPhi = 0.30;
       let focusedPlanet = null;  // Camera follows this planet if set
+      let focusedVessel = false; // Camera follows active vessel if set
       let lastDoubleClickTime = 0;  // Prevent clearing focus immediately after double-click
       const camTarget = new THREE.Vector3(0, 0, 0);
 
@@ -6400,6 +6482,7 @@ run(0);
 
       function resetView() {
         focusedPlanet = null;  // Clear focus lock so camera doesn't get pulled back
+        focusedVessel = false;
         camR = 620; camTheta = 0.15; camPhi = 0.30;
         camTarget.set(0, 0, 0);
         updateCamera();
@@ -6680,6 +6763,7 @@ run(0);
         div.addEventListener('dblclick', (e) => {
           e.stopPropagation();
           focusedPlanet = p.name;
+          focusedVessel = false;
           lastDoubleClickTime = Date.now();  // Record when focus was set
           camTarget.copy(planetMeshes[p.name].position);
           camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
@@ -6819,6 +6903,7 @@ run(0);
         div.addEventListener('dblclick', (e) => {
           e.stopPropagation();
           focusedPlanet = m.name;
+          focusedVessel = false;
           lastDoubleClickTime = Date.now();  // Record when focus was set
           camTarget.copy(moonMeshes[m.name].position);
           camR = Math.max(CAM_MIN, Math.min(CAM_MAX, camR / 3));
@@ -7464,11 +7549,19 @@ run(0);
         updateBridgeVisuals(); // telemetry bridge overrides positions when connected
         enforceMinBodySize();
 
-        // Camera follows focused planet or moon
+        // Camera follows focused planet or active vessel
         if (focusedPlanet) {
           const focusedMesh = planetMeshes[focusedPlanet] || moonMeshes[focusedPlanet];
           if (focusedMesh) {
             camTarget.copy(focusedMesh.position);
+          }
+        } else if (focusedVessel) {
+          const vpos = typeof vesselScenePos === 'function' && bridgeLive && bridgeLive.activeVessel
+            ? vesselScenePos(bridgeLive.activeVessel) : null;
+          if (vpos) {
+            camTarget.copy(vpos);
+          } else {
+            focusedVessel = false; // vessel gone, unlock
           }
         }
 
@@ -7615,6 +7708,7 @@ run(0);
           // But not immediately after a double-click (within 200ms)
           if (isPanning && Date.now() - lastDoubleClickTime > 200) {
             focusedPlanet = null;
+            focusedVessel = false;
           }
         }
         const rect = canvas3d.getBoundingClientRect();
@@ -7682,12 +7776,16 @@ run(0);
           while (obj && !obj.userData.planetName) obj = obj.parent;
           if (obj && obj.userData.planetName) {
             focusedPlanet = obj.userData.planetName;  // Lock camera to this body
+            focusedVessel = false;
             lastDoubleClickTime = Date.now();  // Record when focus was set
             const worldPos = new THREE.Vector3();
             obj.getWorldPosition(worldPos);
             camTarget.copy(worldPos);
             updateCamera();
           }
+        } else {
+          focusedPlanet = null;
+          focusedVessel = false;
         }
       });
 
@@ -7748,6 +7846,7 @@ run(0);
           switch (action) {
             case 'zoom-in':
               focusedPlanet = body;  // Lock camera to this body
+              focusedVessel = false;
               lastDoubleClickTime = Date.now();  // Record when focus was set
               const bodyMesh = planetMeshes[body] || moonMeshes[body];
               if (bodyMesh) {
@@ -7786,6 +7885,7 @@ run(0);
               break;
             case 'reset-zoom':
               focusedPlanet = null;  // Unlock camera
+              focusedVessel = false;
               camR = 620;
               camTheta = 0.15;
               camPhi = 0.30;
@@ -7810,10 +7910,36 @@ run(0);
         updateCamera();
       }, { passive: false });
 
-      // Zoom buttons
+      // Zoom buttons & Vessel focus lock
+      const vFocusBtn = document.getElementById('vesselFocusBtn');
+      if (vFocusBtn) {
+        vFocusBtn.onclick = () => {
+          if (focusedVessel) {
+            focusedVessel = false;
+          } else if (typeof bridgeLive !== 'undefined' && bridgeLive && bridgeLive.activeVessel) {
+            focusedPlanet = null;
+            focusedVessel = true;
+            lastDoubleClickTime = Date.now();
+            const vpos = typeof vesselScenePos === 'function' ? vesselScenePos(bridgeLive.activeVessel) : null;
+            if (vpos) {
+              camTarget.copy(vpos);
+              updateCamera();
+            }
+          }
+        };
+      }
       document.getElementById('zoomIn').onclick = () => { camR = Math.max(CAM_MIN, camR / 1.35); updateCamera(); };
       document.getElementById('zoomOut').onclick = () => { camR = Math.min(CAM_MAX, camR * 1.35); updateCamera(); };
       document.getElementById('zoomReset').onclick = resetView;
+
+      // Click HUD focus pill to unlock focus
+      const hudFocusRow = document.getElementById('hudFocus');
+      if (hudFocusRow) {
+        hudFocusRow.onclick = () => {
+          focusedPlanet = null;
+          focusedVessel = false;
+        };
+      }
 
       // Minimize / Expand Controls Bubble
       window.toggleControlsBubble = () => {
@@ -9830,6 +9956,15 @@ run(0);
           vesselGroup.add(mesh);
           const label = document.createElement('div');
           label.className = 'vessel-label-3d';
+          // Double-click a vessel label to lock camera onto it
+          label.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            if (typeof focusedVessel !== 'undefined') {
+              focusedPlanet = null;
+              focusedVessel = true;
+              lastDoubleClickTime = Date.now();
+            }
+          });
           labelCtr.appendChild(label);
           vesselMarkers.push({ mesh, label });
         }
@@ -10058,7 +10193,6 @@ run(0);
       function hideVesselOverlay() {
         if (!vesselOverlay.svg) return;
         vesselOverlay.svg.style.display = 'none';
-        vesselOverlay.tag.style.display = 'none';
       }
 
       function updateVesselOverlay(active) {
@@ -10070,19 +10204,10 @@ run(0);
         if (s.behind) { hideVesselOverlay(); return; }
         ensureVesselOverlay();
         const o = vesselOverlay;
-        const tx = s.x + 46, ty = s.y - 40;
         o.svg.style.display = '';
-        o.tag.style.display = '';
-        o.line.setAttribute('x1', s.x); o.line.setAttribute('y1', s.y);
-        o.line.setAttribute('x2', tx);  o.line.setAttribute('y2', ty);
+        o.tag.style.display = 'none';
         o.ring.setAttribute('cx', s.x); o.ring.setAttribute('cy', s.y);
         o.ring.style.display = exact ? '' : 'none';
-        o.line.classList.toggle('approx', !exact);
-        o.tag.classList.toggle('approx', !exact);
-        o.tag.textContent = active.name || active.id;
-        o.tag.title = exact ? (active.name || '') : (`${active.name || ''} — position approximate: the bridge does not send the vessel's position yet`);
-        o.tag.style.left = tx + 'px';
-        o.tag.style.top = ty + 'px';
       }
       /* =========================================================
          9. MAIN ANIMATION LOOP
@@ -10166,11 +10291,27 @@ run(0);
             : WARP_LEVELS[warpIndex] + '×');
           document.getElementById('hudWarpVal').textContent = warpLabel;
           const focusRow = document.getElementById('hudFocus');
+          const vesselName = focusedVessel && typeof bridgeLive !== 'undefined' && bridgeLive && bridgeLive.activeVessel
+            ? (bridgeLive.activeVessel.name || bridgeLive.activeVessel.id || 'Vessel') : null;
           if (focusedPlanet) {
             focusRow.style.display = '';
             document.getElementById('hudFocusVal').textContent = focusedPlanet;
+          } else if (vesselName) {
+            focusRow.style.display = '';
+            document.getElementById('hudFocusVal').textContent = '⊙ ' + vesselName;
           } else {
             focusRow.style.display = 'none';
+          }
+
+          const vFocusBtn = document.getElementById('vesselFocusBtn');
+          if (vFocusBtn) {
+            const hasVessel = !!(typeof bridgeLive !== 'undefined' && bridgeLive && bridgeLive.activeVessel);
+            vFocusBtn.classList.toggle('active', !!focusedVessel);
+            vFocusBtn.style.opacity = hasVessel ? '1' : '0.35';
+            vFocusBtn.style.cursor = hasVessel ? 'pointer' : 'default';
+            vFocusBtn.title = focusedVessel
+              ? 'Unlock camera from active vessel'
+              : (hasVessel ? 'Lock camera to active vessel' : 'No active vessel connected');
           }
           lastHudUpdate = now;
         }
@@ -10202,12 +10343,12 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const W = window.innerWidth || 1920;
     const H = window.innerHeight || 1080;
     return {
-      'ghost':    { x: 313, y: 972,  w: 289, h: 111 },
-      'ejection': { x: 5,   y: 192,  w: 368, h: 311 },
-      'phase':    { x: 3,   y: 945,  w: 295, h: 267 },
-      'window':   { x: 313, y: 1092, w: 331, h: 128 },
-      'time':     { x: 658, y: 1125, w: 327, h: 130 },
-      'vessel':   { x: 375, y: 108,  w: 290, h: 215 }
+      'ghost': { x: 437, y: 1008, w: 289, h: 112 },
+      'ejection': { x: 13,  y: 915,  w: 410, h: 313 },
+      'phase': { x: 17,  y: 614,  w: 290, h: 294 },
+      'window': { x: 465, y: 1130, w: 330, h: 127 },
+      'time': { x: 801, y: 1133, w: 326, h: 129 },
+      'vessel': { x: 1657, y: 157, w: 345, h: 258 }
     };
   }
 
@@ -10270,6 +10411,42 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     };
   }
 
+  // Finds the largest text size at which the text fits the box. Only the text is measured: diagrams and
+  // their overflow (for example the scaled ejection diagram) are ignored. A diagram keeps at least 40% of
+  // the box height, so the text never takes all the room.
+  function fitHudText(widget) {
+    const inner = widget.querySelector('.hud-inner');
+    const content = widget.querySelector('.hud-content');
+    const title = widget.querySelector('.hud-title');
+    if (!inner || !content || !widget.isConnected) return;
+    const isFigure = (el) => el.tagName.toLowerCase() === 'svg' || !!el.querySelector('svg');
+    // Figures that have a fixed size (flex-grow 0, such as the ejection diagram) count in full; figures
+    // that fill the leftover space (such as the phase gauge) only need the room the text leaves.
+    const isFixedFigure = (ch) => isFigure(ch) && parseFloat(getComputedStyle(ch).flexGrow) === 0;
+    const hasFlexFigure = Array.from(content.children).some((ch) => isFigure(ch) && !isFixedFigure(ch));
+    const fits = () => {
+      const boxH = inner.clientHeight;
+      const boxW = inner.clientWidth;
+      let textH = title ? title.offsetHeight + parseFloat(getComputedStyle(title).marginBottom) : 0;
+      let fixedH = 0, fixedW = 0;
+      Array.from(content.children).forEach((ch) => {
+        // SVG elements have no offsetWidth/offsetHeight, so measure figures with getBoundingClientRect.
+        if (isFixedFigure(ch)) { const r = ch.getBoundingClientRect(); fixedH += r.height; fixedW = Math.max(fixedW, r.width); }
+        else if (!isFigure(ch)) textH += ch.offsetHeight;
+      });
+      if (fixedW > boxW + 1) return false;
+      const needed = textH + fixedH;
+      return hasFlexFigure ? needed <= boxH * 0.6 : needed <= boxH;
+    };
+    let lo = 6, hi = 60;
+    for (let i = 0; i < 10; i++) {
+      const mid = (lo + hi) / 2;
+      widget.style.setProperty('--u', mid + 'px');
+      if (fits()) lo = mid; else hi = mid;
+    }
+    widget.style.setProperty('--u', lo + 'px');
+  }
+
   window.createHudWidget = function(id, type, title) {
     const existing = document.getElementById(id);
     if (existing) return existing;
@@ -10280,41 +10457,22 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     const widget = document.createElement('div');
     widget.id = id;
     widget.className = 'hud-widget';
+    widget.dataset.type = type;
     widget.style.left = pos.x + 'px';
     widget.style.top = pos.y + 'px';
     widget.style.width = pos.w + 'px';
     widget.style.height = pos.h + 'px';
     widget.innerHTML = `
-      <div class="hud-title">${title}</div>
-      <div class="hud-content"></div>
+      <div class="hud-inner">
+        <div class="hud-title">${title}</div>
+        <div class="hud-content"></div>
+      </div>
       <div class="hud-buttons">
         <button class="hud-btn hud-pin-btn" title="Pin widget">📌</button>
         <button class="hud-btn hud-close-btn" title="Close widget">✕</button>
       </div>
       <div class="hud-resize-handle"></div>
     `;
-
-    // Content scales with the box: the factor is the box size relative to the widget's default size.
-    const refSize = defs[type] || pos;
-    const applyHudScale = () => {
-      // Text grows with both dimensions (geometric mean), then shrinks until the content fits the box height.
-      const clamp = (v) => Math.min(3, Math.max(0.3, v));
-      let f = clamp(Math.sqrt((widget.offsetWidth / refSize.w) * (widget.offsetHeight / refSize.h)));
-      const content = widget.querySelector('.hud-content');
-      const title = widget.querySelector('.hud-title');
-      const cs = getComputedStyle(widget);
-      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
-      for (let i = 0; i < 10 && content; i++) {
-        widget.style.setProperty('--hud-s', f.toFixed(3));
-        const needed = (title ? title.getBoundingClientRect().height : 0) + content.getBoundingClientRect().height;
-        const room = widget.getBoundingClientRect().height - padY;
-        if (needed <= room || f <= 0.3) break;
-        f = clamp(f * 0.94);
-      }
-      widget.style.setProperty('--hud-s', f.toFixed(3));
-    };
-    if (window.ResizeObserver) new ResizeObserver(applyHudScale).observe(widget);
-    applyHudScale();
 
     // Restore pinned state if previously saved
     try {
@@ -10328,6 +10486,8 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 
     hudContainer.appendChild(widget);
     attachWidgetHandlers(widget, type);
+    fitHudText(widget);
+    if (window.ResizeObserver) new ResizeObserver(() => fitHudText(widget)).observe(widget);
     window.hudWidgets.active[type] = id;
     return widget;
   };
@@ -10449,7 +10609,10 @@ window.hudWidgets.active = window.hudWidgets.active || {};
     if (widget) {
       const contentDiv = widget.querySelector('.hud-content');
       if (contentDiv) {
+        if (widget._lastHtml === content) return;   // nothing changed, so nothing to re-fit
+        widget._lastHtml = content;
         contentDiv.innerHTML = content;
+        fitHudText(widget);
       }
     }
   };
@@ -10868,7 +11031,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 
         <div class="bug-report-info">
           <strong>📋 Auto-included:</strong><br>
-          • App Version: v4.4<br>
+          • App Version: v4.5<br>
           • Browser: <span id="bugBrowserInfo">Chrome</span><br>
           • Timestamp: <span id="bugTimestamp">--</span>
         </div>
