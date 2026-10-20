@@ -15,9 +15,9 @@ Kerbalist helps you plan efficient transfers between planets in Kerbal Space Pro
 
 ## Getting Started
 
-1. Select your origin and destination from the dropdowns
-2. The map shows the transfer window and current phase angle
-3. Adjust warp speed to see when transfers are available
+1. Watch the tutorial for a full breakdown of Kerbalist features
+2. Select your origin and destination from the dropdowns
+3. The map shows the transfer window and current phase angle
 4. Pin transfer info cards to the map for reference while flying
 
 ## Live Sync with KSP2
@@ -33,6 +33,7 @@ While live sync is on, the time buttons show a LIVE SYNC overlay, because the ga
 
 ## Version History
 
+- **v4.5** (2026-10-21): Tutorial video
 - **v4.4** (2026-10-18): Active vessel orbit line, vessel marker on its orbit, apoapsis and periapsis from the bridge, game calendar, small-body halos
 - **v4.3.1** (2026-10-18): Fixed active vessel apoapsis and periapsis
 - **v4.3** (2026-10-18): Active vessel HUD element, vessel tag, Settings tab with HUD layout reset, live sync overlay, game orbits in live sync, HUD scaling
