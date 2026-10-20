@@ -3,8 +3,8 @@ dist/
 *.log
 .DS_Store
 __pycache__/
-
-# Local development and build tools
+functions/
+.firebase       
 AGENTS.md
 DEVELOPING.md
 kerbalist-changes-summary.py
@@ -16,3 +16,4 @@ test/
 tools/
 .vs/
 .github/
+.git/
