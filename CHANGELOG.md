@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.6] - 2026-10-21
+
+### Added
+- **Header menu**: Reset HUD layout, the Telemetry Bridge release page, the changelog, and Themes.
+- **Themes**: Cyan (default), Red, Yellow and Green. A theme recolours the accents, panels, header, sidebar, rail, separator lines, Plan Transfer button and map background. The choice is remembered.
+- **Tutorial button**: restyled to match the app and says just "Tutorial".
+
+### Changed
+- **Settings**: the Settings tab is gone. Its HUD reset is in the menu.
+- **HUD elements**: text fits each box, diagrams fill the space the text leaves, and the ejection diagram is sized from the text. The default layout is updated.
+- **Game calendar**: the time display matches the game, and Epoch resets to the calendar start.
+
+### Fixed
+- **Menu and tutorial**: no longer broken by the order of the build parts.
+- **Accent colours**: some borders and glows lost their colour after the theme change. They're back.
+- **Plan Transfer and sidebar cards**: follow the theme.
+
+### Known Issues
+- The transfer planner, porkchop plot and assist arcs still use the stock orbit table.
+
+
 ## [4.5] - 2026-10-19
 
 ### Added
