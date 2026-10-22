@@ -19,3 +19,6 @@ tools/
 .git/
 IDEA.md
 SOUL.md
+firebase.json
+.firebaserc
+functions/
