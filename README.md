@@ -60,6 +60,7 @@ Modern browsers with WebGL support. Desktop and tablet recommended (mobile map r
 
 - Transfers are flat (coplanar). Moho and Eeloo won't intercept exactly due to their orbital tilt.
 - Return-trip estimates use simplified circular-orbit calculations.
+- kRPC2 bridge support not yet available.
 
 ## License
 
