@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.7] - 2026-10-22
+
+### Added
+- **Anonymous usage stats**: on by default. A one-time notice after the splash screen explains what is counted. Turn it off in the header menu. The Community Stats overlay shows the totals.
+- **Assist routes**: the Phase Angle and Ejection Angle cards show the first leg of the selected route.
+
+### Changed
+- **Themes**: the top bar, sidebar and separator lines now follow the selected theme too.
+- **Theme menu**: the colour list stays open briefly while you move to it.
+
+
 ## [4.6] - 2026-10-21
 
 ### Added
