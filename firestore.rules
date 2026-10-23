@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public totals: anyone can read; only a single +1 in one counter per write.
+    match /stats/global {
+      allow read: if true;
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['transfers', 'livesyncs', 'sessions', 'users'])
+        && (request.resource.data.transfers + request.resource.data.livesyncs
+            + request.resource.data.sessions + request.resource.data.users)
+           - (resource.data.transfers + resource.data.livesyncs
+            + resource.data.sessions + resource.data.users) == 1;
+    }
+
+    // One record per anonymous browser. Only that browser can read or create it.
+    match /users/{uid} {
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow update, delete: if false;
+    }
+  }
+}
