@@ -1,4 +1,4 @@
-# Kerbalist v4.6
+# Kerbalist v4.7
 
 Astrodynamics Suite for Kerbal Space Program 2 Redux
 
@@ -34,6 +34,7 @@ While live sync is on, the time buttons show a LIVE SYNC overlay, because the ga
 
 ## Version History
 
+- **v4.7** (2026-10-22): Anonymous usage stats (on by default, turn off in the menu), assist route phase and ejection cards, theme colours for the top bar and sidebar
 - **v4.6** (2026-10-21): Header menu with themes (Cyan, Red, Yellow, Green), tutorial button restyle, HUD text and diagram fitting, game calendar
 - **v4.5** (2026-10-21): Tutorial video
 - **v4.4** (2026-10-18): Active vessel orbit line, vessel marker on its orbit, apoapsis and periapsis from the bridge, game calendar, small-body halos
@@ -60,7 +61,6 @@ Modern browsers with WebGL support. Desktop and tablet recommended (mobile map r
 
 - Transfers are flat (coplanar). Moho and Eeloo won't intercept exactly due to their orbital tilt.
 - Return-trip estimates use simplified circular-orbit calculations.
-- kRPC2 bridge support not yet available.
 
 ## License
 
