@@ -4158,6 +4158,62 @@ header {
   background: linear-gradient(180deg, var(--sidebar-a, rgba(20, 30, 50, 0.85)), var(--sidebar-b, rgba(12, 20, 35, 0.85)));
 }
 
+
+/* One-time anonymous stats notice (shown after the splash screen) */
+.stats-notice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.stats-notice {
+  max-width: 460px;
+  padding: 22px 24px;
+  background: var(--panel2);
+  border: 1px solid var(--border-bright);
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  font-family: var(--font-display);
+  color: var(--text);
+}
+
+.stats-notice h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.stats-notice p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.stats-notice button {
+  display: block;
+  margin-left: auto;
+  padding: 8px 18px;
+  background: rgba(var(--accent-rgb), 0.2);
+  border: 1px solid var(--cyan);
+  border-radius: 6px;
+  color: var(--text);
+  font: 700 13px var(--font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.stats-notice button:hover {
+  background: rgba(var(--accent-rgb), 0.35);
+}
   </style>
 </head>
 
@@ -4172,7 +4228,7 @@ header {
         <img class="mark" src="Kerbalist.png" alt="Kerbalist">
         <div>
           <h1>Kerbalist</h1>
-          <div class="sub">Astrodynamics Suite <div>v4.6</div></div>
+          <div class="sub">Astrodynamics Suite <div>v4.7</div></div>
         </div>
       </div>
       <button class="tutorial-btn" type="button" onclick="openTutorial()" title="Watch the animated tutorial">
@@ -4190,6 +4246,7 @@ header {
             <button class="menu-item" id="menuResetHud">Reset HUD layout<span class="menu-hint">Moves every HUD element back to its default position and size</span></button>
             <a class="menu-item" href="https://github.com/BlocDigital/KerbalistTelemetryBridge/releases/" target="_blank" rel="noopener">Telemetry Bridge release page</a>
             <button class="menu-item" id="menuChangelog">Changelog</button>
+            <button class="menu-item" id="menuStats">Anonymous stats: on</button>
             <div class="menu-item menu-has-sub" id="menuThemes">Themes<span class="menu-arrow">▸</span>
               <div class="menu-sub-panel">
                 <button class="menu-item" data-theme="default">Cyan</button>
@@ -4283,7 +4340,7 @@ header {
         <div class="bottom-left-bar">
           <span class="changelog-label" title="Click to view full Changelog" onclick="showChangelog()"
             style="cursor:pointer;opacity:.75;font-family:var(--font-mono);font-size:11.2px;letter-spacing:.05em;text-transform:uppercase;user-select:none;">Changelog:</span>
-          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.6</div>
+          <div class="map-version" id="mapVersion" onclick="showChangelog()">v4.7</div>
           <div class="bug-report-btn" id="bugReportBtn" onclick="showBugReportModal()" title="Report a bug">Submit bug
             report</div>
           <div class="bmc-wrap" id="bmcWrap">
@@ -5084,7 +5141,148 @@ run(0);
 <\/script>
 </body>
 </html>
-</script>  <!-- Changelog Popup Modal -->
+</script><!-- 104-html-firebase.html : anonymous usage stats (Firebase Analytics + Firestore counters).
+     Nothing is sent until the user turns "Anonymous stats" on in the header menu. -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function () {
+  const CONSENT_KEY = 'kerbalist_stats_consent';
+  const NOTICE_KEY = 'kerbalist_stats_notice_seen';
+  const firebaseConfig = {
+    apiKey: "AIzaSyCsZ6GYt7XTWWWkZ_84C-DsNcsPVh5j96c",
+    authDomain: "kerbalist-7dfaf.firebaseapp.com",
+    projectId: "kerbalist-7dfaf",
+    storageBucket: "kerbalist-7dfaf.firebasestorage.app",
+    messagingSenderId: "135187352198",
+    appId: "1:135187352198:web:ea8f78cc27f6bcfb599f07",
+    measurementId: "G-XQ8X4KPW55"
+  };
+
+  let db = null, auth = null, analytics = null, uid = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    analytics = firebase.analytics();
+  } catch (e) { console.warn('[stats] Firebase unavailable', e); }
+
+  // On by default: only an explicit "no" (set from the menu) turns stats off.
+  function consent() {
+    try { return localStorage.getItem(CONSENT_KEY) !== 'no'; } catch (e) { return true; }
+  }
+
+  // Analytics collects nothing until the user opts in.
+  function setAnalytics(on) {
+    try { if (analytics) analytics.setAnalyticsCollectionEnabled(on); } catch (e) {}
+  }
+
+  async function ensureUser() {
+    if (uid) return uid;
+    const cred = await auth.signInAnonymously();
+    uid = cred.user.uid;
+    const userRef = db.collection('users').doc(uid);
+    const snap = await userRef.get();
+    if (!snap.exists) {
+      // First time this browser counts: one user record plus one user in the total.
+      const batch = db.batch();
+      batch.set(userRef, { created: firebase.firestore.FieldValue.serverTimestamp() });
+      batch.update(db.collection('stats').doc('global'),
+        { users: firebase.firestore.FieldValue.increment(1) });
+      await batch.commit();
+    }
+    return uid;
+  }
+
+  // Counts one event: 'transfer', 'livesync' or 'session'. Does nothing without consent.
+  window.kbTrack = async function (name) {
+    if (!consent() || !db) return;
+    try {
+      if (analytics) analytics.logEvent(name);
+      await ensureUser();
+      const field = { transfer: 'transfers', livesync: 'livesyncs', session: 'sessions' }[name];
+      if (field) {
+        await db.collection('stats').doc('global')
+          .update({ [field]: firebase.firestore.FieldValue.increment(1) });
+      }
+    } catch (e) { console.warn('[stats]', e); }
+  };
+
+  // Totals for the Community Stats overlay. Returns null when there is nothing to show.
+  window.kbStats = {
+    read: async function () {
+      if (!db) return null;
+      try {
+        const s = await db.collection('stats').doc('global').get();
+        if (!s.exists) return null;
+        const d = s.data();
+        return { kerbalists: d.users || 0, transfers: d.transfers || 0 };
+      } catch (e) { return null; }
+    }
+  };
+
+  // One-time notice after the splash screen. Plain text only.
+  function showNoticeOnce() {
+    try { if (localStorage.getItem(NOTICE_KEY) === 'seen') return; } catch (e) { return; }
+    const overlay = document.createElement('div');
+    overlay.className = 'stats-notice-overlay';
+    const box = document.createElement('div');
+    box.className = 'stats-notice';
+    const title = document.createElement('h3');
+    title.textContent = 'Anonymous stats';
+    const body = document.createElement('p');
+    body.textContent = 'Kerbalist counts anonymous usage to show community totals: how many browsers use it, how many transfers are planned, and how many live sync sessions start. No personal information is collected, and each browser is identified only by a random anonymous ID. Stats are on by default. To turn them off, open the menu in the top right and select Anonymous stats.';
+    const ok = document.createElement('button');
+    ok.type = 'button';
+    ok.textContent = 'Got it';
+    ok.addEventListener('click', function () {
+      try { localStorage.setItem(NOTICE_KEY, 'seen'); } catch (e) {}
+      overlay.remove();
+    });
+    box.appendChild(title);
+    box.appendChild(body);
+    box.appendChild(ok);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
+
+  // The splash screen removes itself after its fade-out, so wait until it is gone.
+  function waitForSplashThenNotice() {
+    let tries = 0;
+    const timer = setInterval(function () {
+      tries++;
+      if (!document.getElementById('splash') || tries > 80) {
+        clearInterval(timer);
+        showNoticeOnce();
+      }
+    }, 200);
+  }
+
+  function paintMenuItem() {
+    const b = document.getElementById('menuStats');
+    if (b) b.textContent = 'Anonymous stats: ' + (consent() ? 'on' : 'off');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    setAnalytics(consent());
+    paintMenuItem();
+    const b = document.getElementById('menuStats');
+    if (b) b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const on = !consent();
+      try { localStorage.setItem(CONSENT_KEY, on ? 'yes' : 'no'); } catch (err) {}
+      setAnalytics(on);
+      paintMenuItem();
+      if (on) window.kbTrack('session');
+    });
+    if (consent()) window.kbTrack('session');
+    waitForSplashThenNotice();
+  });
+})();
+</script>
+  <!-- Changelog Popup Modal -->
   <div class="changelog-overlay" id="changelogOverlay" onclick="if(event.target===this)hideChangelog()">
     <div class="changelog-popup">
       <div class="changelog-header">
@@ -5093,6 +5291,18 @@ run(0);
       </div>
       <div class="changelog-body" id="changelogBody">
         <h1>Changelog</h1>
+        <h2>[4.7] - 2026-10-22 &mdash; Kerbalist v4.7 &middot; Astrodynamics Suite</h2>
+        <h3>Added</h3>
+        <ul>
+          <li><strong>Anonymous usage stats</strong>: on by default. A one-time notice after the splash screen explains what is counted. Turn it off in the header menu. The Community Stats overlay shows the totals.</li>
+          <li><strong>Assist routes</strong>: the Phase Angle and Ejection Angle cards show the first leg of the selected route.</li>
+        </ul>
+        <h3>Changed</h3>
+        <ul>
+          <li><strong>Themes</strong>: the top bar, sidebar and separator lines now follow the selected theme too.</li>
+          <li><strong>Theme menu</strong>: the colour list stays open briefly while you move to it.</li>
+        </ul>
+
         <h2>[4.6] - 2026-10-21 &mdash; Kerbalist v4.6 &middot; Astrodynamics Suite</h2>
         <h3>Added</h3>
         <ul>
@@ -5822,7 +6032,7 @@ run(0);
           <li>Transfer arc visualization</li>
         </ul>
       </div>
-      <div class="changelog-footer">Kerbalist v4.6 &middot; CHANGELOG.md</div>
+      <div class="changelog-footer">Kerbalist v4.7 &middot; CHANGELOG.md</div>
     </div>
   </div>
 
@@ -6377,7 +6587,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         issueBody += `## Environment\n`;
-        issueBody += `- **App Version:** v4.6\n`;
+        issueBody += `- **App Version:** v4.7\n`;
         issueBody += `- **Browser:** ${browserInfo}\n`;
         issueBody += `- **Reported:** ${timestamp}\n`;
 
@@ -6479,7 +6689,7 @@ document.addEventListener('DOMContentLoaded', function () {
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.167/build/three.module.min.js';
 
     // Version constant - automatically updated from CHANGELOG.md
-    const VERSION = 'v4.6';
+    const VERSION = 'v4.7';
 
     // ============================================================
     // SPLASH SCREEN: fade in logo → hold → fade out → reveal app
@@ -8990,6 +9200,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setLiveOverlay(true);
         bridgeConnectBtn.textContent = 'Disconnect';
         bridgeConnectBtn.classList.add('stop');
+        if (window.kbTrack) window.kbTrack('livesync');
         startBridge(bridgeUrlInput.value.trim() || BRIDGE_WS_URL);
       };
 
@@ -9443,6 +9654,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       document.getElementById('planBtn').onclick = () => {
+        if (window.kbTrack) window.kbTrack('transfer');
         const o = originSelect.value, d = destSelect.value;
         if (o === d) {
           clearTransfer();
@@ -11209,15 +11421,16 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   // Fetch stats from the main Kerbalist site
   async function fetchStats() {
     try {
-      // Try to fetch from stats API
-      const response = await fetch('https://blockdigital.github.io/Kerbalist/api/stats.json', {
-        mode: 'cors',
-        cache: 'no-cache'
-      });
-
-      if (!response.ok) throw new Error('API not available');
-      
-      const data = await response.json();
+      // Firestore counters first (written by the app once users opt in), then the static file.
+      let data = window.kbStats ? await window.kbStats.read() : null;
+      if (!data) {
+        const response = await fetch('https://blockdigital.github.io/Kerbalist/api/stats.json', {
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        if (!response.ok) throw new Error('API not available');
+        data = await response.json();
+      }
       displayStats(data);
     } catch (error) {
       // Silently fail if stats unavailable (no console error)
@@ -11463,7 +11676,7 @@ window.hudWidgets.active = window.hudWidgets.active || {};
 
         <div class="bug-report-info">
           <strong>📋 Auto-included:</strong><br>
-          • App Version: v4.6<br>
+          • App Version: v4.7<br>
           • Browser: <span id="bugBrowserInfo">Chrome</span><br>
           • Timestamp: <span id="bugTimestamp">--</span>
         </div>
