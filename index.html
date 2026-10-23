@@ -3608,68 +3608,34 @@
 .hud-widget:hover .hud-resize-handle {
   opacity: 1;
 }
-/* Stats Overlay - Very Faint Community Statistics */
-
-#statsOverlay {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(var(--panel-rgb), 0.15);
-  border: 1px solid rgba(var(--accent-rgb), 0.15);
-  border-radius: 4px;
-  padding: 12px 16px;
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
-  color: rgba(192, 208, 224, 0.4);
-  line-height: 1.6;
-  pointer-events: none;
-  z-index: 50;
-  backdrop-filter: blur(2px);
-  max-width: 200px;
-}
-
-.stats-row {
+/* ---------- HEADER STATS (single-line, topbar) ---------- */
+.header-stats {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 3px 0;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dimmer);
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
-.stats-label {
-  color: rgba(var(--accent-rgb), 0.25);
-  font-weight: normal;
+.header-stats .hs-sep {
+  color: var(--border);
+  margin: 0 2px;
+  user-select: none;
 }
 
-.stats-value {
+.header-stats .hs-label {
   color: rgba(var(--accent-rgb), 0.35);
-  font-weight: bold;
-  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: 11px;
 }
 
-.stats-divider {
-  height: 1px;
-  background: rgba(var(--accent-rgb), 0.1);
-  margin: 6px 0;
-}
-
-#statsOverlay.loading::after {
-  content: '...';
-  animation: statsLoading 1.5s infinite;
-}
-
-@keyframes statsLoading {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
-/* Responsive: hide on very small screens */
-@media (max-width: 768px) {
-  #statsOverlay {
-    font-size: 10px;
-    padding: 8px 12px;
-    bottom: 10px;
-    left: 10px;
-  }
+.header-stats .hs-val {
+  color: rgba(var(--accent-rgb), 0.55);
+  font-weight: 700;
 }
     /* ===== Telemetry bridge: vessel layer, filter panel, active-vessel HUD ===== */
     .vessel-label-3d {
@@ -4235,6 +4201,7 @@ header {
         <span class="tb-icon">&#9654;</span>
         <span class="tb-title">Tutorial</span>
       </button>
+      <div class="header-stats" id="headerStats"></div>
       <div class="ut-clock">
         <div><span class="label">UT</span><br><span class="value" id="utValue">T+0y,0d,00:00:00</span></div>
       </div>
@@ -5152,7 +5119,7 @@ run(0);
   const CONSENT_KEY = 'kerbalist_stats_consent';
   const NOTICE_KEY = 'kerbalist_stats_notice_seen';
   const firebaseConfig = {
-    apiKey: "AIzaSyCsZ6GYt7XTWWWkZ_84C-DsNcsPVh5j96c",
+    apiKey: "AIzaSyCsZ6GYt7XTWWwK_Z84C-DsNcsVPvh5j96c",
     authDomain: "kerbalist-7dfaf.firebaseapp.com",
     projectId: "kerbalist-7dfaf",
     storageBucket: "kerbalist-7dfaf.firebasestorage.app",
@@ -11395,28 +11362,18 @@ window.hudWidgets.active = window.hudWidgets.active || {};
   // Export config for sidebar
   window.hudTransferWidgetConfig = widgetConfig;
 })();
-/* Community Statistics Overlay */
+/* Community Statistics - Single-line Topbar Display */
 (function() {
-  // Create stats overlay element
-  const statsOverlay = document.createElement('div');
-  statsOverlay.id = 'statsOverlay';
-  statsOverlay.className = 'loading';
-  statsOverlay.innerHTML = `
-    <div class="stats-row">
-      <span class="stats-label">Community Stats</span>
-    </div>
-  `;
-
   // Wait for DOM to be ready before inserting
-  function insertStatsOverlay() {
-    const hudContainer = document.getElementById('hudContainer');
-    if (hudContainer) {
-      hudContainer.appendChild(statsOverlay);
+  function insertHeaderStats() {
+    const container = document.getElementById('headerStats');
+    if (container) {
+      container.innerHTML = '<span class="hs-label">Community</span><span class="hs-val">—</span>';
     } else {
-      setTimeout(insertStatsOverlay, 100);
+      setTimeout(insertHeaderStats, 100);
     }
   }
-  insertStatsOverlay();
+  insertHeaderStats();
 
   // Fetch stats from the main Kerbalist site
   async function fetchStats() {
@@ -11433,92 +11390,56 @@ window.hudWidgets.active = window.hudWidgets.active || {};
       }
       displayStats(data);
     } catch (error) {
-      // Silently fail if stats unavailable (no console error)
-      statsOverlay.classList.remove('loading');
-      statsOverlay.style.display = 'none';
+      // Silently fail if stats unavailable
+      const container = document.getElementById('headerStats');
+      if (container) container.style.display = 'none';
     }
   }
 
+  function fmt(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return n.toString();
+  }
+
   function displayStats(data) {
-    statsOverlay.classList.remove('loading');
-    statsOverlay.innerHTML = '';
+    const container = document.getElementById('headerStats');
+    if (!container) return;
 
-    // Format large numbers
-    const fmt = (n) => {
-      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
-      return n.toString();
-    };
-
-    // Build stats display
-    let html = '';
+    const parts = [];
 
     // Kerbalists (total unique users)
     if (data.kerbalists !== undefined) {
-      html += `
-        <div class="stats-row">
-          <span class="stats-label">Kerbalists</span>
-          <span class="stats-value">${fmt(data.kerbalists)}</span>
-        </div>
-      `;
+      parts.push('<span class="hs-label">Kerbalists</span><span class="hs-val">' + fmt(data.kerbalists) + '</span>');
     }
 
     // Planned transfers
     if (data.transfers !== undefined) {
-      html += `
-        <div class="stats-row">
-          <span class="stats-label">Transfers</span>
-          <span class="stats-value">${fmt(data.transfers)}</span>
-        </div>
-      `;
+      parts.push('<span class="hs-sep">·</span><span class="hs-label">Transfers</span><span class="hs-val">' + fmt(data.transfers) + '</span>');
     }
 
     // Total years flown (across all transfers)
     if (data.totalYearsFlown !== undefined) {
-      const years = (data.totalYearsFlown / 365.25).toFixed(2);
-      html += `
-        <div class="stats-row">
-          <span class="stats-label">Years Flown</span>
-          <span class="stats-value">${fmt(years)}</span>
-        </div>
-      `;
+      const years = (data.totalYearsFlown / 365.25).toFixed(0);
+      parts.push('<span class="hs-sep">·</span><span class="hs-label">Years</span><span class="hs-val">' + fmt(years) + '</span>');
     }
 
     // Assist maneuvers performed
     if (data.assistManeuvers !== undefined) {
-      html += `
-        <div class="stats-row">
-          <span class="stats-label">Assist Maneuvers</span>
-          <span class="stats-value">${fmt(data.assistManeuvers)}</span>
-        </div>
-      `;
+      parts.push('<span class="hs-sep">·</span><span class="hs-label">Assists</span><span class="hs-val">' + fmt(data.assistManeuvers) + '</span>');
     }
 
     // Total ΔV executed
     if (data.totalDeltaV !== undefined) {
-      html += `
-        <div class="stats-row">
-          <span class="stats-label">Total ΔV</span>
-          <span class="stats-value">${fmt(data.totalDeltaV)} m/s</span>
-        </div>
-      `;
+      parts.push('<span class="hs-sep">·</span><span class="hs-label">ΔV</span><span class="hs-val">' + fmt(data.totalDeltaV) + ' m/s</span>');
     }
 
     // Successful landings
     if (data.successfulLandings !== undefined) {
-      html += `
-        <div class="stats-row">
-          <span class="stats-label">Landings</span>
-          <span class="stats-value">${fmt(data.successfulLandings)}</span>
-        </div>
-      `;
+      parts.push('<span class="hs-sep">·</span><span class="hs-label">Landings</span><span class="hs-val">' + fmt(data.successfulLandings) + '</span>');
     }
 
-    if (html) {
-      statsOverlay.innerHTML = html;
-    } else {
-      statsOverlay.style.display = 'none';
-    }
+    container.innerHTML = parts.join('');
   }
 
   // Fetch stats on load, then periodically refresh
