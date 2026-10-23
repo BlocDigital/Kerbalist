@@ -9545,6 +9545,22 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="stat-row"><span class="k">Round-trip Δv budget</span><span class="v warn">${plan.roundTripDv.toFixed(0)} m/s</span></div>`;
       }
 
+      // Phase and ejection numbers for the first leg of an assist route (origin -> assist planet).
+      // The phase needed is where the assist planet will be when leg 1 arrives, measured from the
+      // origin's position at departure. The burn uses leg 1's departure excess speed; capture uses leg 2's.
+      function assistCardResult(r, a) {
+        const t0 = r.windowUT ?? r.tRef;
+        const tof1 = a.solved.tof1;
+        const oNow = stateAt(r.origin, r.tRef), aNow = stateAt(a.planet, r.tRef);
+        const oDep = stateAt(r.origin, t0), aArr = stateAt(a.planet, t0 + tof1);
+        return Object.assign({}, r, {
+          currentPhase: angNormPM180((aNow.theta - oNow.theta) * 180 / Math.PI),
+          requiredPhase: angNormPM180((aArr.theta - oDep.theta) * 180 / Math.PI),
+          depEj: ejectionBurn(a.solved.vInfDep, r.origin),
+          arrEj: ejectionBurn(a.solved.vInfArr, r.dest)
+        });
+      }
+
       function renderTransferResults() {
         const r = currentResult;
         if (!r) { document.getElementById('transferResults').innerHTML = '<div class="placeholder">No transfer computed.</div>'; return; }
@@ -9587,42 +9603,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const isHudActive = (k) => (window.hudWidgets && window.hudWidgets.active && window.hudWidgets.active[k]) ? ' on' : '';
 
-        // For assist: show simplified phase/ejection, highlight the 2-leg nature
+        // For assist routes the phase and ejection cards show leg 1 (origin -> assist planet)
+        const cardR = selectedAssist ? assistCardResult(r, selectedAssist) : r;
         const phaseCard = selectedAssist 
           ? `
     <div class="card" data-card="phase">
-      <h3><span class="dot"></span>Phase Angle (direct reference)<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
-      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
-      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Difference</span><span class="v">${angNormPM180(r.currentPhase - r.requiredPhase).toFixed(1)}°</span></div>
-      <div class="note">Showing direct transfer reference. Assist route uses 2-leg Lambert arcs from ${originName} → ${selectedAssist.planet.name} → ${destName}.</div>
+      <h3><span class="dot"></span>Phase Angle (leg 1)<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
+      <div class="phase-gauge">${phaseGaugeSvg(cardR.currentPhase, cardR.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${cardR.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${cardR.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v">${angNormPM180(cardR.currentPhase - cardR.requiredPhase).toFixed(1)}°</span></div>
+      <div class="note">Leg 1 of the assist route: ${originName} → ${selectedAssist.planet.name}. Required angle is where ${selectedAssist.planet.name} will be when leg 1 arrives.</div>
     </div>`
           : `
     <div class="card" data-card="phase">
       <h3><span class="dot"></span>Phase Angle<button class="hud-card-toggle${isHudActive('phase')}" data-widget-type="phase" onclick="window.toggleTransferWidget('phase')" title="Toggle HUD widget">HUD</button></h3>
-      <div class="phase-gauge">${phaseGaugeSvg(r.currentPhase, r.requiredPhase)}</div>
-      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${r.currentPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${r.requiredPhase.toFixed(1)}°</span></div>
-      <div class="stat-row"><span class="k">Difference</span><span class="v ${Math.abs(angNormPM180(r.currentPhase - r.requiredPhase)) < 2 ? 'good' : ''}">${angNormPM180(r.currentPhase - r.requiredPhase).toFixed(1)}°</span></div>
+      <div class="phase-gauge">${phaseGaugeSvg(cardR.currentPhase, cardR.requiredPhase)}</div>
+      <div class="stat-row"><span class="k">Current phase angle</span><span class="v hi">${cardR.currentPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Required phase angle</span><span class="v warn">${cardR.requiredPhase.toFixed(1)}°</span></div>
+      <div class="stat-row"><span class="k">Difference</span><span class="v ${Math.abs(angNormPM180(cardR.currentPhase - cardR.requiredPhase)) < 2 ? 'good' : ''}">${angNormPM180(cardR.currentPhase - cardR.requiredPhase).toFixed(1)}°</span></div>
     </div>`;
 
         const ejectionCard = selectedAssist
           ? `
     <div class="card" data-card="ejection">
-      <h3><span class="dot"></span>Ejection Angle (direct reference)<button class="hud-card-toggle${isHudActive('ejection')}" data-widget-type="ejection" onclick="window.toggleTransferWidget('ejection')" title="Toggle HUD widget">HUD</button></h3>
-      ${ejectionDiagramSvg(r)}
-      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(r).text}</span></div>
-      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
-      <div class="note">Showing direct transfer reference. The actual 2-leg assist trajectory will have different departure/arrival angles toward the assist planet instead.</div>
+      <h3><span class="dot"></span>Ejection Angle (leg 1)<button class="hud-card-toggle${isHudActive('ejection')}" data-widget-type="ejection" onclick="window.toggleTransferWidget('ejection')" title="Toggle HUD widget">HUD</button></h3>
+      ${ejectionDiagramSvg(cardR)}
+      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(cardR).text}</span></div>
+      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${cardR.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
+      <div class="note">Leg 1 burn from your parking orbit toward ${selectedAssist.planet.name}. Capture geometry is for the final leg into ${destName}. Burn direction uses the direct transfer as an approximation.</div>
     </div>`
           : `
     <div class="card" data-card="ejection">
       <h3><span class="dot"></span>Ejection Angle (burn point)<button class="hud-card-toggle${isHudActive('ejection')}" data-widget-type="ejection" onclick="window.toggleTransferWidget('ejection')" title="Toggle HUD widget">HUD</button></h3>
-      ${ejectionDiagramSvg(r)}
-      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(r).text}</span></div>
-      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${r.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
-      <div class="note">Burn when your ship is this far from the planet's ${ejectionBurnPoint(r).refName} point, measured in the direction you orbit. Derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
+      ${ejectionDiagramSvg(cardR)}
+      <div class="stat-row"><span class="k">${originName} departure burn</span><span class="v hi">${ejectionBurnPoint(cardR).text}</span></div>
+      <div class="stat-row"><span class="k">${destName} capture geometry</span><span class="v hi">${cardR.arrEj.ejAngleFromPeri.toFixed(1)}° from asymptote</span></div>
+      <div class="note">Burn when your ship is this far from the planet's ${ejectionBurnPoint(cardR).refName} point, measured in the direction you orbit. Derived from the hyperbolic escape trajectory at ${(PARK_ALT / 1000) | 0} km altitude.</div>
     </div>`;
 
         document.getElementById('transferResults').innerHTML = `
