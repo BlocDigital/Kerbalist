@@ -22,3 +22,8 @@ SOUL.md
 firebase.json
 .firebaserc
 functions/
+package-lock.json
+firebase-config.js
+manifest.json
+SETUP-stats.md
+firestore.rules
