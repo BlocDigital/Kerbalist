@@ -5119,6 +5119,13 @@ run(0);
 (function () {
   const CONSENT_KEY = 'kerbalist_stats_consent';
   const NOTICE_KEY = 'kerbalist_stats_notice_seen';
+  // Disable Analytics cookies to avoid domain rejection on GitHub Pages.
+  // Events still send to GA; user tracking becomes session-only.
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XQ8X4KPW55', {'cookie_domain': 'none'});
+
   const firebaseConfig = {
     apiKey: "AIzaSyAxFJauIL1SMSKOaFKDLXpDGO_7rYkbzQI",
     authDomain: "kerbalist-7dfaf.firebaseapp.com",
