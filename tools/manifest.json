@@ -1,0 +1,231 @@
+{
+  "parts": [
+    {
+      "file": "010-head.html",
+      "kind": "html"
+    },
+    {
+      "file": "020-css-base.css",
+      "kind": "css"
+    },
+    {
+      "file": "021-css-header.css",
+      "kind": "css"
+    },
+    {
+      "file": "022-css-calendar-modal.css",
+      "kind": "css"
+    },
+    {
+      "file": "023-css-layout-hud.css",
+      "kind": "css"
+    },
+    {
+      "file": "024-css-bugreport-modal.css",
+      "kind": "css"
+    },
+    {
+      "file": "025-css-changelog-modal.css",
+      "kind": "css"
+    },
+    {
+      "file": "026-css-origindest-labels.css",
+      "kind": "css"
+    },
+    {
+      "file": "027-css-sidebar.css",
+      "kind": "css"
+    },
+    {
+      "file": "028-css-porkchop-info-splash-responsive.css",
+      "kind": "css"
+    },
+    {
+      "file": "029-css-hud-widgets.css",
+      "kind": "css"
+    },
+    {
+      "file": "030-css-stats-overlay.css",
+      "kind": "css"
+    },
+    {
+      "file": "031-css-vessel-hud.css",
+      "kind": "css",
+      "desc": "telemetry bridge: vessel labels, filter panel, active-vessel HUD"
+    },
+    {
+      "file": "036-css-themes-menu.css",
+      "kind": "css",
+      "desc": "accent themes and the header menu"
+    },
+    {
+      "file": "100-html-shell.html",
+      "kind": "html"
+    },
+    {
+      "file": "101-html-sidebar.html",
+      "kind": "html"
+    },
+    {
+      "file": "103-html-tutorial.html",
+      "kind": "html",
+      "desc": "tutorial overlay"
+    },
+    {
+      "file": "104-html-firebase.html",
+      "kind": "html",
+      "desc": "anonymous stats: Firebase Analytics and Firestore counters"
+    },
+    {
+      "file": "102-html-changelog-modal.html",
+      "kind": "html"
+    },
+    {
+      "file": "200-js-changelog-modal.js",
+      "kind": "classic"
+    },
+    {
+      "file": "201-js-bugreport-modal-captcha.js",
+      "kind": "classic"
+    },
+    {
+      "file": "202-js-bugreport-screenshots.js",
+      "kind": "classic"
+    },
+    {
+      "file": "203-js-bugreport-submit-dragdrop.js",
+      "kind": "classic"
+    },
+    {
+      "file": "300-html-script-boundary.html",
+      "kind": "html"
+    },
+    {
+      "file": "310-js-00-boot-splash.js",
+      "kind": "module"
+    },
+    {
+      "file": "311-js-01-data.js",
+      "kind": "module"
+    },
+    {
+      "file": "312-js-02-orbital-mechanics.js",
+      "kind": "module"
+    },
+    {
+      "file": "313-js-03-sim-clock.js",
+      "kind": "module"
+    },
+    {
+      "file": "314-js-04a-scene-setup.js",
+      "kind": "module"
+    },
+    {
+      "file": "315-js-04b-coordinates-bodies.js",
+      "kind": "module"
+    },
+    {
+      "file": "316-js-04c-ghosts-raycaster.js",
+      "kind": "module"
+    },
+    {
+      "file": "317-js-04d-transfer-return-arcs.js",
+      "kind": "module"
+    },
+    {
+      "file": "318-js-04e-assist-arcs.js",
+      "kind": "module"
+    },
+    {
+      "file": "319-js-04f-phase-lines-ghost.js",
+      "kind": "module"
+    },
+    {
+      "file": "320-js-04g-map-update-labels.js",
+      "kind": "module"
+    },
+    {
+      "file": "321-js-04h-camera-controls.js",
+      "kind": "module"
+    },
+    {
+      "file": "322-js-04i-mobile-map.js",
+      "kind": "module"
+    },
+    {
+      "file": "323-js-05a-ui-setup-tabs.js",
+      "kind": "module"
+    },
+    {
+      "file": "324-js-05b-calendar.js",
+      "kind": "module"
+    },
+    {
+      "file": "325-js-05c-live-sync.js",
+      "kind": "module"
+    },
+    {
+      "file": "326-js-06a-transfer-math.js",
+      "kind": "module"
+    },
+    {
+      "file": "327-js-06b-assists-clear.js",
+      "kind": "module"
+    },
+    {
+      "file": "328-js-06c-return-render-results.js",
+      "kind": "module"
+    },
+    {
+      "file": "329-js-06d-svg-diagrams.js",
+      "kind": "module"
+    },
+    {
+      "file": "330-js-07-info-panel.js",
+      "kind": "module"
+    },
+    {
+      "file": "331-js-08-porkchop.js",
+      "kind": "module"
+    },
+    {
+      "file": "331a-js-08a-bridge-frame.js",
+      "kind": "module",
+      "desc": "pure maths: fit telemetry-bridge axes to the analytic model"
+    },
+    {
+      "file": "331b-js-08b-bridge-live.js",
+      "kind": "module",
+      "desc": "telemetry bridge WebSocket client; bridge body positions; LIVE sync UT"
+    },
+    {
+      "file": "331c-js-08c-vessel-layer.js",
+      "kind": "module",
+      "desc": "vessel markers, filter panel and active-vessel HUD (bridge)"
+    },
+    {
+      "file": "332-js-09-main-loop.js",
+      "kind": "module"
+    },
+    {
+      "file": "333-js-10-hud-widgets.js",
+      "kind": "module"
+    },
+    {
+      "file": "334-js-11-hud-transfer-widgets.js",
+      "kind": "module"
+    },
+    {
+      "file": "335-js-12-stats-overlay.js",
+      "kind": "module"
+    },
+    {
+      "file": "900-html-calendar-modal.html",
+      "kind": "html"
+    },
+    {
+      "file": "901-html-bugreport-modal.html",
+      "kind": "html"
+    }
+    ]
+}
