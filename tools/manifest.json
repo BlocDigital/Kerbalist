@@ -226,6 +226,10 @@
     {
       "file": "901-html-bugreport-modal.html",
       "kind": "html"
+    },
+    {
+      "file": "favicon.ico",
+      "kind": "data"
     }
     ]
 }
