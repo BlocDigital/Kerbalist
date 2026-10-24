@@ -4,6 +4,8 @@ Astrodynamics Suite for Kerbal Space Program 2 Redux
 
 Kerbalist helps you plan efficient transfers between planets in Kerbal Space Program. Calculate transfer windows, ejection angles, and capture requirements all in one tool.
 
+![Kerbalist orbital map](docs/screenshots/main.png)
+
 ## Features
 
 - **Transfer Window Calculator**: Find the next window to your destination with accurate timing based on real orbital mechanics.
@@ -13,6 +15,17 @@ Kerbalist helps you plan efficient transfers between planets in Kerbal Space Pro
 - **Themes and Menu**: A header menu with Reset HUD layout, the Telemetry Bridge release page, the changelog, and four themes (Cyan, Red, Yellow, Green) that recolour the whole app.
 - **Bug Reports**: Report issues directly to GitHub with automatic app screenshots.
 - **Persistent State**: All your preferences and widget positions are saved to localStorage.
+
+![Ejection angle and phase angle cards](docs/screenshots/angles.png)
+![Next transfer window and transfer time cards](docs/screenshots/window.png)
+
+### Themes
+
+The app ships with four colour themes — green, cyan, red, and yellow — applied across the entire UI.
+
+![Cyan theme](docs/screenshots/cyan.png)
+![Red theme](docs/screenshots/red.png)
+![Yellow theme](docs/screenshots/yellow.png)
 
 ## Getting Started
 
