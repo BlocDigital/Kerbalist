@@ -4,7 +4,6 @@ Astrodynamics Suite for Kerbal Space Program 2 Redux
 
 Kerbalist helps you plan efficient transfers between planets in Kerbal Space Program. Calculate transfer windows, ejection angles, and capture requirements all in one tool.
 
-![Kerbalist orbital map](docs/screenshots/main.png)
 
 ## Features
 
@@ -24,6 +23,7 @@ Kerbalist helps you plan efficient transfers between planets in Kerbal Space Pro
 The app ships with four colour themes — green, cyan, red, and yellow — applied across the entire UI.
 
 ![Cyan theme](docs/screenshots/cyan.png)
+![Kerbalist orbital map](docs/screenshots/main.png)
 ![Red theme](docs/screenshots/red.png)
 ![Yellow theme](docs/screenshots/yellow.png)
 
