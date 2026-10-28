@@ -1,0 +1,13 @@
+src/
+tools/
+test/
+node_modules/
+backup/
+functions/
+.env
+*.local
+state.json
+DEVELOPING.md
+IDEA.md
+AGENTS.md
+SOUL.md
